@@ -249,108 +249,99 @@ function pctSpan(start, end) {
 
 // Milestones: { lane, title, start, end, p, week, detail }
 const MILESTONES = [
-  // ----- Semana 0 (28 abr - 5 may) -----
+  // ----- Sem 0 · Esta semana -----
   { lane:'legal', title:'Consulta abogado laboral', start:'2026-04-28', end:'2026-04-30', p:'P0', week:'Sem 0 · Esta semana',
     detail:'Agendar cita martes. Validar status de salida Semantiks 27-abr y conflictos de no-compete antes de firmar contratos Shelfly.' },
-  { lane:'legal', title:'IMPI: validar 4 nombres', start:'2026-04-29', end:'2026-04-30', p:'P0', week:'Sem 0 · Esta semana',
-    detail:'Búsqueda fonética en IMPI para Shelvel, Venshel, Covdal y nombre 4. Filtrar conflictos antes de comprar dominios.' },
-
   { lane:'brand', title:'Comprar 4 dominios .com', start:'2026-04-28', end:'2026-04-29', p:'P0', week:'Sem 0 · Esta semana',
-    detail:'Hoy mismo. Cloudflare Registrar. 4 candidatos en simultáneo para no perder ventana mientras se valida IMPI.' },
-  { lane:'brand', title:'Decisión nombre final con Diego', start:'2026-04-30', end:'2026-05-01', p:'P0', week:'Sem 0 · Esta semana',
-    detail:'Jueves. Cruzar IMPI + USPTO + dominios disponibles + criterio de marca. Output: nombre congelado + brief al diseñador.' },
-
+    detail:'Hoy mismo. Cloudflare Registrar. 4 candidatos en simultaneo para no perder ventana mientras se valida IMPI.' },
+  { lane:'legal', title:'IMPI: validar 4 nombres', start:'2026-04-29', end:'2026-04-30', p:'P0', week:'Sem 0 · Esta semana',
+    detail:'Busqueda fonetica en IMPI para Shelvel, Venshel, Covdal y nombre 4. Filtrar conflictos antes de comprar dominios.' },
   { lane:'gtm', title:'Llamada con Diego · 4 slides', start:'2026-04-29', end:'2026-04-30', p:'P0', week:'Sem 0 · Esta semana',
-    detail:'Miércoles. Solo slides 1, 5, 6, 10 del deck v2. Confirmar capital, canal Time Tracker, pipeline brands warm.' },
-
+    detail:'Miercoles. Solo slides 1, 5, 6, 10 del deck v2. Confirmar capital, canal Time Tracker, pipeline brands warm.' },
+  { lane:'brand', title:'Decision nombre final con Diego', start:'2026-04-30', end:'2026-05-01', p:'P0', week:'Sem 0 · Esta semana',
+    detail:'Jueves. Cruzar IMPI + USPTO + dominios disponibles + criterio de marca. Output: nombre congelado + brief al disenador.' },
   { lane:'tech', title:'Approve builds + Supabase staging', start:'2026-04-30', end:'2026-05-04', p:'P1', week:'Sem 0 · Esta semana',
     detail:'Aprovisionar proyecto Supabase staging (db + auth + storage). Verificar Expo EAS builds + Vercel preview deploys conectados.' },
-
-  // ----- Semana 1 (6-12 may) -----
+  // ----- Sem 1 -----
   { lane:'legal', title:'Filing trademark USPTO + IMPI', start:'2026-05-06', end:'2026-05-12', p:'P1', week:'Sem 1',
     detail:'Con abogado PI: USPTO Class 35/42 + IMPI clases equivalentes. Use intent-to-use en USPTO mientras sale producto.' },
   { lane:'brand', title:'Identidad visual final', start:'2026-05-06', end:'2026-05-12', p:'P1', week:'Sem 1',
-    detail:'Logo definitivo + landing page V1 con dominio elegido. Sistema de tipografía Inter + Space Grotesk implementado en CSS vars.' },
+    detail:'Logo definitivo + landing page V1 con dominio elegido. Sistema de tipografia Inter + Space Grotesk implementado en CSS vars.' },
+  { lane:'producto', title:'Brand console UI funcional', start:'2026-05-06', end:'2026-05-12', p:'P1', week:'Sem 1',
+    detail:'Dashboard, missions/new, listado de misiones. No mas mockups; queries reales a Supabase via Prisma o RLS directo.' },
   { lane:'tech', title:'Schema migration + RLS + auth', start:'2026-05-06', end:'2026-05-12', p:'P1', week:'Sem 1',
     detail:'Prisma migrate deploy a Supabase. Policies RLS por organization_id + role. Supabase Auth con magic link + phone OTP rep.' },
-  { lane:'producto', title:'Brand console UI funcional', start:'2026-05-06', end:'2026-05-12', p:'P1', week:'Sem 1',
-    detail:'Dashboard, missions/new, listado de misiones. No más mockups; queries reales a Supabase via Prisma o RLS directo.' },
-
-  // ----- Semana 2 (13-19 may) -----
+  // ----- Sem 2 -----
+  { lane:'tech', title:'Mercado Pago Marketplace · spike 3 dias', start:'2026-05-13', end:'2026-05-16', p:'P0', week:'Sem 2',
+    detail:'3 dias time-boxed para validar split payments, payout a CLABE, KYC requerido. Si rojo: plan B = STP via API o pagos manuales acumulados.' },
   { lane:'tech', title:'Mobile rep app skeleton + EAS', start:'2026-05-13', end:'2026-05-19', p:'P1', week:'Sem 2',
     detail:'Expo router + auth + feed + accept mission flow. EAS Build dev profile listo. Deep link a expo://shelfly/feed.' },
-  { lane:'tech', title:'Mercado Pago Marketplace · spike 3 días', start:'2026-05-13', end:'2026-05-16', p:'P0', week:'Sem 2',
-    detail:'3 días time-boxed para validar split payments, payout a CLABE, KYC requerido. Si rojo: plan B = STP via API o pagos manuales acumulados.' },
   { lane:'tech', title:'Cloudflare R2 + CORS upload directo', start:'2026-05-16', end:'2026-05-19', p:'P1', week:'Sem 2',
     detail:'Buckets evidences/private + brand-logos/public. Signed URLs presigned 5min. Upload directo desde mobile sin pasar por API.' },
-
-  // ----- Semana 3 (20-26 may) -----
-  { lane:'tech', title:'Ejecución end-to-end', start:'2026-05-20', end:'2026-05-26', p:'P0', week:'Sem 3',
-    detail:'Check-in geo + foto antes/después + upload R2 + validación auto (geofence, EXIF, hash). Mission status transitions.' },
-  { lane:'tech', title:'Validación manual UI admin', start:'2026-05-22', end:'2026-05-26', p:'P1', week:'Sem 3',
-    detail:'Cola de evidencias en /validation con aprobar/rechazar/marcar revisión. Bulk actions. Audit log automático.' },
+  // ----- Sem 3 -----
+  { lane:'tech', title:'Ejecucion end-to-end', start:'2026-05-20', end:'2026-05-26', p:'P0', week:'Sem 3',
+    detail:'Check-in geo + foto antes/despues + upload R2 + validacion auto (geofence, EXIF, hash). Mission status transitions.' },
+  { lane:'tech', title:'Validacion manual UI admin', start:'2026-05-22', end:'2026-05-26', p:'P1', week:'Sem 3',
+    detail:'Cola de evidencias en /validation con aprobar/rechazar/marcar revision. Bulk actions. Audit log automatico.' },
   { lane:'tech', title:'Webhooks Time Tracker [VALIDAR]', start:'2026-05-23', end:'2026-05-26', p:'P2', week:'Sem 3',
-    detail:'Placeholder. Validar con Diego qué eventos quiere bidireccional (asistencia rep, cierre misión). No bloquear si no hay specs.' },
-
-  // ----- Semana 4 (27 may - 2 jun) -----
-  { lane:'tech', title:'Mercado Pago Marketplace LIVE sandbox', start:'2026-05-27', end:'2026-06-02', p:'P0', week:'Sem 4',
-    detail:'Pago real (sandbox) tras validación: split a brand wallet → release a rep CLABE. Reintentos + estado payment.' },
+    detail:'Placeholder. Validar con Diego que eventos quiere bidireccional (asistencia rep, cierre mision). No bloquear si no hay specs.' },
+  // ----- Sem 4 -----
   { lane:'tech', title:'KYC ligero rep (CURP+INE+CLABE)', start:'2026-05-27', end:'2026-06-02', p:'P0', week:'Sem 4',
     detail:'Flow guiado en mobile: CURP, INE foto frente/dorso, selfie liveness, CLABE validada. Status pending_review hasta aprobar.' },
+  { lane:'tech', title:'Mercado Pago Marketplace LIVE sandbox', start:'2026-05-27', end:'2026-06-02', p:'P0', week:'Sem 4',
+    detail:'Pago real (sandbox) tras validacion: split a brand wallet -> release a rep CLABE. Reintentos + estado payment.' },
   { lane:'producto', title:'Onboarding 3 brands warm', start:'2026-05-30', end:'2026-06-02', p:'P1', week:'Sem 4',
-    detail:'Brands del pipeline Diego en staging. Crear org, invitar admin, importar PDVs CSV, crear primera misión draft.' },
-
-  // ----- Semana 5 (3-9 jun) -----
-  { lane:'tech', title:'Hardening fraud (geo + EXIF + IQ)', start:'2026-06-03', end:'2026-06-09', p:'P1', week:'Sem 5',
-    detail:'Geofence radius enforcement. EXIF GPS vs check-in. Image quality threshold (blur, brightness). Hash dup detection.' },
+    detail:'Brands del pipeline Diego en staging. Crear org, invitar admin, importar PDVs CSV, crear primera mision draft.' },
+  // ----- Sem 5 -----
   { lane:'tech', title:'Sentry + PostHog', start:'2026-06-03', end:'2026-06-06', p:'P1', week:'Sem 5',
     detail:'Error monitoring web+mobile. Funnels: rep onboarding, brand mission creation, execution submit-to-paid.' },
+  { lane:'tech', title:'Hardening fraud (geo + EXIF + IQ)', start:'2026-06-03', end:'2026-06-09', p:'P1', week:'Sem 5',
+    detail:'Geofence radius enforcement. EXIF GPS vs check-in. Image quality threshold (blur, brightness). Hash dup detection.' },
   { lane:'producto', title:'30 reps onboardeados staging', start:'2026-06-04', end:'2026-06-09', p:'P1', week:'Sem 5',
     detail:'Reclutar reps via Diego/Time Tracker. Completar KYC. Probar feed + accept + execute misiones de prueba.' },
-  { lane:'gtm', title:'Documentación + FAQs públicos', start:'2026-06-05', end:'2026-06-09', p:'P2', week:'Sem 5',
-    detail:'Help center: cómo crear misión (brand), cómo cobrar (rep), políticas de validación. Notion público o Mintlify.' },
-
-  // ----- Semanas 6-8 (10-30 jun) -----
-  { lane:'tech', title:'Producción switch (DB+R2+MP LIVE)', start:'2026-06-10', end:'2026-06-16', p:'P0', week:'Sem 6',
-    detail:'Cutover staging → prod. DB con backups, R2 dominio custom, MP credenciales prod. DNS. Smoke test E2E antes de invitar.' },
+  { lane:'gtm', title:'Documentacion + FAQs publicos', start:'2026-06-05', end:'2026-06-09', p:'P2', week:'Sem 5',
+    detail:'Help center: como crear mision (brand), como cobrar (rep), politicas de validacion. Notion publico o Mintlify.' },
+  // ----- Sem 6 -----
+  { lane:'tech', title:'Produccion switch (DB+R2+MP LIVE)', start:'2026-06-10', end:'2026-06-16', p:'P0', week:'Sem 6',
+    detail:'Cutover staging -> prod. DB con backups, R2 dominio custom, MP credenciales prod. DNS. Smoke test E2E antes de invitar.' },
+  // ----- Sem 6-8 -----
+  { lane:'legal', title:'Contratos rep firmados digital', start:'2026-06-12', end:'2026-06-30', p:'P1', week:'Sem 6-8',
+    detail:'Acuerdo prestacion servicios independientes + cesion de imagen. Firma e-doc (Mifiel/Weetrust). Gating al primer pago.' },
+  { lane:'producto', title:'Iteracion producto vs feedback', start:'2026-06-15', end:'2026-06-30', p:'P1', week:'Sem 6-8',
+    detail:'Daily fixes basados en lo que rompe en beta. UX de campo, edge cases de validacion, claridad en pago al rep.' },
   { lane:'gtm', title:'Beta cerrada · 3 brands CDMX', start:'2026-06-15', end:'2026-06-30', p:'P0', week:'Sem 6-8',
     detail:'Tres brands del pipeline Diego corren misiones reales en CDMX. Entre 50-150 misiones totales. Pedro en soporte 1:1.' },
-  { lane:'producto', title:'Iteración producto vs feedback', start:'2026-06-15', end:'2026-06-30', p:'P1', week:'Sem 6-8',
-    detail:'Daily fixes basados en lo que rompe en beta. UX de campo, edge cases de validación, claridad en pago al rep.' },
-  { lane:'legal', title:'Contratos rep firmados digital', start:'2026-06-12', end:'2026-06-30', p:'P1', week:'Sem 6-8',
-    detail:'Acuerdo prestación servicios independientes + cesión de imagen. Firma e-doc (Mifiel/Weetrust). Gating al primer pago.' },
-  { lane:'tech', title:'Time Tracker integración completa', start:'2026-06-18', end:'2026-06-30', p:'P1', week:'Sem 6-8',
-    detail:'SSO, KPI consolidado bidireccional. Diego define spec final. Output: cliente Time Tracker ve métricas Shelfly en su dashboard.' },
-
-  // ----- Mes 3 (julio) -----
-  { lane:'gtm', title:'Primera misión real validada y pagada', start:'2026-07-01', end:'2026-07-15', p:'P0', week:'Julio',
-    detail:'Hito celebración. Primera misión post-beta cerrada con pago liberado a rep en menos de 72h. Caso de estudio público.' },
+  { lane:'tech', title:'Time Tracker integracion completa', start:'2026-06-18', end:'2026-06-30', p:'P1', week:'Sem 6-8',
+    detail:'SSO, KPI consolidado bidireccional. Diego define spec final. Output: cliente Time Tracker ve metricas Shelfly en su dashboard.' },
+  // ----- Julio -----
+  { lane:'gtm', title:'Primera mision real validada y pagada', start:'2026-07-01', end:'2026-07-15', p:'P0', week:'Julio',
+    detail:'Hito celebracion. Primera mision post-beta cerrada con pago liberado a rep en menos de 72h. Caso de estudio publico.' },
   { lane:'tech', title:'Misiones recurrentes / rutas optimizadas', start:'2026-07-08', end:'2026-07-31', p:'P1', week:'Julio',
-    detail:'Cron de creación de misiones recurrentes. Optimizador de ruta para rep (visita N PDVs en sesión). Beneficia churn rep.' },
+    detail:'Cron de creacion de misiones recurrentes. Optimizador de ruta para rep (visita N PDVs en sesion). Beneficia churn rep.' },
   { lane:'tech', title:'OCR planograma fase 2', start:'2026-07-15', end:'2026-07-31', p:'P2', week:'Julio',
-    detail:'Visión computadora para validar share-of-shelf y planograma compliance. Modelo cloud (Anthropic Vision o similar).' },
+    detail:'Vision computadora para validar share-of-shelf y planograma compliance. Modelo cloud (Anthropic Vision o similar).' },
   { lane:'gtm', title:'100 misiones validadas / semana', start:'2026-07-20', end:'2026-07-31', p:'P1', week:'Julio',
-    detail:'Métrica north-star primer trimestre. Implica 5 brands activas + 50 reps activos. Soporte tracking en dashboard interno.' },
-
-  // ----- Mes 4-5 (ago-sep) -----
-  { lane:'gtm', title:'Expansión GDL + MTY', start:'2026-08-01', end:'2026-08-31', p:'P1', week:'Agosto',
-    detail:'Reclutamiento rep en GDL y MTY. PDVs cargados. Primer brand dispara misiones fuera CDMX. Logística pago multi-region.' },
-  { lane:'producto', title:'Marketplace campañas premium', start:'2026-08-15', end:'2026-09-15', p:'P2', week:'Ago-Sep',
-    detail:'Brands pueden lanzar campañas multi-misión con presupuestos altos y reps top-tier filtrados por rating.' },
+    detail:'Metrica north-star primer trimestre. Implica 5 brands activas + 50 reps activos. Soporte tracking en dashboard interno.' },
+  // ----- Agosto -----
+  { lane:'gtm', title:'Expansion GDL + MTY', start:'2026-08-01', end:'2026-08-31', p:'P1', week:'Agosto',
+    detail:'Reclutamiento rep en GDL y MTY. PDVs cargados. Primer brand dispara misiones fuera CDMX. Logistica pago multi-region.' },
+  // ----- Ago-Sep -----
+  { lane:'producto', title:'Marketplace campanas premium', start:'2026-08-15', end:'2026-09-15', p:'P2', week:'Ago-Sep',
+    detail:'Brands pueden lanzar campanas multi-mision con presupuestos altos y reps top-tier filtrados por rating.' },
   { lane:'tech', title:'API para marcas con DAM existente', start:'2026-08-20', end:'2026-09-20', p:'P2', week:'Ago-Sep',
-    detail:'Integración bidireccional con sistemas de las brands grandes. Webhooks salientes + REST API documentada.' },
+    detail:'Integracion bidireccional con sistemas de las brands grandes. Webhooks salientes + REST API documentada.' },
+  // ----- Septiembre -----
   { lane:'producto', title:'Rating bidireccional avanzado', start:'2026-09-01', end:'2026-09-20', p:'P2', week:'Septiembre',
     detail:'Score compuesto rep (puntualidad, calidad, geofence). Brand-side puede preferir reps top-rated. Apela disputas.' },
   { lane:'gtm', title:'500 misiones / semana', start:'2026-09-15', end:'2026-09-30', p:'P1', week:'Septiembre',
-    detail:'5x crecimiento vs julio. Implica 15 brands + 200 reps. Métrica para ronda institucional.' },
-
-  // ----- Mes 6 (octubre) -----
+    detail:'5x crecimiento vs julio. Implica 15 brands + 200 reps. Metrica para ronda institucional.' },
+  // ----- Octubre -----
   { lane:'producto', title:'Insights products (share-of-shelf)', start:'2026-10-01', end:'2026-10-20', p:'P1', week:'Octubre',
-    detail:'Producto data: brands compran reportes agregados de share-of-shelf, precio competidor, presencia. Margen alto, no por misión.' },
-  { lane:'gtm', title:'Decisión seed institucional ($7-15M MXN)', start:'2026-10-10', end:'2026-10-31', p:'P0', week:'Octubre',
-    detail:'Basado en métricas Q3 (volumen, retención brand, NPS rep, margen). Si rojo: bootstrap más con flujo Time Tracker.' },
+    detail:'Producto data: brands compran reportes agregados de share-of-shelf, precio competidor, presencia. Margen alto, no por mision.' },
+  { lane:'gtm', title:'Decision seed institucional ($7-15M MXN)', start:'2026-10-10', end:'2026-10-31', p:'P0', week:'Octubre',
+    detail:'Basado en metricas Q3 (volumen, retencion brand, NPS rep, margen). Si rojo: bootstrap mas con flujo Time Tracker.' },
   { lane:'producto', title:'Roadmap 2027', start:'2026-10-20', end:'2026-10-31', p:'P2', week:'Octubre',
-    detail:'Estratégico. Plan multi-país (Colombia? Perú?), retail audit como producto enterprise, integraciones SAP/Oracle BI.' },
+    detail:'Estrategico. Plan multi-pais (Colombia? Peru?), retail audit como producto enterprise, integraciones SAP/Oracle BI.' },
 ];
 
 // ============================================================
