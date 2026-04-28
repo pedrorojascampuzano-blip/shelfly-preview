@@ -90,10 +90,10 @@
   .scroll-area.pulled-down .ptr-spinner { transform: translateY(8px); opacity: 1; }
   .modal { transition: transform 0.35s cubic-bezier(0.32, 0.72, 0, 1), opacity 0.2s; }
   .modal.hidden-down { transform: translateY(100%); opacity: 0; pointer-events: none; }
-  .tab-content { display: none; }
-  .tab-content.active { display: flex; }
-  .inner-tab-content { display: none; }
-  .inner-tab-content.active { display: block; }
+  .tab-content { display: none !important; }
+  .tab-content.active { display: flex !important; }
+  .inner-tab-content { display: none !important; }
+  .inner-tab-content.active { display: block !important; }
   .pin-shadow { filter: drop-shadow(0 4px 6px rgba(10,37,64,0.25)); }
   .filter-pill { transition: all 0.15s; }
   .filter-pill:active { transform: scale(0.96); }

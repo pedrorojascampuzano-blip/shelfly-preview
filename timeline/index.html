@@ -76,10 +76,9 @@
     /* Card */
     .milestone {
       position: absolute;
-      top: 50%;
-      transform: translateY(-50%);
+      top: 6px;
       border-radius: 10px;
-      padding: 8px 12px;
+      padding: 10px 12px;
       font-size: 12px;
       line-height: 1.35;
       font-weight: 500;
@@ -88,14 +87,21 @@
       box-shadow: 0 1px 2px rgba(10,37,64,.06), 0 0 0 1px rgba(10,37,64,.05);
       background: white;
       color: #0A2540;
+      min-width: 180px;
+      max-width: 320px;
+      white-space: normal;
       overflow: hidden;
-      text-overflow: ellipsis;
+      z-index: 5;
+    }
+    .milestone .m-title {
       display: -webkit-box;
       -webkit-line-clamp: 2;
       -webkit-box-orient: vertical;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
     .milestone:hover {
-      transform: translateY(-50%) scale(1.02);
+      transform: scale(1.03);
       z-index: 20;
       box-shadow: 0 8px 24px rgba(10,37,64,.12), 0 0 0 1px rgba(10,37,64,.10);
     }
@@ -186,7 +192,7 @@
 <main class="max-w-[1400px] mx-auto px-6 pb-20">
   <div id="timeline-shell" class="bg-white rounded-2xl border border-brand-navy/10 shadow-sm overflow-hidden">
     <div id="timeline-scroll" class="overflow-x-auto scrollbar-thin">
-      <div id="timeline-grid" class="relative" style="min-width: 1600px;">
+      <div id="timeline-grid" class="relative" style="min-width: 2800px;">
         <!-- Header axis -->
         <div id="axis" class="grid sticky top-0 bg-white z-20 border-b border-brand-navy/10"></div>
         <!-- Lanes -->
@@ -408,17 +414,30 @@ function renderLanes() {
   const lanes = document.getElementById('lanes');
   lanes.innerHTML = '';
 
+  const CARD_HEIGHT = 56;
+  const CARD_GAP = 6;
+  const TOP_PADDING = 8;
+  const MIN_CARD_PX = 180;
+
+  // Container width for px conversion (best estimate before render)
+  const containerW = document.getElementById('timeline-grid').offsetWidth || 2800;
+  const trackW = containerW - 200; // minus lane label
+
   LANES.forEach(lane => {
-    const items = MILESTONES.filter(m => m.lane === lane.id);
+    const items = MILESTONES.filter(m => m.lane === lane.id)
+      .filter(m => {
+        const ms = new Date(m.start), me = new Date(m.end);
+        return !(me < bounds.start || ms > bounds.end);
+      })
+      .sort((a, b) => new Date(a.start) - new Date(b.start));
+
     const row = document.createElement('div');
     row.className = `lane-row lane-${lane.id} grid week-bg`;
-    // match grid cols of axis: 200px + N flex cols. We just stretch using 1fr.
     row.style.gridTemplateColumns = `200px 1fr`;
-    row.style.minHeight = '110px';
 
     // label
     const label = document.createElement('div');
-    label.className = 'lane-label flex items-center px-4 py-3';
+    label.className = 'lane-label flex items-start px-4 py-4';
     label.innerHTML = `
       <div class="flex items-center gap-3">
         <span class="w-2.5 h-2.5 rounded-full" style="background:${lane.color}"></span>
@@ -430,36 +449,48 @@ function renderLanes() {
     // track area
     const track = document.createElement('div');
     track.className = 'relative';
-    track.style.minHeight = '110px';
 
-    items.forEach((m, idx) => {
+    // Collision detection: for each item, find the lowest slot where it does not overlap
+    const slotEnds = []; // slotEnds[i] = pixel position where slot i becomes free
+    let maxSlotUsed = 0;
+
+    items.forEach((m) => {
       const ms = new Date(m.start);
       const me = new Date(m.end);
-      // Skip items outside view range
-      if (me < bounds.start || ms > bounds.end) return;
-
       const clampedStart = ms < bounds.start ? bounds.start : ms;
       const clampedEnd   = me > bounds.end   ? bounds.end   : me;
 
-      const left = ((clampedStart - bounds.start) / DAY_MS / total) * 100;
-      const width = Math.max(((clampedEnd - clampedStart) / DAY_MS / total) * 100, 2);
+      const leftPct = ((clampedStart - bounds.start) / DAY_MS / total) * 100;
+      const widthPct = Math.max(((clampedEnd - clampedStart) / DAY_MS / total) * 100, 0.5);
+
+      const leftPx = (leftPct / 100) * trackW;
+      const widthPx = Math.max((widthPct / 100) * trackW, MIN_CARD_PX);
+      const cardStart = leftPx;
+      const cardEnd = leftPx + widthPx + 8; // +gap
+
+      // find lowest slot where slotEnds[i] <= cardStart
+      let slot = 0;
+      while (slot < slotEnds.length && slotEnds[slot] > cardStart) slot++;
+      slotEnds[slot] = cardEnd;
+      if (slot > maxSlotUsed) maxSlotUsed = slot;
 
       const card = document.createElement('div');
       card.className = `milestone ${m.p === 'P0' ? 'is-p0' : ''}`;
-      card.style.left = left + '%';
-      card.style.width = width + '%';
-
-      // Stack vertically inside lane based on overlap
-      const verticalSlot = (idx % 3);
-      card.style.top = (verticalSlot === 0 ? '50%' : verticalSlot === 1 ? '22%' : '78%');
-      card.style.transform = 'translateY(-50%)';
+      card.style.left = leftPx + 'px';
+      card.style.width = widthPx + 'px';
+      card.style.top = (TOP_PADDING + slot * (CARD_HEIGHT + CARD_GAP)) + 'px';
+      card.style.height = CARD_HEIGHT + 'px';
 
       const priColor = m.p === 'P0' ? '#FF6B35' : (m.p === 'P1' ? '#0A2540' : '#94a3b8');
-      card.innerHTML = `<span class="pri" style="color:${priColor}">${m.p}</span>${m.title}`;
+      card.innerHTML = `<span class="pri" style="color:${priColor}">${m.p}</span><span class="m-title">${m.title}</span>`;
       card.title = m.title;
       card.addEventListener('click', () => openModal(m, lane));
       track.appendChild(card);
     });
+
+    const laneHeight = TOP_PADDING * 2 + (maxSlotUsed + 1) * (CARD_HEIGHT + CARD_GAP);
+    row.style.minHeight = laneHeight + 'px';
+    track.style.minHeight = laneHeight + 'px';
 
     row.appendChild(track);
     lanes.appendChild(row);
@@ -509,7 +540,7 @@ function setMode(mode) {
     : 'px-4 py-2 text-sm font-semibold rounded-md text-brand-navy/70 hover:text-brand-navy';
   // Adjust min-width of the grid for week mode (more breathing room)
   const grid = document.getElementById('timeline-grid');
-  grid.style.minWidth = mode === 'week' ? '1800px' : '1600px';
+  grid.style.minWidth = mode === 'week' ? '2400px' : '2800px';
   renderAxis(mode);
   renderLanes();
 }
