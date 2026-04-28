@@ -14,6 +14,7 @@
 
 # --- Pedro y core ---
 pedroc11@gmail.com
+pedro.rojas.campuzano@gmail.com
 
 # --- Dominios autorizados (todo el equipo) ---
 @timetracker.com.mx
