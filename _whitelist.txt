@@ -14,6 +14,10 @@
 
 # --- Pedro y core ---
 pedro.rojas.campuzano@gmail.com
+mariana.lenero94@gmail.com
+adrian@semantiks.com
+adrian@semantiks.ai
+maria@knomadic.io
 
 # --- Dominios autorizados (todo el equipo) ---
 @timetracker.com.mx
