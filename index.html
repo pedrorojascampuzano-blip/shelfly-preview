@@ -7,29 +7,62 @@
 <script src="https://cdn.tailwindcss.com"></script>
 <style>body{font-family:Inter,system-ui;background:#FFF8F3;color:#0A2540}</style>
 </head>
-<body class="min-h-screen flex items-center justify-center p-8">
-  <div class="max-w-2xl w-full">
-    <h1 class="text-5xl md:text-6xl font-bold mb-2" style="font-family:'Space Grotesk',sans-serif;letter-spacing:-0.03em">Shelfly</h1>
-    <p class="text-lg text-gray-700 mb-10">Marketplace de reps de campo · Preview interno</p>
-    <div class="grid gap-4">
-      <a href="./landing/" class="block p-6 bg-white rounded-2xl border border-gray-200 hover:border-orange-500 hover:shadow-lg transition group">
+<body class="min-h-screen p-8 md:p-16">
+  <div class="max-w-4xl mx-auto">
+    <h1 class="text-5xl md:text-7xl font-bold mb-2" style="font-family:'Space Grotesk',sans-serif;letter-spacing:-0.04em">Shelfly</h1>
+    <p class="text-lg text-gray-700 mb-2">Marketplace de reps de campo &middot; Preview interno</p>
+    <p class="text-sm text-orange-600 font-semibold mb-12 uppercase tracking-wider">Vertical long-tail del portafolio Time Tracker + Storecheck</p>
+
+    <h2 class="text-xs uppercase tracking-wider text-gray-500 font-semibold mb-4">Visuales originales</h2>
+    <div class="grid md:grid-cols-3 gap-3 mb-10">
+      <a href="./landing/" class="block p-5 bg-white rounded-2xl border border-gray-200 hover:border-orange-500 hover:shadow-lg transition group">
         <div class="text-xs uppercase tracking-wider text-orange-500 font-semibold mb-1">Landing</div>
-        <div class="text-2xl font-semibold mb-1 group-hover:text-orange-600">Homepage mockup</div>
-        <div class="text-gray-600">Production-grade, animaciones sutiles, anaquel SVG, secciones marcas+reps</div>
+        <div class="text-lg font-semibold mb-1 group-hover:text-orange-600">Homepage mockup</div>
+        <div class="text-sm text-gray-600">Production-grade, anaquel SVG, animaciones sutiles</div>
       </a>
-      <a href="./deck/" class="block p-6 bg-white rounded-2xl border border-gray-200 hover:border-orange-500 hover:shadow-lg transition group">
-        <div class="text-xs uppercase tracking-wider text-orange-500 font-semibold mb-1">Deck</div>
-        <div class="text-2xl font-semibold mb-1 group-hover:text-orange-600">10 slides para el socio</div>
-        <div class="text-gray-600">Scroll-snap. Navegacion teclado. Print to PDF en Chrome.</div>
+      <a href="./deck/" class="block p-5 bg-white rounded-2xl border border-gray-200 hover:border-orange-500 hover:shadow-lg transition group">
+        <div class="text-xs uppercase tracking-wider text-orange-500 font-semibold mb-1">Deck v2</div>
+        <div class="text-lg font-semibold mb-1 group-hover:text-orange-600">10 slides para Diego</div>
+        <div class="text-sm text-gray-600">Slides 1, 5, 10 reescritas con análisis TT+SC</div>
       </a>
-      <a href="./logos/" class="block p-6 bg-white rounded-2xl border border-gray-200 hover:border-orange-500 hover:shadow-lg transition group">
+      <a href="./logos/" class="block p-5 bg-white rounded-2xl border border-gray-200 hover:border-orange-500 hover:shadow-lg transition group">
         <div class="text-xs uppercase tracking-wider text-orange-500 font-semibold mb-1">Brand</div>
-        <div class="text-2xl font-semibold mb-1 group-hover:text-orange-600">Direcciones de logo</div>
-        <div class="text-gray-600">3 propuestas SVG: S de ruta, anaquel + pin, monograma SH</div>
+        <div class="text-lg font-semibold mb-1 group-hover:text-orange-600">Direcciones de logo</div>
+        <div class="text-sm text-gray-600">3 propuestas SVG: ruta, anaquel, monograma SH</div>
       </a>
     </div>
-    <div class="mt-12 text-sm text-gray-500">
-      <p>Hosted en GitHub Pages. Privado pendiente. <a href="https://drive.google.com/drive/folders/1mwKwfkIXlaTz-yQsPsUK-W2mXj2qCCkD" class="underline hover:text-navy">Carpeta Drive</a></p>
+
+    <h2 class="text-xs uppercase tracking-wider text-gray-500 font-semibold mb-4">Consolas del producto</h2>
+    <div class="grid md:grid-cols-2 gap-3 mb-10">
+      <a href="./brand-console/" class="block p-6 bg-white rounded-2xl border-2 border-gray-200 hover:border-orange-500 hover:shadow-xl transition group">
+        <div class="text-xs uppercase tracking-wider text-orange-500 font-semibold mb-1">Vista marca</div>
+        <div class="text-2xl font-semibold mb-1 group-hover:text-orange-600">Brand Manager dashboard</div>
+        <div class="text-sm text-gray-600">KPIs, misiones activas, mapa CDMX, FAB crear misión, switcher TT/SC/Shelfly</div>
+      </a>
+      <a href="./rep-console/" class="block p-6 bg-white rounded-2xl border-2 border-gray-200 hover:border-orange-500 hover:shadow-xl transition group">
+        <div class="text-xs uppercase tracking-wider text-orange-500 font-semibold mb-1">Vista rep</div>
+        <div class="text-2xl font-semibold mb-1 group-hover:text-orange-600">Mobile rep app</div>
+        <div class="text-sm text-gray-600">iPhone frame, 4 tabs, captura simulada, wallet Mercado Pago</div>
+      </a>
+      <a href="./admin-console/" class="block p-6 bg-white rounded-2xl border-2 border-gray-200 hover:border-orange-500 hover:shadow-xl transition group">
+        <div class="text-xs uppercase tracking-wider text-orange-500 font-semibold mb-1">Vista admin</div>
+        <div class="text-2xl font-semibold mb-1 group-hover:text-orange-600">Operations console</div>
+        <div class="text-sm text-gray-600">Validación manual, fraud monitoring, brands, reps, payouts</div>
+      </a>
+      <a href="./timeline/" class="block p-6 bg-white rounded-2xl border-2 border-gray-200 hover:border-orange-500 hover:shadow-xl transition group">
+        <div class="text-xs uppercase tracking-wider text-orange-500 font-semibold mb-1">Roadmap</div>
+        <div class="text-2xl font-semibold mb-1 group-hover:text-orange-600">Timeline 6 meses</div>
+        <div class="text-sm text-gray-600">Gantt swim lanes (Legal/Producto/Tech/GTM/Branding), 30 hitos clickables</div>
+      </a>
+    </div>
+
+    <div class="mt-12 pt-8 border-t border-gray-200 text-sm text-gray-500">
+      <p>Hosted en GitHub Pages. URL no indexada (público pero no listado).</p>
+      <p class="mt-2">
+        <a href="https://drive.google.com/drive/folders/1mwKwfkIXlaTz-yQsPsUK-W2mXj2qCCkD" class="underline hover:text-navy">Carpeta Drive</a>
+        &middot;
+        <a href="https://www.notion.so/Shelfly-Marketplace-Reps-x-Marcas-34fb1aa1843f818e9964e4d6546909a1" class="underline hover:text-navy">Project hub Notion</a>
+      </p>
     </div>
   </div>
 </body>

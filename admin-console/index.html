@@ -1,0 +1,1140 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Shelfly Admin · Operations</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        colors: {
+          orange: { brand: '#FF6B35' },
+          navy: { 900: '#061A30', 800: '#0A2540', 700: '#102E4F', 600: '#1A3D63' },
+          cream: { 50: '#FFF8F3', 100: '#FBF1E7' },
+          ink: '#0A2540',
+        },
+        fontFamily: {
+          sans: ['Inter', 'system-ui', 'sans-serif'],
+          display: ['Space Grotesk', 'sans-serif'],
+          mono: ['JetBrains Mono', 'ui-monospace', 'monospace'],
+        },
+      },
+    },
+  };
+</script>
+<style>
+  html, body { background: #FFF8F3; color: #0A2540; font-family: 'Inter', system-ui, sans-serif; }
+  .num { font-family: 'JetBrains Mono', ui-monospace, monospace; font-variant-numeric: tabular-nums; }
+  .display { font-family: 'Space Grotesk', sans-serif; letter-spacing: -0.01em; }
+  .scrollbar-thin::-webkit-scrollbar { width: 6px; height: 6px; }
+  .scrollbar-thin::-webkit-scrollbar-thumb { background: rgba(10,37,64,0.18); border-radius: 3px; }
+  .row-fade { transition: opacity 220ms ease, transform 220ms ease, max-height 320ms ease; }
+  .row-fade.removing { opacity: 0; transform: translateX(-8px); max-height: 0 !important; overflow: hidden; padding-top: 0; padding-bottom: 0; margin-top: 0; margin-bottom: 0; border: 0; }
+  .pill { display: inline-flex; align-items: center; gap: 4px; padding: 2px 8px; border-radius: 999px; font-size: 11px; font-weight: 600; line-height: 16px; }
+  .kpi-card { transition: transform 160ms ease, box-shadow 160ms ease, border-color 160ms ease; }
+  .kpi-card:hover { transform: translateY(-2px); box-shadow: 0 12px 32px -16px rgba(10,37,64,0.18); border-color: rgba(10,37,64,0.14); }
+  .nav-item { transition: background 120ms ease, color 120ms ease; }
+  .filter-pill[data-active="true"] { background: #0A2540; color: #FFF8F3; border-color: #0A2540; }
+  details > summary::-webkit-details-marker { display: none; }
+  .focus-ring:focus-visible { outline: 2px solid #FF6B35; outline-offset: 2px; }
+  .table-row:hover { background: rgba(10,37,64,0.03); }
+  .ghost-toggle[data-on="true"] .dot { transform: translateX(14px); }
+  .ghost-toggle[data-on="true"] { background: #FF6B35; }
+  .pulse-dot::after { content: ''; position: absolute; inset: -2px; border-radius: 999px; border: 2px solid currentColor; opacity: .5; animation: pulse 1.6s ease-out infinite; }
+  @keyframes pulse { 0% { transform: scale(0.6); opacity: .6; } 100% { transform: scale(1.6); opacity: 0; } }
+</style>
+</head>
+<body class="min-h-screen">
+
+<!-- ============ TOP BAR ============ -->
+<header class="h-14 border-b border-ink/10 bg-cream-50 sticky top-0 z-30 backdrop-blur-sm">
+  <div class="h-full px-4 flex items-center gap-6">
+    <!-- Logo + Admin badge -->
+    <div class="flex items-center gap-2 pr-4 border-r border-ink/10 h-full">
+      <div class="w-7 h-7 rounded-md bg-ink flex items-center justify-center">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#FF6B35" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h18"/><path d="M3 12h18"/><path d="M3 17h18"/><circle cx="7" cy="7" r="1.2" fill="#FF6B35"/><circle cx="13" cy="12" r="1.2" fill="#FF6B35"/><circle cx="9" cy="17" r="1.2" fill="#FF6B35"/></svg>
+      </div>
+      <span class="display font-bold text-[19px] tracking-tight">Shelfly</span>
+      <span class="num text-[10px] font-semibold uppercase bg-navy-900 text-cream-50 px-1.5 py-0.5 rounded tracking-wider">Admin</span>
+    </div>
+
+    <!-- Product switcher -->
+    <nav class="flex items-center gap-1 text-[13px]">
+      <button class="px-2.5 py-1.5 rounded-md text-ink/55 hover:text-ink hover:bg-ink/5 transition focus-ring">TimeTracker</button>
+      <button class="px-2.5 py-1.5 rounded-md text-ink/55 hover:text-ink hover:bg-ink/5 transition focus-ring">Storecheck</button>
+      <button class="px-2.5 py-1.5 rounded-md bg-ink text-cream-50 font-semibold focus-ring">Shelfly</button>
+    </nav>
+
+    <!-- Search -->
+    <div class="ml-auto flex items-center gap-3">
+      <label class="relative">
+        <svg class="absolute left-2.5 top-1/2 -translate-y-1/2 text-ink/40" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+        <input type="text" placeholder="Buscar TX, MS, RP, brand…" class="num text-[12px] w-72 pl-8 pr-12 py-1.5 rounded-md bg-white border border-ink/10 placeholder:text-ink/35 focus:border-ink/30 focus:outline-none transition" />
+        <kbd class="absolute right-2 top-1/2 -translate-y-1/2 num text-[10px] text-ink/40 border border-ink/15 rounded px-1 py-0.5">⌘K</kbd>
+      </label>
+
+      <button class="relative w-8 h-8 rounded-md hover:bg-ink/5 flex items-center justify-center text-ink/70 hover:text-ink transition focus-ring" aria-label="Alertas">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>
+        <span class="absolute -top-0.5 -right-0.5 num text-[9px] font-bold bg-orange-brand text-white rounded-full min-w-[16px] h-4 px-1 flex items-center justify-center">5</span>
+      </button>
+
+      <div class="h-6 w-px bg-ink/10"></div>
+
+      <button class="flex items-center gap-2 pr-1 pl-1 py-0.5 rounded-md hover:bg-ink/5 transition focus-ring">
+        <span class="w-7 h-7 rounded-full bg-gradient-to-br from-orange-brand to-[#D9521E] text-white text-[11px] font-bold flex items-center justify-center">PR</span>
+        <span class="text-[12px] font-medium leading-tight text-left">
+          Pedro Rojas<br/><span class="num text-[10px] text-ink/45 font-normal">founder · ops</span>
+        </span>
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-ink/40"><path d="m6 9 6 6 6-6"/></svg>
+      </button>
+    </div>
+  </div>
+</header>
+
+<div class="flex">
+
+<!-- ============ SIDE NAV ============ -->
+<aside class="w-56 shrink-0 bg-navy-900 text-cream-100/90 sticky top-14 self-start h-[calc(100vh-3.5rem)] flex flex-col">
+  <!-- Workspace selector -->
+  <div class="p-3 border-b border-white/5">
+    <button class="w-full flex items-center gap-2 px-2 py-2 rounded-md hover:bg-white/5 transition group">
+      <span class="w-7 h-7 rounded bg-orange-brand/15 border border-orange-brand/30 flex items-center justify-center">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#FF6B35" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-6 9 6v12H3V9z"/></svg>
+      </span>
+      <span class="flex-1 text-left">
+        <span class="block text-[12px] font-semibold text-cream-50">Shelfly</span>
+        <span class="num block text-[10px] text-cream-100/50">Production · MX</span>
+      </span>
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-cream-100/40 group-hover:text-cream-50"><path d="m7 15 5 5 5-5"/><path d="m7 9 5-5 5 5"/></svg>
+    </button>
+    <div class="num text-[9px] text-cream-100/35 px-2 mt-1 uppercase tracking-wider">switch · staging</div>
+  </div>
+
+  <!-- Nav items -->
+  <nav class="flex-1 overflow-y-auto scrollbar-thin py-3 px-2 space-y-0.5 text-[13px]">
+    <a href="#" class="nav-item flex items-center gap-2.5 px-2.5 py-2 rounded-md bg-white/8 text-cream-50 font-semibold">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg>
+      Dashboard
+    </a>
+    <a href="#" class="nav-item flex items-center gap-2.5 px-2.5 py-2 rounded-md hover:bg-white/5 text-cream-100/75 hover:text-cream-50">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></svg>
+      Brands
+      <span class="ml-auto num text-[10px] bg-white/10 text-cream-50 px-1.5 py-0.5 rounded">23</span>
+    </a>
+    <a href="#" class="nav-item flex items-center gap-2.5 px-2.5 py-2 rounded-md hover:bg-white/5 text-cream-100/75 hover:text-cream-50">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+      Reps
+      <span class="ml-auto num text-[10px] bg-white/10 text-cream-50 px-1.5 py-0.5 rounded">342</span>
+    </a>
+    <a href="#" class="nav-item flex items-center gap-2.5 px-2.5 py-2 rounded-md hover:bg-white/5 text-cream-100/75 hover:text-cream-50">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+      Misiones
+    </a>
+    <a href="#" class="nav-item flex items-center gap-2.5 px-2.5 py-2 rounded-md hover:bg-white/5 text-cream-100/75 hover:text-cream-50">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="12" rx="2"/><circle cx="12" cy="12" r="2.5"/><path d="M6 12h.01M18 12h.01"/></svg>
+      Pagos
+      <span class="ml-auto num text-[10px] bg-white/10 text-cream-50 px-1.5 py-0.5 rounded">$12K</span>
+    </a>
+    <a href="#" class="nav-item flex items-center gap-2.5 px-2.5 py-2 rounded-md hover:bg-white/5 text-cream-100/75 hover:text-cream-50 relative">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9v4"/><path d="M12 17h.01"/><circle cx="12" cy="12" r="9"/></svg>
+      Validación manual
+      <span class="ml-auto num text-[10px] bg-orange-brand text-white px-1.5 py-0.5 rounded font-semibold">47</span>
+    </a>
+    <a href="#" class="nav-item flex items-center gap-2.5 px-2.5 py-2 rounded-md hover:bg-white/5 text-cream-100/75 hover:text-cream-50">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg>
+      Fraud monitoring
+      <span class="ml-auto num text-[10px] bg-red-500/90 text-white px-1.5 py-0.5 rounded font-semibold">3</span>
+    </a>
+
+    <div class="pt-4 mt-4 border-t border-white/5 px-1 num text-[9px] text-cream-100/40 uppercase tracking-wider">setup</div>
+    <a href="#" class="nav-item flex items-center gap-2.5 px-2.5 py-2 rounded-md hover:bg-white/5 text-cream-100/75 hover:text-cream-50">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 0 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 0 1 0-4h.1A1.7 1.7 0 0 0 4.6 9a1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 0 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 0 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>
+      Configuración
+    </a>
+  </nav>
+
+  <!-- Status footer -->
+  <div class="p-3 border-t border-white/5 text-[11px]">
+    <div class="flex items-center justify-between">
+      <span class="flex items-center gap-1.5">
+        <span class="relative w-1.5 h-1.5 rounded-full bg-emerald-400 text-emerald-400 pulse-dot inline-block"></span>
+        <span class="text-cream-50 font-medium">Operacional</span>
+      </span>
+      <span class="num text-[10px] text-cream-100/40">v2.4.1</span>
+    </div>
+    <div class="num text-[9px] text-cream-100/35 mt-1">build a7c3f9 · [VALIDAR build]</div>
+  </div>
+</aside>
+
+<!-- ============ MAIN ============ -->
+<main class="flex-1 min-w-0 overflow-x-hidden">
+
+  <!-- 3a Header -->
+  <section class="px-8 pt-8 pb-6 flex items-end justify-between gap-6 flex-wrap">
+    <div>
+      <h1 class="display text-[32px] font-bold leading-none">Operations Dashboard</h1>
+      <p class="text-[13px] text-ink/55 mt-2 num">Lunes 28 abril <span class="text-ink/30">·</span> 09:24 CDMX <span class="text-ink/30">·</span> auto-refresh 60s</p>
+    </div>
+    <div class="flex items-center gap-2">
+      <button class="filter-pill flex items-center gap-1.5 px-3 py-1.5 text-[12px] font-medium border border-ink/15 rounded-md bg-white hover:border-ink/30 transition num">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+        Últimos 30 días
+        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
+      </button>
+      <button class="px-3 py-1.5 text-[12px] font-medium border border-ink/15 rounded-md bg-white hover:border-ink/30 transition flex items-center gap-1.5">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        Exportar
+      </button>
+      <button class="px-3 py-1.5 text-[12px] font-medium bg-ink text-cream-50 rounded-md hover:bg-navy-700 transition flex items-center gap-1.5">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-3-6.7L21 8"/><path d="M21 3v5h-5"/></svg>
+        Refresh
+      </button>
+    </div>
+  </section>
+
+  <!-- 3b KPIs -->
+  <section class="px-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+
+    <!-- KPI 1 GMV -->
+    <article class="kpi-card bg-white border border-ink/8 rounded-xl p-5 relative overflow-hidden">
+      <div class="flex items-start justify-between">
+        <div>
+          <p class="text-[11px] font-semibold uppercase tracking-wider text-ink/45">GMV mes</p>
+          <p class="num text-ink text-[34px] font-semibold leading-none mt-3">$487,300<span class="text-ink/40 text-[14px] font-medium ml-1">MXN</span></p>
+        </div>
+        <span class="pill bg-emerald-50 text-emerald-700 border border-emerald-200">
+          <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="m6 15 6-6 6 6"/></svg>
+          18.2%
+        </span>
+      </div>
+      <svg viewBox="0 0 200 40" class="w-full h-10 mt-4" preserveAspectRatio="none">
+        <defs>
+          <linearGradient id="g1" x1="0" x2="0" y1="0" y2="1">
+            <stop offset="0%" stop-color="#10b981" stop-opacity="0.25"/>
+            <stop offset="100%" stop-color="#10b981" stop-opacity="0"/>
+          </linearGradient>
+        </defs>
+        <path d="M0,32 L15,30 L30,28 L45,29 L60,24 L75,22 L90,23 L105,18 L120,16 L135,12 L150,14 L165,10 L180,7 L200,4 L200,40 L0,40 Z" fill="url(#g1)"/>
+        <path d="M0,32 L15,30 L30,28 L45,29 L60,24 L75,22 L90,23 L105,18 L120,16 L135,12 L150,14 L165,10 L180,7 L200,4" fill="none" stroke="#10b981" stroke-width="1.6" stroke-linecap="round"/>
+      </svg>
+      <p class="text-[11px] text-ink/55 mt-2 num">vs $412,100 mes pasado</p>
+    </article>
+
+    <!-- KPI 2 Misiones -->
+    <article class="kpi-card bg-white border border-ink/8 rounded-xl p-5">
+      <div class="flex items-start justify-between">
+        <div>
+          <p class="text-[11px] font-semibold uppercase tracking-wider text-ink/45">Misiones validadas</p>
+          <p class="num text-ink text-[34px] font-semibold leading-none mt-3">1,247</p>
+        </div>
+        <span class="pill bg-emerald-50 text-emerald-700 border border-emerald-200">94% 1ra rev</span>
+      </div>
+      <svg viewBox="0 0 200 40" class="w-full h-10 mt-4" preserveAspectRatio="none">
+        <path d="M0,28 L15,25 L30,27 L45,22 L60,24 L75,20 L90,18 L105,21 L120,15 L135,17 L150,12 L165,14 L180,9 L200,11" fill="none" stroke="#0A2540" stroke-width="1.6" stroke-linecap="round"/>
+      </svg>
+      <p class="text-[11px] text-ink/55 mt-2 num">avg ttv 1h 47m <span class="text-ink/30">·</span> SLA 4h</p>
+    </article>
+
+    <!-- KPI 3 Take rate -->
+    <article class="kpi-card bg-white border border-ink/8 rounded-xl p-5">
+      <div class="flex items-start justify-between">
+        <div>
+          <p class="text-[11px] font-semibold uppercase tracking-wider text-ink/45">Take rate efectivo</p>
+          <p class="num text-ink text-[34px] font-semibold leading-none mt-3">16.8<span class="text-ink/40 text-[20px] font-medium">%</span></p>
+        </div>
+        <span class="pill bg-amber-50 text-amber-700 border border-amber-200">−0.2 pts</span>
+      </div>
+      <div class="mt-5 flex items-center gap-2">
+        <div class="flex-1 h-1.5 bg-ink/8 rounded-full overflow-hidden">
+          <div class="h-full bg-amber-500" style="width: 96.5%"></div>
+        </div>
+        <span class="num text-[11px] text-ink/55">17.0% target</span>
+      </div>
+      <p class="text-[11px] text-ink/55 mt-2 num">comisión + fees vs GMV bruto</p>
+    </article>
+
+    <!-- KPI 4 Fraud -->
+    <article class="kpi-card bg-white border border-ink/8 rounded-xl p-5">
+      <div class="flex items-start justify-between">
+        <div>
+          <p class="text-[11px] font-semibold uppercase tracking-wider text-ink/45">Fraud rate</p>
+          <p class="num text-ink text-[34px] font-semibold leading-none mt-3">1.2<span class="text-ink/40 text-[20px] font-medium">%</span></p>
+        </div>
+        <span class="pill bg-emerald-50 text-emerald-700 border border-emerald-200">
+          <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+          on track
+        </span>
+      </div>
+      <div class="mt-5 flex items-center gap-2">
+        <div class="flex-1 h-1.5 bg-ink/8 rounded-full overflow-hidden">
+          <div class="h-full bg-emerald-500" style="width: 60%"></div>
+        </div>
+        <span class="num text-[11px] text-ink/55">&lt;2% target</span>
+      </div>
+      <p class="text-[11px] text-ink/55 mt-2 num">15 misiones rechazadas / 1,262 total</p>
+    </article>
+
+  </section>
+
+  <!-- 3c Two-col grid -->
+  <section class="px-8 mt-6 grid lg:grid-cols-3 gap-4">
+
+    <!-- Cola validación manual -->
+    <div class="lg:col-span-2 bg-white border border-ink/8 rounded-xl overflow-hidden">
+      <header class="px-5 py-4 border-b border-ink/8 flex items-center gap-3 flex-wrap">
+        <div>
+          <h2 class="display font-semibold text-[16px] flex items-center gap-2">
+            Cola validación manual
+            <span class="num pill bg-orange-brand/10 text-orange-brand border border-orange-brand/20">47 pendientes</span>
+          </h2>
+          <p class="text-[11px] text-ink/50 mt-0.5">Auto-flag por geo / EXIF / blur · revisión humana requerida</p>
+        </div>
+        <div class="ml-auto flex items-center gap-1 flex-wrap" id="filter-pills">
+          <button data-filter="all" data-active="true" class="filter-pill border border-ink/15 hover:border-ink/30 rounded-md text-[11px] font-medium px-2.5 py-1 transition">Todas (47)</button>
+          <button data-filter="geo" data-active="false" class="filter-pill border border-ink/15 hover:border-ink/30 rounded-md text-[11px] font-medium px-2.5 py-1 transition">Geo (23)</button>
+          <button data-filter="exif" data-active="false" class="filter-pill border border-ink/15 hover:border-ink/30 rounded-md text-[11px] font-medium px-2.5 py-1 transition">EXIF (12)</button>
+          <button data-filter="blur" data-active="false" class="filter-pill border border-ink/15 hover:border-ink/30 rounded-md text-[11px] font-medium px-2.5 py-1 transition">Calidad (8)</button>
+          <button data-filter="repeat" data-active="false" class="filter-pill border border-ink/15 hover:border-ink/30 rounded-md text-[11px] font-medium px-2.5 py-1 transition">Reincidencia (4)</button>
+        </div>
+      </header>
+
+      <ul class="divide-y divide-ink/6" id="validation-list">
+        <!-- Item template, repeated -->
+        <li class="row-fade px-5 py-3.5 flex items-center gap-4" style="max-height: 120px;" data-flag="geo">
+          <!-- Thumb -->
+          <div class="w-16 h-16 shrink-0 rounded-md bg-cream-100 border border-ink/8 flex items-center justify-center relative overflow-hidden">
+            <svg viewBox="0 0 64 64" class="w-full h-full">
+              <rect width="64" height="64" fill="#F4E5D2"/>
+              <rect x="6" y="14" width="52" height="2" fill="#0A2540" opacity=".4"/>
+              <rect x="6" y="30" width="52" height="2" fill="#0A2540" opacity=".4"/>
+              <rect x="6" y="46" width="52" height="2" fill="#0A2540" opacity=".4"/>
+              <rect x="10" y="18" width="8" height="10" fill="#FF6B35" opacity=".75"/>
+              <rect x="20" y="18" width="6" height="10" fill="#0A2540" opacity=".5"/>
+              <rect x="28" y="18" width="10" height="10" fill="#FF6B35" opacity=".55"/>
+              <rect x="40" y="18" width="6" height="10" fill="#0A2540" opacity=".4"/>
+              <rect x="48" y="18" width="8" height="10" fill="#FF6B35" opacity=".7"/>
+              <rect x="10" y="34" width="12" height="10" fill="#0A2540" opacity=".55"/>
+              <rect x="24" y="34" width="8" height="10" fill="#FF6B35" opacity=".6"/>
+              <rect x="34" y="34" width="10" height="10" fill="#0A2540" opacity=".4"/>
+              <rect x="46" y="34" width="10" height="10" fill="#FF6B35" opacity=".75"/>
+            </svg>
+            <span class="absolute bottom-0.5 right-0.5 num text-[8px] bg-ink text-cream-50 px-1 rounded">JPG</span>
+          </div>
+          <!-- Mid -->
+          <div class="flex-1 min-w-0">
+            <div class="flex items-center gap-2 flex-wrap">
+              <span class="font-semibold text-[13px]">Bebida Viva</span>
+              <span class="num text-[11px] text-ink/45">MS-4827</span>
+              <span class="pill bg-red-50 text-red-700 border border-red-200">
+                <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                GEO_FUERA · 87m de PDV
+              </span>
+            </div>
+            <p class="text-[11px] text-ink/55 mt-1 num">
+              <span class="text-ink/75 font-medium">Daniel M.</span> ★4.92 <span class="text-ink/30">·</span> hace 2h <span class="text-ink/30">·</span> Coyoacán CDMX <span class="text-ink/30">·</span> payout <span class="text-ink font-semibold">$85</span>
+            </p>
+          </div>
+          <!-- Actions -->
+          <div class="flex items-center gap-1.5 shrink-0">
+            <button data-action="approve" class="action-btn px-2.5 py-1.5 text-[11px] font-semibold rounded-md bg-emerald-50 text-emerald-700 border border-emerald-200 hover:bg-emerald-100 transition flex items-center gap-1">
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6 9 17l-5-5"/></svg>
+              Aprobar
+            </button>
+            <button data-action="reject" class="action-btn px-2.5 py-1.5 text-[11px] font-semibold rounded-md bg-red-50 text-red-700 border border-red-200 hover:bg-red-100 transition flex items-center gap-1">
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6 6 18M6 6l12 12"/></svg>
+              Rechazar
+            </button>
+            <button data-action="dispute" class="action-btn px-2.5 py-1.5 text-[11px] font-semibold rounded-md text-ink/60 hover:bg-ink/5 hover:text-ink transition flex items-center gap-1">
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17 17 7"/><path d="M7 7h10v10"/></svg>
+              Disputar
+            </button>
+          </div>
+        </li>
+
+        <li class="row-fade px-5 py-3.5 flex items-center gap-4" style="max-height: 120px;" data-flag="exif">
+          <div class="w-16 h-16 shrink-0 rounded-md bg-cream-100 border border-ink/8 overflow-hidden">
+            <svg viewBox="0 0 64 64" class="w-full h-full">
+              <rect width="64" height="64" fill="#EFE2D0"/>
+              <rect x="6" y="10" width="52" height="2" fill="#0A2540" opacity=".4"/>
+              <rect x="6" y="26" width="52" height="2" fill="#0A2540" opacity=".4"/>
+              <rect x="6" y="42" width="52" height="2" fill="#0A2540" opacity=".4"/>
+              <rect x="8" y="14" width="14" height="11" fill="#FF6B35" opacity=".7"/>
+              <rect x="24" y="14" width="10" height="11" fill="#0A2540" opacity=".5"/>
+              <rect x="36" y="14" width="20" height="11" fill="#FF6B35" opacity=".6"/>
+              <rect x="8" y="30" width="22" height="11" fill="#0A2540" opacity=".55"/>
+              <rect x="32" y="30" width="12" height="11" fill="#FF6B35" opacity=".75"/>
+              <rect x="46" y="30" width="10" height="11" fill="#0A2540" opacity=".4"/>
+            </svg>
+          </div>
+          <div class="flex-1 min-w-0">
+            <div class="flex items-center gap-2 flex-wrap">
+              <span class="font-semibold text-[13px]">Cerveza Minerva</span>
+              <span class="num text-[11px] text-ink/45">MS-4824</span>
+              <span class="pill bg-red-50 text-red-700 border border-red-200">
+                <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                EXIF_TIMESTAMP_DESALINEADO · Δ 32min
+              </span>
+            </div>
+            <p class="text-[11px] text-ink/55 mt-1 num">
+              <span class="text-ink/75 font-medium">Andrés R.</span> ★4.71 <span class="text-ink/30">·</span> hace 3h <span class="text-ink/30">·</span> Zapopan GDL <span class="text-ink/30">·</span> payout <span class="text-ink font-semibold">$72</span>
+            </p>
+          </div>
+          <div class="flex items-center gap-1.5 shrink-0">
+            <button data-action="approve" class="action-btn px-2.5 py-1.5 text-[11px] font-semibold rounded-md bg-emerald-50 text-emerald-700 border border-emerald-200 hover:bg-emerald-100 transition flex items-center gap-1"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6 9 17l-5-5"/></svg>Aprobar</button>
+            <button data-action="reject" class="action-btn px-2.5 py-1.5 text-[11px] font-semibold rounded-md bg-red-50 text-red-700 border border-red-200 hover:bg-red-100 transition flex items-center gap-1"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6 6 18M6 6l12 12"/></svg>Rechazar</button>
+            <button data-action="dispute" class="action-btn px-2.5 py-1.5 text-[11px] font-semibold rounded-md text-ink/60 hover:bg-ink/5 hover:text-ink transition flex items-center gap-1"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17 17 7"/><path d="M7 7h10v10"/></svg>Disputar</button>
+          </div>
+        </li>
+
+        <li class="row-fade px-5 py-3.5 flex items-center gap-4" style="max-height: 120px;" data-flag="blur">
+          <div class="w-16 h-16 shrink-0 rounded-md bg-cream-100 border border-ink/8 overflow-hidden">
+            <svg viewBox="0 0 64 64" class="w-full h-full">
+              <defs><filter id="blur1" x="0" y="0"><feGaussianBlur stdDeviation="1.5"/></filter></defs>
+              <rect width="64" height="64" fill="#E8DBC7"/>
+              <g filter="url(#blur1)" opacity=".7">
+                <rect x="6" y="14" width="52" height="2" fill="#0A2540"/>
+                <rect x="6" y="30" width="52" height="2" fill="#0A2540"/>
+                <rect x="10" y="18" width="14" height="10" fill="#FF6B35"/>
+                <rect x="26" y="18" width="10" height="10" fill="#0A2540"/>
+                <rect x="38" y="18" width="18" height="10" fill="#FF6B35"/>
+              </g>
+            </svg>
+          </div>
+          <div class="flex-1 min-w-0">
+            <div class="flex items-center gap-2 flex-wrap">
+              <span class="font-semibold text-[13px]">Birdman</span>
+              <span class="num text-[11px] text-ink/45">MS-4819</span>
+              <span class="pill bg-red-50 text-red-700 border border-red-200">
+                <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>
+                BLUR_DETECTED · score 0.40
+              </span>
+            </div>
+            <p class="text-[11px] text-ink/55 mt-1 num">
+              <span class="text-ink/75 font-medium">Sofía L.</span> ★4.88 <span class="text-ink/30">·</span> hace 4h <span class="text-ink/30">·</span> San Pedro MTY <span class="text-ink/30">·</span> payout <span class="text-ink font-semibold">$95</span>
+            </p>
+          </div>
+          <div class="flex items-center gap-1.5 shrink-0">
+            <button data-action="approve" class="action-btn px-2.5 py-1.5 text-[11px] font-semibold rounded-md bg-emerald-50 text-emerald-700 border border-emerald-200 hover:bg-emerald-100 transition flex items-center gap-1"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6 9 17l-5-5"/></svg>Aprobar</button>
+            <button data-action="reject" class="action-btn px-2.5 py-1.5 text-[11px] font-semibold rounded-md bg-red-50 text-red-700 border border-red-200 hover:bg-red-100 transition flex items-center gap-1"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6 6 18M6 6l12 12"/></svg>Rechazar</button>
+            <button data-action="dispute" class="action-btn px-2.5 py-1.5 text-[11px] font-semibold rounded-md text-ink/60 hover:bg-ink/5 hover:text-ink transition flex items-center gap-1"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17 17 7"/><path d="M7 7h10v10"/></svg>Disputar</button>
+          </div>
+        </li>
+
+        <li class="row-fade px-5 py-3.5 flex items-center gap-4" style="max-height: 120px;" data-flag="geo">
+          <div class="w-16 h-16 shrink-0 rounded-md bg-cream-100 border border-ink/8 overflow-hidden">
+            <svg viewBox="0 0 64 64" class="w-full h-full">
+              <rect width="64" height="64" fill="#F2E4CD"/>
+              <rect x="6" y="14" width="52" height="2" fill="#0A2540" opacity=".4"/>
+              <rect x="6" y="30" width="52" height="2" fill="#0A2540" opacity=".4"/>
+              <rect x="6" y="46" width="52" height="2" fill="#0A2540" opacity=".4"/>
+              <rect x="10" y="18" width="9" height="10" fill="#FF6B35" opacity=".7"/>
+              <rect x="21" y="18" width="11" height="10" fill="#0A2540" opacity=".55"/>
+              <rect x="34" y="18" width="9" height="10" fill="#FF6B35" opacity=".5"/>
+              <rect x="45" y="18" width="11" height="10" fill="#0A2540" opacity=".4"/>
+              <rect x="10" y="34" width="14" height="10" fill="#0A2540" opacity=".55"/>
+              <rect x="26" y="34" width="10" height="10" fill="#FF6B35" opacity=".7"/>
+              <rect x="38" y="34" width="18" height="10" fill="#0A2540" opacity=".4"/>
+            </svg>
+          </div>
+          <div class="flex-1 min-w-0">
+            <div class="flex items-center gap-2 flex-wrap">
+              <span class="font-semibold text-[13px]">Golmex</span>
+              <span class="num text-[11px] text-ink/45">MS-4815</span>
+              <span class="pill bg-red-50 text-red-700 border border-red-200">
+                <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                GEO_FUERA · 142m de PDV
+              </span>
+            </div>
+            <p class="text-[11px] text-ink/55 mt-1 num">
+              <span class="text-ink/75 font-medium">Mauricio T.</span> ★4.45 <span class="text-ink/30">·</span> hace 5h <span class="text-ink/30">·</span> León Bajío <span class="text-ink/30">·</span> payout <span class="text-ink font-semibold">$68</span>
+            </p>
+          </div>
+          <div class="flex items-center gap-1.5 shrink-0">
+            <button data-action="approve" class="action-btn px-2.5 py-1.5 text-[11px] font-semibold rounded-md bg-emerald-50 text-emerald-700 border border-emerald-200 hover:bg-emerald-100 transition flex items-center gap-1"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6 9 17l-5-5"/></svg>Aprobar</button>
+            <button data-action="reject" class="action-btn px-2.5 py-1.5 text-[11px] font-semibold rounded-md bg-red-50 text-red-700 border border-red-200 hover:bg-red-100 transition flex items-center gap-1"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6 6 18M6 6l12 12"/></svg>Rechazar</button>
+            <button data-action="dispute" class="action-btn px-2.5 py-1.5 text-[11px] font-semibold rounded-md text-ink/60 hover:bg-ink/5 hover:text-ink transition flex items-center gap-1"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17 17 7"/><path d="M7 7h10v10"/></svg>Disputar</button>
+          </div>
+        </li>
+
+        <li class="row-fade px-5 py-3.5 flex items-center gap-4" style="max-height: 120px;" data-flag="repeat">
+          <div class="w-16 h-16 shrink-0 rounded-md bg-cream-100 border border-ink/8 overflow-hidden">
+            <svg viewBox="0 0 64 64" class="w-full h-full">
+              <rect width="64" height="64" fill="#EBDBC2"/>
+              <rect x="6" y="14" width="52" height="2" fill="#0A2540" opacity=".4"/>
+              <rect x="6" y="30" width="52" height="2" fill="#0A2540" opacity=".4"/>
+              <rect x="6" y="46" width="52" height="2" fill="#0A2540" opacity=".4"/>
+              <rect x="10" y="18" width="46" height="10" fill="#FF6B35" opacity=".55"/>
+              <rect x="10" y="34" width="20" height="10" fill="#0A2540" opacity=".55"/>
+              <rect x="32" y="34" width="24" height="10" fill="#FF6B35" opacity=".75"/>
+            </svg>
+          </div>
+          <div class="flex-1 min-w-0">
+            <div class="flex items-center gap-2 flex-wrap">
+              <span class="font-semibold text-[13px]">DeOrno</span>
+              <span class="num text-[11px] text-ink/45">MS-4811</span>
+              <span class="pill bg-red-50 text-red-700 border border-red-200">
+                <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m17 1 4 4-4 4"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><path d="m7 23-4-4 4-4"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>
+                REINCIDENCIA · 3era flag rep
+              </span>
+            </div>
+            <p class="text-[11px] text-ink/55 mt-1 num">
+              <span class="text-ink/75 font-medium">Karla F.</span> ★3.92 <span class="text-ink/30">·</span> hace 6h <span class="text-ink/30">·</span> Tlalpan CDMX <span class="text-ink/30">·</span> payout <span class="text-ink font-semibold">$78</span>
+            </p>
+          </div>
+          <div class="flex items-center gap-1.5 shrink-0">
+            <button data-action="approve" class="action-btn px-2.5 py-1.5 text-[11px] font-semibold rounded-md bg-emerald-50 text-emerald-700 border border-emerald-200 hover:bg-emerald-100 transition flex items-center gap-1"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6 9 17l-5-5"/></svg>Aprobar</button>
+            <button data-action="reject" class="action-btn px-2.5 py-1.5 text-[11px] font-semibold rounded-md bg-red-50 text-red-700 border border-red-200 hover:bg-red-100 transition flex items-center gap-1"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6 6 18M6 6l12 12"/></svg>Rechazar</button>
+            <button data-action="dispute" class="action-btn px-2.5 py-1.5 text-[11px] font-semibold rounded-md text-ink/60 hover:bg-ink/5 hover:text-ink transition flex items-center gap-1"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17 17 7"/><path d="M7 7h10v10"/></svg>Disputar</button>
+          </div>
+        </li>
+
+        <li class="row-fade px-5 py-3.5 flex items-center gap-4" style="max-height: 120px;" data-flag="exif">
+          <div class="w-16 h-16 shrink-0 rounded-md bg-cream-100 border border-ink/8 overflow-hidden">
+            <svg viewBox="0 0 64 64" class="w-full h-full">
+              <rect width="64" height="64" fill="#F0E2C9"/>
+              <rect x="6" y="14" width="52" height="2" fill="#0A2540" opacity=".4"/>
+              <rect x="6" y="30" width="52" height="2" fill="#0A2540" opacity=".4"/>
+              <rect x="10" y="18" width="46" height="10" fill="#0A2540" opacity=".5"/>
+              <rect x="10" y="34" width="22" height="10" fill="#FF6B35" opacity=".7"/>
+              <rect x="34" y="34" width="22" height="10" fill="#0A2540" opacity=".55"/>
+            </svg>
+          </div>
+          <div class="flex-1 min-w-0">
+            <div class="flex items-center gap-2 flex-wrap">
+              <span class="font-semibold text-[13px]">Tier Holistic</span>
+              <span class="num text-[11px] text-ink/45">MS-4807</span>
+              <span class="pill bg-red-50 text-red-700 border border-red-200">
+                <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                EXIF_TIMESTAMP_DESALINEADO · Δ 1h 12min
+              </span>
+            </div>
+            <p class="text-[11px] text-ink/55 mt-1 num">
+              <span class="text-ink/75 font-medium">Roberto N.</span> ★4.62 <span class="text-ink/30">·</span> hace 7h <span class="text-ink/30">·</span> Polanco CDMX <span class="text-ink/30">·</span> payout <span class="text-ink font-semibold">$110</span>
+            </p>
+          </div>
+          <div class="flex items-center gap-1.5 shrink-0">
+            <button data-action="approve" class="action-btn px-2.5 py-1.5 text-[11px] font-semibold rounded-md bg-emerald-50 text-emerald-700 border border-emerald-200 hover:bg-emerald-100 transition flex items-center gap-1"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6 9 17l-5-5"/></svg>Aprobar</button>
+            <button data-action="reject" class="action-btn px-2.5 py-1.5 text-[11px] font-semibold rounded-md bg-red-50 text-red-700 border border-red-200 hover:bg-red-100 transition flex items-center gap-1"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6 6 18M6 6l12 12"/></svg>Rechazar</button>
+            <button data-action="dispute" class="action-btn px-2.5 py-1.5 text-[11px] font-semibold rounded-md text-ink/60 hover:bg-ink/5 hover:text-ink transition flex items-center gap-1"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17 17 7"/><path d="M7 7h10v10"/></svg>Disputar</button>
+          </div>
+        </li>
+      </ul>
+
+      <footer class="px-5 py-3 border-t border-ink/8 flex items-center justify-between text-[12px]">
+        <span class="text-ink/55 num">Mostrando 6 de 47</span>
+        <a href="#" class="font-semibold text-orange-brand hover:underline flex items-center gap-1">Ver toda la cola <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 18 6-6-6-6"/></svg></a>
+      </footer>
+    </div>
+
+    <!-- Sidebar col-span-1 -->
+    <aside class="space-y-4 min-w-0">
+
+      <!-- Health checks -->
+      <section class="bg-white border border-ink/8 rounded-xl p-5">
+        <header class="flex items-center justify-between mb-3">
+          <h3 class="display font-semibold text-[14px]">Health checks</h3>
+          <span class="num text-[10px] text-ink/45">refresh 30s</span>
+        </header>
+        <ul class="text-[12px] divide-y divide-ink/6">
+          <li class="py-2 flex items-center gap-3"><span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span><span class="font-medium">API</span><span class="num ml-auto text-[11px] text-ink/45">142ms p95</span></li>
+          <li class="py-2 flex items-center gap-3"><span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span><span class="font-medium">PostgreSQL</span><span class="num ml-auto text-[11px] text-ink/45">28ms · 12% cpu</span></li>
+          <li class="py-2 flex items-center gap-3"><span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span><span class="font-medium">Mercado Pago <span class="text-ink/40 font-normal">(sandbox)</span></span><span class="num ml-auto text-[10px] bg-amber-50 text-amber-700 px-1.5 py-0.5 rounded border border-amber-200">degraded</span></li>
+          <li class="py-2 flex items-center gap-3"><span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span><span class="font-medium">R2 storage</span><span class="num ml-auto text-[11px] text-ink/45">847 GB used</span></li>
+          <li class="py-2 flex items-center gap-3"><span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span><span class="font-medium">Inngest jobs</span><span class="num ml-auto text-[11px] text-ink/45">0 fail / 1.2k</span></li>
+          <li class="py-2 flex items-center gap-3"><span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span><span class="font-medium">Sentry</span><span class="num ml-auto text-[11px] text-ink/45">3 issues open</span></li>
+        </ul>
+        <p class="text-[10px] text-ink/40 mt-3 num">[VALIDAR ws sandbox MP]</p>
+      </section>
+
+      <!-- Top reps -->
+      <section class="bg-white border border-ink/8 rounded-xl p-5">
+        <header class="flex items-center justify-between mb-3">
+          <h3 class="display font-semibold text-[14px]">Top reps · esta semana</h3>
+          <a class="num text-[11px] text-ink/45 hover:text-ink" href="#">Ver todos</a>
+        </header>
+        <ul class="space-y-2.5 text-[12px]">
+          <li class="flex items-center gap-3">
+            <span class="w-7 h-7 rounded-full bg-gradient-to-br from-orange-brand to-[#D9521E] text-white text-[10px] font-bold flex items-center justify-center shrink-0">DM</span>
+            <span class="flex-1 min-w-0"><span class="font-medium block leading-tight">Daniel Mercado</span><span class="num text-[10px] text-ink/45">CDMX · ★4.92</span></span>
+            <span class="num text-[12px] font-semibold">$3,840</span>
+          </li>
+          <li class="flex items-center gap-3">
+            <span class="w-7 h-7 rounded-full bg-gradient-to-br from-navy-700 to-navy-900 text-white text-[10px] font-bold flex items-center justify-center shrink-0">SL</span>
+            <span class="flex-1 min-w-0"><span class="font-medium block leading-tight">Sofía López</span><span class="num text-[10px] text-ink/45">MTY · ★4.88</span></span>
+            <span class="num text-[12px] font-semibold">$3,210</span>
+          </li>
+          <li class="flex items-center gap-3">
+            <span class="w-7 h-7 rounded-full bg-gradient-to-br from-emerald-600 to-emerald-800 text-white text-[10px] font-bold flex items-center justify-center shrink-0">VP</span>
+            <span class="flex-1 min-w-0"><span class="font-medium block leading-tight">Valeria Peña</span><span class="num text-[10px] text-ink/45">GDL · ★4.85</span></span>
+            <span class="num text-[12px] font-semibold">$2,870</span>
+          </li>
+          <li class="flex items-center gap-3">
+            <span class="w-7 h-7 rounded-full bg-gradient-to-br from-purple-600 to-purple-900 text-white text-[10px] font-bold flex items-center justify-center shrink-0">IS</span>
+            <span class="flex-1 min-w-0"><span class="font-medium block leading-tight">Iván Salazar</span><span class="num text-[10px] text-ink/45">CDMX · ★4.81</span></span>
+            <span class="num text-[12px] font-semibold">$2,640</span>
+          </li>
+          <li class="flex items-center gap-3">
+            <span class="w-7 h-7 rounded-full bg-gradient-to-br from-amber-600 to-amber-800 text-white text-[10px] font-bold flex items-center justify-center shrink-0">AR</span>
+            <span class="flex-1 min-w-0"><span class="font-medium block leading-tight">Andrés Ruiz</span><span class="num text-[10px] text-ink/45">GDL · ★4.71</span></span>
+            <span class="num text-[12px] font-semibold">$2,410</span>
+          </li>
+        </ul>
+      </section>
+
+      <!-- Alertas -->
+      <section class="bg-white border-l-4 border-orange-brand border-y border-r border-y-ink/8 border-r-ink/8 rounded-xl p-5">
+        <header class="flex items-center justify-between mb-3">
+          <h3 class="display font-semibold text-[14px] flex items-center gap-2">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#FF6B35" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+            Alertas activas
+          </h3>
+          <span class="num text-[10px] text-orange-brand font-bold">3</span>
+        </header>
+        <ul class="space-y-3 text-[12px]">
+          <li>
+            <p class="font-medium leading-tight">Spike fraud rate <span class="text-ink/55 font-normal">en Coyoacán</span></p>
+            <p class="num text-[10px] text-ink/50 mt-0.5">+340% baseline · 8 misiones afectadas <span class="text-ink/30">·</span> hace 1h</p>
+          </li>
+          <li>
+            <p class="font-medium leading-tight">Rep <span class="num">RP-4827</span> score riesgo <span class="text-red-600">87</span></p>
+            <p class="num text-[10px] text-ink/50 mt-0.5">geo spoof detectado x3 últimas 24h <span class="text-ink/30">·</span> hace 4h</p>
+          </li>
+          <li>
+            <p class="font-medium leading-tight">Brand <span class="text-ink">Bebida Viva</span> pago pendiente</p>
+            <p class="num text-[10px] text-ink/50 mt-0.5">$8,420 MXN · 7 días vencido <span class="text-ink/30">·</span> hace 6h</p>
+          </li>
+        </ul>
+      </section>
+
+    </aside>
+
+  </section>
+
+  <!-- 3d Brands table -->
+  <section class="px-8 mt-6">
+    <div class="bg-white border border-ink/8 rounded-xl overflow-hidden">
+      <header class="px-5 py-4 border-b border-ink/8 flex items-center justify-between flex-wrap gap-3">
+        <div>
+          <h2 class="display font-semibold text-[16px] flex items-center gap-2">Brands <span class="num pill bg-ink/5 text-ink/65 border border-ink/8">23 activas</span></h2>
+          <p class="text-[11px] text-ink/50 mt-0.5">MRR total <span class="num font-semibold text-ink">$284,000 MXN</span> · activación promedio <span class="num font-semibold text-ink">71%</span></p>
+        </div>
+        <div class="flex items-center gap-2">
+          <button class="px-3 py-1.5 text-[12px] font-medium border border-ink/15 rounded-md bg-white hover:border-ink/30 transition num">+ Onboard brand</button>
+          <button class="px-2.5 py-1.5 border border-ink/15 rounded-md hover:border-ink/30 transition" aria-label="Filtrar">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 3H2l8 9.46V19l4 2v-8.54L22 3z"/></svg>
+          </button>
+        </div>
+      </header>
+
+      <div class="overflow-x-auto scrollbar-thin">
+        <table class="w-full text-[12px]">
+          <thead class="text-left text-[10px] uppercase tracking-wider text-ink/45 border-b border-ink/8">
+            <tr>
+              <th class="px-5 py-2.5 font-semibold">Marca</th>
+              <th class="px-3 py-2.5 font-semibold">Plan</th>
+              <th class="px-3 py-2.5 font-semibold text-right">MRR</th>
+              <th class="px-3 py-2.5 font-semibold w-44">Activación</th>
+              <th class="px-3 py-2.5 font-semibold text-right">Mis/mes</th>
+              <th class="px-3 py-2.5 font-semibold">KAM</th>
+              <th class="px-3 py-2.5 font-semibold">Alta</th>
+              <th class="px-5 py-2.5 font-semibold w-8"></th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-ink/6" id="brands-tbody">
+            <!-- 12 rows -->
+            <!-- Row helpers will be repeated -->
+            <tr class="table-row">
+              <td class="px-5 py-3"><div class="flex items-center gap-2.5"><span class="w-7 h-7 rounded-md bg-orange-brand/15 text-orange-brand font-bold text-[10px] flex items-center justify-center">BV</span><span class="font-medium">Bebida Viva</span></div></td>
+              <td class="px-3"><span class="pill bg-ink text-cream-50">Scale</span></td>
+              <td class="px-3 num text-right font-semibold">$22,400</td>
+              <td class="px-3"><div class="flex items-center gap-2"><div class="flex-1 h-1.5 bg-ink/8 rounded-full overflow-hidden"><div class="h-full bg-emerald-500" style="width:88%"></div></div><span class="num text-[10px] text-ink/55 w-8 text-right">88%</span></div></td>
+              <td class="px-3 num text-right">142</td>
+              <td class="px-3 text-ink/65">Pedro</td>
+              <td class="px-3 num text-ink/55">12 mar</td>
+              <td class="px-5 text-ink/35 text-right">⋯</td>
+            </tr>
+            <tr class="table-row">
+              <td class="px-5 py-3"><div class="flex items-center gap-2.5"><span class="w-7 h-7 rounded-md bg-navy-700 text-cream-50 font-bold text-[10px] flex items-center justify-center">BM</span><span class="font-medium">Birdman</span></div></td>
+              <td class="px-3"><span class="pill bg-ink text-cream-50">Scale</span></td>
+              <td class="px-3 num text-right font-semibold">$18,900</td>
+              <td class="px-3"><div class="flex items-center gap-2"><div class="flex-1 h-1.5 bg-ink/8 rounded-full overflow-hidden"><div class="h-full bg-emerald-500" style="width:81%"></div></div><span class="num text-[10px] text-ink/55 w-8 text-right">81%</span></div></td>
+              <td class="px-3 num text-right">118</td>
+              <td class="px-3 text-ink/65">Pedro</td>
+              <td class="px-3 num text-ink/55">02 mar</td>
+              <td class="px-5 text-ink/35 text-right">⋯</td>
+            </tr>
+            <tr class="table-row">
+              <td class="px-5 py-3"><div class="flex items-center gap-2.5"><span class="w-7 h-7 rounded-md bg-emerald-700 text-cream-50 font-bold text-[10px] flex items-center justify-center">GM</span><span class="font-medium">Golmex</span></div></td>
+              <td class="px-3"><span class="pill bg-ink/10 text-ink">Growth</span></td>
+              <td class="px-3 num text-right font-semibold">$15,200</td>
+              <td class="px-3"><div class="flex items-center gap-2"><div class="flex-1 h-1.5 bg-ink/8 rounded-full overflow-hidden"><div class="h-full bg-amber-500" style="width:64%"></div></div><span class="num text-[10px] text-ink/55 w-8 text-right">64%</span></div></td>
+              <td class="px-3 num text-right">87</td>
+              <td class="px-3 text-ink/65">Pedro</td>
+              <td class="px-3 num text-ink/55">28 feb</td>
+              <td class="px-5 text-ink/35 text-right">⋯</td>
+            </tr>
+            <tr class="table-row">
+              <td class="px-5 py-3"><div class="flex items-center gap-2.5"><span class="w-7 h-7 rounded-md bg-amber-700 text-cream-50 font-bold text-[10px] flex items-center justify-center">CM</span><span class="font-medium">Cerveza Minerva</span></div></td>
+              <td class="px-3"><span class="pill bg-ink text-cream-50">Scale</span></td>
+              <td class="px-3 num text-right font-semibold">$24,800</td>
+              <td class="px-3"><div class="flex items-center gap-2"><div class="flex-1 h-1.5 bg-ink/8 rounded-full overflow-hidden"><div class="h-full bg-emerald-500" style="width:92%"></div></div><span class="num text-[10px] text-ink/55 w-8 text-right">92%</span></div></td>
+              <td class="px-3 num text-right">156</td>
+              <td class="px-3 text-ink/65">Pedro</td>
+              <td class="px-3 num text-ink/55">21 feb</td>
+              <td class="px-5 text-ink/35 text-right">⋯</td>
+            </tr>
+            <tr class="table-row">
+              <td class="px-5 py-3"><div class="flex items-center gap-2.5"><span class="w-7 h-7 rounded-md bg-purple-700 text-cream-50 font-bold text-[10px] flex items-center justify-center">DO</span><span class="font-medium">DeOrno</span></div></td>
+              <td class="px-3"><span class="pill bg-ink/10 text-ink">Growth</span></td>
+              <td class="px-3 num text-right font-semibold">$12,400</td>
+              <td class="px-3"><div class="flex items-center gap-2"><div class="flex-1 h-1.5 bg-ink/8 rounded-full overflow-hidden"><div class="h-full bg-amber-500" style="width:58%"></div></div><span class="num text-[10px] text-ink/55 w-8 text-right">58%</span></div></td>
+              <td class="px-3 num text-right">62</td>
+              <td class="px-3 text-ink/65">Pedro</td>
+              <td class="px-3 num text-ink/55">15 feb</td>
+              <td class="px-5 text-ink/35 text-right">⋯</td>
+            </tr>
+            <tr class="table-row">
+              <td class="px-5 py-3"><div class="flex items-center gap-2.5"><span class="w-7 h-7 rounded-md bg-rose-700 text-cream-50 font-bold text-[10px] flex items-center justify-center">TH</span><span class="font-medium">Tier Holistic</span></div></td>
+              <td class="px-3"><span class="pill bg-ink/10 text-ink">Growth</span></td>
+              <td class="px-3 num text-right font-semibold">$11,800</td>
+              <td class="px-3"><div class="flex items-center gap-2"><div class="flex-1 h-1.5 bg-ink/8 rounded-full overflow-hidden"><div class="h-full bg-emerald-500" style="width:73%"></div></div><span class="num text-[10px] text-ink/55 w-8 text-right">73%</span></div></td>
+              <td class="px-3 num text-right">74</td>
+              <td class="px-3 text-ink/65">Pedro</td>
+              <td class="px-3 num text-ink/55">10 feb</td>
+              <td class="px-5 text-ink/35 text-right">⋯</td>
+            </tr>
+            <tr class="table-row">
+              <td class="px-5 py-3"><div class="flex items-center gap-2.5"><span class="w-7 h-7 rounded-md bg-teal-700 text-cream-50 font-bold text-[10px] flex items-center justify-center">GG</span><span class="font-medium">Grupo Grisi</span></div></td>
+              <td class="px-3"><span class="pill bg-ink text-cream-50">Scale</span></td>
+              <td class="px-3 num text-right font-semibold">$25,000</td>
+              <td class="px-3"><div class="flex items-center gap-2"><div class="flex-1 h-1.5 bg-ink/8 rounded-full overflow-hidden"><div class="h-full bg-emerald-500" style="width:84%"></div></div><span class="num text-[10px] text-ink/55 w-8 text-right">84%</span></div></td>
+              <td class="px-3 num text-right">132</td>
+              <td class="px-3 text-ink/65">Pedro</td>
+              <td class="px-3 num text-ink/55">04 feb</td>
+              <td class="px-5 text-ink/35 text-right">⋯</td>
+            </tr>
+            <tr class="table-row">
+              <td class="px-5 py-3"><div class="flex items-center gap-2.5"><span class="w-7 h-7 rounded-md bg-indigo-700 text-cream-50 font-bold text-[10px] flex items-center justify-center">EI</span><span class="font-medium">EINSBLEDT</span></div></td>
+              <td class="px-3"><span class="pill bg-ink/8 text-ink/65 border border-ink/15">Starter</span></td>
+              <td class="px-3 num text-right font-semibold">$8,600</td>
+              <td class="px-3"><div class="flex items-center gap-2"><div class="flex-1 h-1.5 bg-ink/8 rounded-full overflow-hidden"><div class="h-full bg-amber-500" style="width:51%"></div></div><span class="num text-[10px] text-ink/55 w-8 text-right">51%</span></div></td>
+              <td class="px-3 num text-right">38</td>
+              <td class="px-3 text-ink/65">Pedro</td>
+              <td class="px-3 num text-ink/55">28 ene</td>
+              <td class="px-5 text-ink/35 text-right">⋯</td>
+            </tr>
+            <tr class="table-row">
+              <td class="px-5 py-3"><div class="flex items-center gap-2.5"><span class="w-7 h-7 rounded-md bg-orange-brand/15 text-orange-brand font-bold text-[10px] flex items-center justify-center">DM</span><span class="font-medium">De Mama Gourmet</span></div></td>
+              <td class="px-3"><span class="pill bg-ink/8 text-ink/65 border border-ink/15">Starter</span></td>
+              <td class="px-3 num text-right font-semibold">$9,200</td>
+              <td class="px-3"><div class="flex items-center gap-2"><div class="flex-1 h-1.5 bg-ink/8 rounded-full overflow-hidden"><div class="h-full bg-emerald-500" style="width:78%"></div></div><span class="num text-[10px] text-ink/55 w-8 text-right">78%</span></div></td>
+              <td class="px-3 num text-right">52</td>
+              <td class="px-3 text-ink/65">Pedro</td>
+              <td class="px-3 num text-ink/55">22 ene</td>
+              <td class="px-5 text-ink/35 text-right">⋯</td>
+            </tr>
+            <tr class="table-row">
+              <td class="px-5 py-3"><div class="flex items-center gap-2.5"><span class="w-7 h-7 rounded-md bg-emerald-800 text-cream-50 font-bold text-[10px] flex items-center justify-center">NA</span><span class="font-medium">Natura</span></div></td>
+              <td class="px-3"><span class="pill bg-ink text-cream-50">Scale</span></td>
+              <td class="px-3 num text-right font-semibold">$21,300</td>
+              <td class="px-3"><div class="flex items-center gap-2"><div class="flex-1 h-1.5 bg-ink/8 rounded-full overflow-hidden"><div class="h-full bg-emerald-500" style="width:79%"></div></div><span class="num text-[10px] text-ink/55 w-8 text-right">79%</span></div></td>
+              <td class="px-3 num text-right">104</td>
+              <td class="px-3 text-ink/65">Pedro</td>
+              <td class="px-3 num text-ink/55">15 ene</td>
+              <td class="px-5 text-ink/35 text-right">⋯</td>
+            </tr>
+            <tr class="table-row">
+              <td class="px-5 py-3"><div class="flex items-center gap-2.5"><span class="w-7 h-7 rounded-md bg-yellow-700 text-cream-50 font-bold text-[10px] flex items-center justify-center">CP</span><span class="font-medium">Cervecería Primus</span></div></td>
+              <td class="px-3"><span class="pill bg-ink/10 text-ink">Growth</span></td>
+              <td class="px-3 num text-right font-semibold">$14,400</td>
+              <td class="px-3"><div class="flex items-center gap-2"><div class="flex-1 h-1.5 bg-ink/8 rounded-full overflow-hidden"><div class="h-full bg-emerald-500" style="width:69%"></div></div><span class="num text-[10px] text-ink/55 w-8 text-right">69%</span></div></td>
+              <td class="px-3 num text-right">81</td>
+              <td class="px-3 text-ink/65">Pedro</td>
+              <td class="px-3 num text-ink/55">08 ene</td>
+              <td class="px-5 text-ink/35 text-right">⋯</td>
+            </tr>
+            <tr class="table-row">
+              <td class="px-5 py-3"><div class="flex items-center gap-2.5"><span class="w-7 h-7 rounded-md bg-cyan-700 text-cream-50 font-bold text-[10px] flex items-center justify-center">WL</span><span class="font-medium">Wendlandt</span></div></td>
+              <td class="px-3"><span class="pill bg-ink/8 text-ink/65 border border-ink/15">Starter</span></td>
+              <td class="px-3 num text-right font-semibold">$8,000</td>
+              <td class="px-3"><div class="flex items-center gap-2"><div class="flex-1 h-1.5 bg-ink/8 rounded-full overflow-hidden"><div class="h-full bg-amber-500" style="width:46%"></div></div><span class="num text-[10px] text-ink/55 w-8 text-right">46%</span></div></td>
+              <td class="px-3 num text-right">29</td>
+              <td class="px-3 text-ink/65">Pedro</td>
+              <td class="px-3 num text-ink/55">02 ene</td>
+              <td class="px-5 text-ink/35 text-right">⋯</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <footer class="px-5 py-3 border-t border-ink/8 flex items-center justify-between text-[12px]">
+        <span class="text-ink/55 num">12 de 23 brands</span>
+        <a href="#" class="font-semibold text-orange-brand hover:underline flex items-center gap-1">Ver todas <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 18 6-6-6-6"/></svg></a>
+      </footer>
+    </div>
+  </section>
+
+  <!-- 3e Reps preview -->
+  <section class="px-8 mt-6">
+    <div class="bg-white border border-ink/8 rounded-xl overflow-hidden">
+      <header class="px-5 py-4 border-b border-ink/8 flex items-center justify-between">
+        <div>
+          <h2 class="display font-semibold text-[16px] flex items-center gap-2">Reps onboarded <span class="num pill bg-ink/5 text-ink/65 border border-ink/8">342 activos</span></h2>
+          <p class="text-[11px] text-ink/50 mt-0.5">KYC aprobado · banco verificado · ≥ 1 misión completada</p>
+        </div>
+        <a class="text-[12px] font-semibold text-orange-brand hover:underline" href="#">Ver todos</a>
+      </header>
+
+      <div class="overflow-x-auto scrollbar-thin">
+        <table class="w-full text-[12px]">
+          <thead class="text-left text-[10px] uppercase tracking-wider text-ink/45 border-b border-ink/8">
+            <tr>
+              <th class="px-5 py-2.5 font-semibold">Rep</th>
+              <th class="px-3 py-2.5 font-semibold">Ciudad</th>
+              <th class="px-3 py-2.5 font-semibold">KYC</th>
+              <th class="px-3 py-2.5 font-semibold">Rating</th>
+              <th class="px-3 py-2.5 font-semibold text-right">Mis. completadas</th>
+              <th class="px-3 py-2.5 font-semibold">Banco</th>
+              <th class="px-5 py-2.5 font-semibold text-right">Banned</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-ink/6">
+            <tr class="table-row">
+              <td class="px-5 py-3"><div class="flex items-center gap-2.5"><span class="w-7 h-7 rounded-full bg-gradient-to-br from-orange-brand to-[#D9521E] text-white text-[10px] font-bold flex items-center justify-center">DM</span><span><span class="font-medium block leading-tight">Daniel Mercado</span><span class="num text-[10px] text-ink/45">RP-4827</span></span></div></td>
+              <td class="px-3 text-ink/65">CDMX</td>
+              <td class="px-3"><span class="pill bg-emerald-50 text-emerald-700 border border-emerald-200">verified</span></td>
+              <td class="px-3 num">★ 4.92</td>
+              <td class="px-3 num text-right">187</td>
+              <td class="px-3"><span class="num text-ink/65">Mercado Pago</span></td>
+              <td class="px-5 text-right"><button class="ghost-toggle relative w-9 h-5 bg-ink/15 rounded-full transition" data-on="false" aria-label="Banear rep"><span class="dot absolute top-0.5 left-0.5 w-4 h-4 rounded-full bg-white shadow transition-transform"></span></button></td>
+            </tr>
+            <tr class="table-row">
+              <td class="px-5 py-3"><div class="flex items-center gap-2.5"><span class="w-7 h-7 rounded-full bg-gradient-to-br from-amber-600 to-amber-800 text-white text-[10px] font-bold flex items-center justify-center">AR</span><span><span class="font-medium block leading-tight">Andrés Ruiz</span><span class="num text-[10px] text-ink/45">RP-4815</span></span></div></td>
+              <td class="px-3 text-ink/65">GDL</td>
+              <td class="px-3"><span class="pill bg-emerald-50 text-emerald-700 border border-emerald-200">verified</span></td>
+              <td class="px-3 num">★ 4.71</td>
+              <td class="px-3 num text-right">142</td>
+              <td class="px-3"><span class="num text-ink/65">BBVA</span></td>
+              <td class="px-5 text-right"><button class="ghost-toggle relative w-9 h-5 bg-ink/15 rounded-full transition" data-on="false"><span class="dot absolute top-0.5 left-0.5 w-4 h-4 rounded-full bg-white shadow transition-transform"></span></button></td>
+            </tr>
+            <tr class="table-row">
+              <td class="px-5 py-3"><div class="flex items-center gap-2.5"><span class="w-7 h-7 rounded-full bg-gradient-to-br from-navy-700 to-navy-900 text-white text-[10px] font-bold flex items-center justify-center">SL</span><span><span class="font-medium block leading-tight">Sofía López</span><span class="num text-[10px] text-ink/45">RP-4801</span></span></div></td>
+              <td class="px-3 text-ink/65">MTY</td>
+              <td class="px-3"><span class="pill bg-emerald-50 text-emerald-700 border border-emerald-200">verified</span></td>
+              <td class="px-3 num">★ 4.88</td>
+              <td class="px-3 num text-right">164</td>
+              <td class="px-3"><span class="num text-ink/65">Santander</span></td>
+              <td class="px-5 text-right"><button class="ghost-toggle relative w-9 h-5 bg-ink/15 rounded-full transition" data-on="false"><span class="dot absolute top-0.5 left-0.5 w-4 h-4 rounded-full bg-white shadow transition-transform"></span></button></td>
+            </tr>
+            <tr class="table-row">
+              <td class="px-5 py-3"><div class="flex items-center gap-2.5"><span class="w-7 h-7 rounded-full bg-gradient-to-br from-rose-600 to-rose-900 text-white text-[10px] font-bold flex items-center justify-center">MT</span><span><span class="font-medium block leading-tight">Mauricio Tovar</span><span class="num text-[10px] text-ink/45">RP-4789</span></span></div></td>
+              <td class="px-3 text-ink/65">Bajío</td>
+              <td class="px-3"><span class="pill bg-amber-50 text-amber-700 border border-amber-200">re-review</span></td>
+              <td class="px-3 num">★ 4.45</td>
+              <td class="px-3 num text-right">98</td>
+              <td class="px-3"><span class="num text-ink/65">Banorte</span></td>
+              <td class="px-5 text-right"><button class="ghost-toggle relative w-9 h-5 bg-ink/15 rounded-full transition" data-on="false"><span class="dot absolute top-0.5 left-0.5 w-4 h-4 rounded-full bg-white shadow transition-transform"></span></button></td>
+            </tr>
+            <tr class="table-row">
+              <td class="px-5 py-3"><div class="flex items-center gap-2.5"><span class="w-7 h-7 rounded-full bg-gradient-to-br from-purple-600 to-purple-900 text-white text-[10px] font-bold flex items-center justify-center">KF</span><span><span class="font-medium block leading-tight">Karla Figueroa</span><span class="num text-[10px] text-ink/45">RP-4762</span></span></div></td>
+              <td class="px-3 text-ink/65">CDMX</td>
+              <td class="px-3"><span class="pill bg-amber-50 text-amber-700 border border-amber-200">re-review</span></td>
+              <td class="px-3 num">★ 3.92</td>
+              <td class="px-3 num text-right">76</td>
+              <td class="px-3"><span class="num text-ink/65">Mercado Pago</span></td>
+              <td class="px-5 text-right"><button class="ghost-toggle relative w-9 h-5 bg-ink/15 rounded-full transition" data-on="false"><span class="dot absolute top-0.5 left-0.5 w-4 h-4 rounded-full bg-white shadow transition-transform"></span></button></td>
+            </tr>
+            <tr class="table-row">
+              <td class="px-5 py-3"><div class="flex items-center gap-2.5"><span class="w-7 h-7 rounded-full bg-gradient-to-br from-amber-700 to-amber-900 text-white text-[10px] font-bold flex items-center justify-center">RN</span><span><span class="font-medium block leading-tight">Roberto Núñez</span><span class="num text-[10px] text-ink/45">RP-4741</span></span></div></td>
+              <td class="px-3 text-ink/65">CDMX</td>
+              <td class="px-3"><span class="pill bg-emerald-50 text-emerald-700 border border-emerald-200">verified</span></td>
+              <td class="px-3 num">★ 4.62</td>
+              <td class="px-3 num text-right">112</td>
+              <td class="px-3"><span class="num text-ink/65">BBVA</span></td>
+              <td class="px-5 text-right"><button class="ghost-toggle relative w-9 h-5 bg-ink/15 rounded-full transition" data-on="false"><span class="dot absolute top-0.5 left-0.5 w-4 h-4 rounded-full bg-white shadow transition-transform"></span></button></td>
+            </tr>
+            <tr class="table-row">
+              <td class="px-5 py-3"><div class="flex items-center gap-2.5"><span class="w-7 h-7 rounded-full bg-gradient-to-br from-emerald-600 to-emerald-800 text-white text-[10px] font-bold flex items-center justify-center">VP</span><span><span class="font-medium block leading-tight">Valeria Peña</span><span class="num text-[10px] text-ink/45">RP-4720</span></span></div></td>
+              <td class="px-3 text-ink/65">GDL</td>
+              <td class="px-3"><span class="pill bg-emerald-50 text-emerald-700 border border-emerald-200">verified</span></td>
+              <td class="px-3 num">★ 4.85</td>
+              <td class="px-3 num text-right">156</td>
+              <td class="px-3"><span class="num text-ink/65">Santander</span></td>
+              <td class="px-5 text-right"><button class="ghost-toggle relative w-9 h-5 bg-ink/15 rounded-full transition" data-on="false"><span class="dot absolute top-0.5 left-0.5 w-4 h-4 rounded-full bg-white shadow transition-transform"></span></button></td>
+            </tr>
+            <tr class="table-row">
+              <td class="px-5 py-3"><div class="flex items-center gap-2.5"><span class="w-7 h-7 rounded-full bg-gradient-to-br from-purple-700 to-purple-950 text-white text-[10px] font-bold flex items-center justify-center">IS</span><span><span class="font-medium block leading-tight">Iván Salazar</span><span class="num text-[10px] text-ink/45">RP-4698</span></span></div></td>
+              <td class="px-3 text-ink/65">CDMX</td>
+              <td class="px-3"><span class="pill bg-emerald-50 text-emerald-700 border border-emerald-200">verified</span></td>
+              <td class="px-3 num">★ 4.81</td>
+              <td class="px-3 num text-right">128</td>
+              <td class="px-3"><span class="num text-ink/65">BBVA</span></td>
+              <td class="px-5 text-right"><button class="ghost-toggle relative w-9 h-5 bg-ink/15 rounded-full transition" data-on="false"><span class="dot absolute top-0.5 left-0.5 w-4 h-4 rounded-full bg-white shadow transition-transform"></span></button></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3f Payouts -->
+  <section class="px-8 mt-6 grid lg:grid-cols-5 gap-4">
+    <div class="lg:col-span-3 bg-white border border-ink/8 rounded-xl p-5">
+      <header class="flex items-start justify-between gap-4 mb-5">
+        <div>
+          <h2 class="display font-semibold text-[16px]">Payouts pendientes <span class="text-ink/40 font-normal">· Mercado Pago</span></h2>
+          <p class="text-[11px] text-ink/50 mt-0.5 num">Total <span class="font-semibold text-ink">$12,840 MXN</span> · 47 reps · próximo batch <span class="font-semibold text-ink">jue 1 may 18:00</span></p>
+        </div>
+        <button class="px-3.5 py-2 text-[12px] font-semibold bg-orange-brand text-white rounded-md hover:bg-[#E85D27] transition flex items-center gap-1.5" onclick="confirmBatch()">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+          Procesar batch ahora
+        </button>
+      </header>
+
+      <!-- Bar chart 14 days -->
+      <div class="mt-3">
+        <p class="text-[10px] uppercase tracking-wider text-ink/45 font-semibold mb-2">Payouts diarios · últimos 14 días</p>
+        <svg viewBox="0 0 420 100" class="w-full h-28">
+          <line x1="0" y1="98" x2="420" y2="98" stroke="#0A2540" stroke-opacity=".1" stroke-width="1"/>
+          <g>
+            <!-- 14 bars -->
+            <rect x="2"   y="55" width="22" height="43" fill="#0A2540" opacity=".18" rx="2"/>
+            <rect x="32"  y="48" width="22" height="50" fill="#0A2540" opacity=".22" rx="2"/>
+            <rect x="62"  y="62" width="22" height="36" fill="#0A2540" opacity=".18" rx="2"/>
+            <rect x="92"  y="40" width="22" height="58" fill="#0A2540" opacity=".25" rx="2"/>
+            <rect x="122" y="35" width="22" height="63" fill="#0A2540" opacity=".25" rx="2"/>
+            <rect x="152" y="28" width="22" height="70" fill="#0A2540" opacity=".30" rx="2"/>
+            <rect x="182" y="50" width="22" height="48" fill="#0A2540" opacity=".22" rx="2"/>
+            <rect x="212" y="42" width="22" height="56" fill="#0A2540" opacity=".25" rx="2"/>
+            <rect x="242" y="32" width="22" height="66" fill="#0A2540" opacity=".30" rx="2"/>
+            <rect x="272" y="22" width="22" height="76" fill="#0A2540" opacity=".35" rx="2"/>
+            <rect x="302" y="38" width="22" height="60" fill="#0A2540" opacity=".25" rx="2"/>
+            <rect x="332" y="48" width="22" height="50" fill="#0A2540" opacity=".22" rx="2"/>
+            <rect x="362" y="18" width="22" height="80" fill="#FF6B35" opacity=".95" rx="2"/>
+            <rect x="392" y="30" width="22" height="68" fill="#FF6B35" opacity=".75" rx="2"/>
+          </g>
+          <text x="2"   y="98" font-family="JetBrains Mono" font-size="7" fill="#0A2540" fill-opacity=".4" dy="10">15</text>
+          <text x="92"  y="98" font-family="JetBrains Mono" font-size="7" fill="#0A2540" fill-opacity=".4" dy="10">18</text>
+          <text x="182" y="98" font-family="JetBrains Mono" font-size="7" fill="#0A2540" fill-opacity=".4" dy="10">21</text>
+          <text x="272" y="98" font-family="JetBrains Mono" font-size="7" fill="#0A2540" fill-opacity=".4" dy="10">24</text>
+          <text x="362" y="98" font-family="JetBrains Mono" font-size="7" fill="#FF6B35" font-weight="700" dy="10">hoy</text>
+        </svg>
+      </div>
+
+      <div class="grid grid-cols-3 gap-3 mt-4 pt-4 border-t border-ink/6 text-[11px]">
+        <div><p class="text-ink/45 uppercase tracking-wider font-semibold text-[10px]">Promedio diario</p><p class="num text-[18px] font-semibold mt-1">$8,420</p></div>
+        <div><p class="text-ink/45 uppercase tracking-wider font-semibold text-[10px]">Reps en cola</p><p class="num text-[18px] font-semibold mt-1">47</p></div>
+        <div><p class="text-ink/45 uppercase tracking-wider font-semibold text-[10px]">Fee MP estimado</p><p class="num text-[18px] font-semibold mt-1">$372</p></div>
+      </div>
+    </div>
+
+    <!-- Payout breakdown -->
+    <div class="lg:col-span-2 bg-white border border-ink/8 rounded-xl p-5">
+      <h3 class="display font-semibold text-[14px] mb-3">Breakdown por banco</h3>
+      <ul class="space-y-3 text-[12px]">
+        <li>
+          <div class="flex items-center justify-between mb-1"><span class="font-medium">Mercado Pago</span><span class="num">$5,840 <span class="text-ink/40">· 22 reps</span></span></div>
+          <div class="h-1.5 bg-ink/8 rounded-full overflow-hidden"><div class="h-full bg-orange-brand" style="width:45%"></div></div>
+        </li>
+        <li>
+          <div class="flex items-center justify-between mb-1"><span class="font-medium">BBVA</span><span class="num">$3,210 <span class="text-ink/40">· 12 reps</span></span></div>
+          <div class="h-1.5 bg-ink/8 rounded-full overflow-hidden"><div class="h-full bg-ink" style="width:25%"></div></div>
+        </li>
+        <li>
+          <div class="flex items-center justify-between mb-1"><span class="font-medium">Santander</span><span class="num">$2,180 <span class="text-ink/40">· 8 reps</span></span></div>
+          <div class="h-1.5 bg-ink/8 rounded-full overflow-hidden"><div class="h-full bg-ink/60" style="width:17%"></div></div>
+        </li>
+        <li>
+          <div class="flex items-center justify-between mb-1"><span class="font-medium">Banorte</span><span class="num">$1,610 <span class="text-ink/40">· 5 reps</span></span></div>
+          <div class="h-1.5 bg-ink/8 rounded-full overflow-hidden"><div class="h-full bg-ink/40" style="width:13%"></div></div>
+        </li>
+      </ul>
+      <div class="mt-4 pt-3 border-t border-ink/6 text-[11px] text-ink/55 num">
+        Última corrida exitosa: <span class="text-ink font-semibold">jue 24 abr 18:00</span> · $14,210 / 52 reps
+      </div>
+    </div>
+  </section>
+
+  <!-- 3g Fraud monitoring -->
+  <section class="px-8 mt-6 mb-10 grid lg:grid-cols-5 gap-4">
+    <div class="lg:col-span-3 bg-white border border-ink/8 rounded-xl p-5">
+      <header class="flex items-start justify-between mb-3">
+        <div>
+          <h2 class="display font-semibold text-[16px]">Fraud monitoring</h2>
+          <p class="text-[11px] text-ink/50 mt-0.5 num">Fraud rate semanal · últimos 12 weeks · target &lt;2%</p>
+        </div>
+        <span class="pill bg-emerald-50 text-emerald-700 border border-emerald-200">trend down</span>
+      </header>
+      <svg viewBox="0 0 460 160" class="w-full h-44">
+        <!-- Grid lines -->
+        <g stroke="#0A2540" stroke-opacity=".06" stroke-width="1">
+          <line x1="40" y1="20"  x2="460" y2="20"/>
+          <line x1="40" y1="60"  x2="460" y2="60"/>
+          <line x1="40" y1="100" x2="460" y2="100"/>
+          <line x1="40" y1="140" x2="460" y2="140"/>
+        </g>
+        <!-- Y axis labels -->
+        <g font-family="JetBrains Mono" font-size="9" fill="#0A2540" fill-opacity=".4">
+          <text x="6" y="24">3.0%</text>
+          <text x="6" y="64">2.0%</text>
+          <text x="6" y="104">1.0%</text>
+          <text x="6" y="144">0.0%</text>
+        </g>
+        <!-- Target line at 2% -->
+        <line x1="40" y1="60" x2="460" y2="60" stroke="#FF6B35" stroke-opacity=".4" stroke-width="1" stroke-dasharray="3,3"/>
+        <text x="446" y="56" font-family="JetBrains Mono" font-size="8" fill="#FF6B35" font-weight="600">target</text>
+
+        <!-- Fraud rate area -->
+        <defs>
+          <linearGradient id="frg" x1="0" x2="0" y1="0" y2="1">
+            <stop offset="0%" stop-color="#FF6B35" stop-opacity=".25"/>
+            <stop offset="100%" stop-color="#FF6B35" stop-opacity="0"/>
+          </linearGradient>
+        </defs>
+        <path d="M40,40 L75,52 L110,48 L145,72 L180,68 L215,84 L250,90 L285,98 L320,108 L355,112 L390,118 L425,124 L425,140 L40,140 Z" fill="url(#frg)"/>
+        <path d="M40,40 L75,52 L110,48 L145,72 L180,68 L215,84 L250,90 L285,98 L320,108 L355,112 L390,118 L425,124" fill="none" stroke="#FF6B35" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        <!-- Dots -->
+        <g fill="#FF6B35" stroke="white" stroke-width="1.5">
+          <circle cx="40" cy="40" r="3"/>
+          <circle cx="75" cy="52" r="3"/>
+          <circle cx="110" cy="48" r="3"/>
+          <circle cx="145" cy="72" r="3"/>
+          <circle cx="180" cy="68" r="3"/>
+          <circle cx="215" cy="84" r="3"/>
+          <circle cx="250" cy="90" r="3"/>
+          <circle cx="285" cy="98" r="3"/>
+          <circle cx="320" cy="108" r="3"/>
+          <circle cx="355" cy="112" r="3"/>
+          <circle cx="390" cy="118" r="3"/>
+          <circle cx="425" cy="124" r="4" fill="#0A2540"/>
+        </g>
+        <!-- X labels -->
+        <g font-family="JetBrains Mono" font-size="8" fill="#0A2540" fill-opacity=".4">
+          <text x="36" y="156">w-12</text>
+          <text x="146" y="156">w-8</text>
+          <text x="251" y="156">w-4</text>
+          <text x="411" y="156">hoy</text>
+        </g>
+      </svg>
+      <div class="grid grid-cols-3 gap-3 mt-2 pt-4 border-t border-ink/6 text-[11px]">
+        <div><p class="text-ink/45 uppercase tracking-wider font-semibold text-[10px]">Esta semana</p><p class="num text-[16px] font-semibold mt-1">1.2%</p></div>
+        <div><p class="text-ink/45 uppercase tracking-wider font-semibold text-[10px]">Δ vs w-1</p><p class="num text-[16px] font-semibold mt-1 text-emerald-600">−0.3 pts</p></div>
+        <div><p class="text-ink/45 uppercase tracking-wider font-semibold text-[10px]">Casos abiertos</p><p class="num text-[16px] font-semibold mt-1">8</p></div>
+      </div>
+    </div>
+
+    <!-- Risk scores -->
+    <div class="lg:col-span-2 bg-white border border-ink/8 rounded-xl p-5">
+      <header class="flex items-center justify-between mb-3">
+        <h3 class="display font-semibold text-[14px]">Reps · score riesgo</h3>
+        <span class="num text-[10px] text-ink/45">top 5</span>
+      </header>
+      <ul class="space-y-3">
+        <li class="flex items-start gap-3">
+          <span class="num text-[11px] font-bold w-9 text-right text-red-600 pt-0.5">87</span>
+          <div class="flex-1 min-w-0">
+            <p class="text-[12px] font-medium num">RP-4827 <span class="text-ink/55 font-normal">Daniel M.</span></p>
+            <p class="text-[10px] text-ink/55 mt-0.5">geo spoof detectado x3 en 24h</p>
+            <div class="mt-1 h-1 bg-ink/6 rounded-full overflow-hidden"><div class="h-full bg-red-500" style="width:87%"></div></div>
+          </div>
+        </li>
+        <li class="flex items-start gap-3">
+          <span class="num text-[11px] font-bold w-9 text-right text-red-600 pt-0.5">81</span>
+          <div class="flex-1 min-w-0">
+            <p class="text-[12px] font-medium num">RP-4762 <span class="text-ink/55 font-normal">Karla F.</span></p>
+            <p class="text-[10px] text-ink/55 mt-0.5">3era reincidencia · EXIF mismatches</p>
+            <div class="mt-1 h-1 bg-ink/6 rounded-full overflow-hidden"><div class="h-full bg-red-500" style="width:81%"></div></div>
+          </div>
+        </li>
+        <li class="flex items-start gap-3">
+          <span class="num text-[11px] font-bold w-9 text-right text-amber-600 pt-0.5">68</span>
+          <div class="flex-1 min-w-0">
+            <p class="text-[12px] font-medium num">RP-4789 <span class="text-ink/55 font-normal">Mauricio T.</span></p>
+            <p class="text-[10px] text-ink/55 mt-0.5">2 misiones rechazadas semana</p>
+            <div class="mt-1 h-1 bg-ink/6 rounded-full overflow-hidden"><div class="h-full bg-amber-500" style="width:68%"></div></div>
+          </div>
+        </li>
+        <li class="flex items-start gap-3">
+          <span class="num text-[11px] font-bold w-9 text-right text-amber-600 pt-0.5">54</span>
+          <div class="flex-1 min-w-0">
+            <p class="text-[12px] font-medium num">RP-4612 <span class="text-ink/55 font-normal">Jonathan B.</span></p>
+            <p class="text-[10px] text-ink/55 mt-0.5">device fingerprint shared (RP-4598)</p>
+            <div class="mt-1 h-1 bg-ink/6 rounded-full overflow-hidden"><div class="h-full bg-amber-500" style="width:54%"></div></div>
+          </div>
+        </li>
+        <li class="flex items-start gap-3">
+          <span class="num text-[11px] font-bold w-9 text-right text-amber-600 pt-0.5">48</span>
+          <div class="flex-1 min-w-0">
+            <p class="text-[12px] font-medium num">RP-4501 <span class="text-ink/55 font-normal">Lucía Vázquez</span></p>
+            <p class="text-[10px] text-ink/55 mt-0.5">tiempo respuesta &lt; baseline</p>
+            <div class="mt-1 h-1 bg-ink/6 rounded-full overflow-hidden"><div class="h-full bg-amber-500" style="width:48%"></div></div>
+          </div>
+        </li>
+      </ul>
+      <a href="#" class="mt-4 block text-[12px] font-semibold text-orange-brand hover:underline">Abrir fraud monitoring →</a>
+    </div>
+  </section>
+
+</main>
+
+</div>
+
+<script>
+  // Filter pills (validation queue)
+  const pills = document.querySelectorAll('#filter-pills .filter-pill');
+  const items = document.querySelectorAll('#validation-list .row-fade');
+  pills.forEach(p => {
+    p.addEventListener('click', () => {
+      pills.forEach(x => x.dataset.active = 'false');
+      p.dataset.active = 'true';
+      const f = p.dataset.filter;
+      items.forEach(it => {
+        const match = (f === 'all') || (it.dataset.flag === f);
+        it.style.display = match ? '' : 'none';
+      });
+    });
+  });
+
+  // Approve / Reject row fade
+  document.querySelectorAll('.action-btn').forEach(btn => {
+    btn.addEventListener('click', e => {
+      const row = e.currentTarget.closest('.row-fade');
+      const action = e.currentTarget.dataset.action;
+      if (action === 'dispute') {
+        // Mark disputed inline (simple visual)
+        row.style.background = 'rgba(255,107,53,0.06)';
+        e.currentTarget.textContent = 'Disputa abierta';
+        e.currentTarget.disabled = true;
+        return;
+      }
+      row.classList.add('removing');
+      setTimeout(() => row.remove(), 280);
+    });
+  });
+
+  // Ban toggle confirmation
+  document.querySelectorAll('.ghost-toggle').forEach(t => {
+    t.addEventListener('click', () => {
+      const isOn = t.dataset.on === 'true';
+      if (!isOn) {
+        if (!confirm('¿Banear a este rep? Se cancelarán sus misiones activas y se bloqueará su login.')) return;
+      }
+      t.dataset.on = isOn ? 'false' : 'true';
+    });
+  });
+
+  // Process batch confirm
+  function confirmBatch() {
+    if (confirm('¿Procesar batch de payouts ahora? $12,840 MXN a 47 reps. Esta acción es irreversible.')) {
+      // placeholder
+      alert('Batch encolado. Confirmación llegará por Slack en ~2min.');
+    }
+  }
+</script>
+
+</body>
+</html>

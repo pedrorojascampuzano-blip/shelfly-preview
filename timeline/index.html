@@ -1,0 +1,534 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Shelfly Roadmap · Hoy a Octubre 2026</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              orange: '#FF6B35',
+              navy: '#0A2540',
+              cream: '#FFF8F3',
+            },
+            track: {
+              legal:    '#64748b',
+              producto: '#0A2540',
+              tech:     '#7c3aed',
+              gtm:      '#FF6B35',
+              brand:    '#ec4899',
+            }
+          },
+          fontFamily: {
+            sans: ['Inter', 'ui-sans-serif', 'system-ui'],
+            display: ['"Space Grotesk"', 'Inter', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body { font-family: 'Inter', system-ui, sans-serif; background: #FFF8F3; color: #0A2540; }
+    .font-display { font-family: 'Space Grotesk', 'Inter', sans-serif; letter-spacing: -0.01em; }
+    .scrollbar-thin::-webkit-scrollbar { height: 10px; width: 10px; }
+    .scrollbar-thin::-webkit-scrollbar-track { background: transparent; }
+    .scrollbar-thin::-webkit-scrollbar-thumb { background: rgba(10,37,64,.18); border-radius: 999px; }
+    .scrollbar-thin::-webkit-scrollbar-thumb:hover { background: rgba(10,37,64,.32); }
+
+    /* Today marker */
+    .today-line {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      width: 2px;
+      background: #FF6B35;
+      z-index: 30;
+      pointer-events: none;
+      box-shadow: 0 0 0 4px rgba(255,107,53,.10);
+    }
+    .today-flag {
+      position: absolute;
+      top: -10px;
+      transform: translateX(-50%);
+      background: #FF6B35;
+      color: white;
+      font-weight: 600;
+      font-size: 11px;
+      padding: 4px 10px;
+      border-radius: 999px;
+      letter-spacing: .03em;
+      white-space: nowrap;
+      z-index: 31;
+      box-shadow: 0 4px 12px rgba(255,107,53,.35);
+    }
+
+    /* Lane */
+    .lane-row { position: relative; }
+    .lane-row + .lane-row { border-top: 1px dashed rgba(10,37,64,.10); }
+
+    /* Card */
+    .milestone {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      border-radius: 10px;
+      padding: 8px 12px;
+      font-size: 12px;
+      line-height: 1.35;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all .15s ease;
+      box-shadow: 0 1px 2px rgba(10,37,64,.06), 0 0 0 1px rgba(10,37,64,.05);
+      background: white;
+      color: #0A2540;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+    }
+    .milestone:hover {
+      transform: translateY(-50%) scale(1.02);
+      z-index: 20;
+      box-shadow: 0 8px 24px rgba(10,37,64,.12), 0 0 0 1px rgba(10,37,64,.10);
+    }
+    .milestone.is-p0 { font-weight: 600; }
+    .milestone .pri { font-size: 10px; opacity: .7; margin-right: 4px; font-weight: 700; }
+
+    /* Track-tinted cards */
+    .lane-legal    .milestone { border-left: 3px solid #64748b; }
+    .lane-producto .milestone { border-left: 3px solid #0A2540; }
+    .lane-tech     .milestone { border-left: 3px solid #7c3aed; }
+    .lane-gtm      .milestone { border-left: 3px solid #FF6B35; }
+    .lane-brand    .milestone { border-left: 3px solid #ec4899; }
+
+    /* Header time-axis */
+    .axis-cell {
+      border-left: 1px solid rgba(10,37,64,.08);
+      font-size: 11px;
+      color: rgba(10,37,64,.6);
+      padding: 8px 10px;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: .05em;
+    }
+    .axis-cell:first-child { border-left: none; }
+
+    .week-bg:nth-child(even) { background: rgba(10,37,64,.02); }
+
+    /* Modal */
+    .modal-backdrop {
+      position: fixed; inset: 0; background: rgba(10,37,64,.55);
+      z-index: 50; display: none; align-items: center; justify-content: center;
+      backdrop-filter: blur(4px);
+    }
+    .modal-backdrop.open { display: flex; }
+    .modal {
+      background: white; border-radius: 14px; padding: 28px; max-width: 520px;
+      width: calc(100% - 32px);
+      box-shadow: 0 24px 64px rgba(10,37,64,.25);
+    }
+
+    .lane-label {
+      position: sticky;
+      left: 0;
+      background: #FFF8F3;
+      z-index: 25;
+      border-right: 1px solid rgba(10,37,64,.10);
+    }
+  </style>
+</head>
+<body class="min-h-screen">
+
+<!-- Header -->
+<header class="max-w-[1400px] mx-auto px-6 pt-10 pb-6">
+  <div class="flex items-start justify-between gap-6 flex-wrap">
+    <div>
+      <div class="flex items-center gap-3 mb-3">
+        <div class="w-9 h-9 rounded-lg bg-brand-orange flex items-center justify-center text-white font-display font-bold text-lg">S</div>
+        <span class="text-xs font-semibold tracking-widest uppercase text-brand-navy/60">Shelfly · roadmap operativo</span>
+      </div>
+      <h1 class="font-display text-4xl md:text-5xl font-bold text-brand-navy">Shelfly Roadmap · Hoy a Octubre 2026</h1>
+      <p class="mt-2 text-brand-navy/70 text-base md:text-lg">AI-accelerated, full-time · Pedro + Claude + Diego</p>
+    </div>
+
+    <div class="flex flex-col items-end gap-3">
+      <div class="inline-flex rounded-lg bg-white border border-brand-navy/10 p-1 shadow-sm">
+        <button id="btn-month" class="px-4 py-2 text-sm font-semibold rounded-md bg-brand-navy text-white">Mensual (6 meses)</button>
+        <button id="btn-week"  class="px-4 py-2 text-sm font-semibold rounded-md text-brand-navy/70 hover:text-brand-navy">Semanal (próximas 8)</button>
+      </div>
+      <div class="text-xs text-brand-navy/60 text-right max-w-md">
+        Asume Pedro full-time + Claude Code asistencia + Diego inyecta pipeline.<br>
+        Si solo, el timeline se duplica. Si Diego no inyecta, Sem 6+ se atrasa.
+      </div>
+    </div>
+  </div>
+
+  <!-- Legend -->
+  <div class="mt-6 flex flex-wrap gap-x-5 gap-y-2 text-xs">
+    <div class="flex items-center gap-2"><span class="w-3 h-3 rounded-sm" style="background:#64748b"></span><span class="font-medium">Legal</span></div>
+    <div class="flex items-center gap-2"><span class="w-3 h-3 rounded-sm" style="background:#0A2540"></span><span class="font-medium">Producto</span></div>
+    <div class="flex items-center gap-2"><span class="w-3 h-3 rounded-sm" style="background:#7c3aed"></span><span class="font-medium">Tech</span></div>
+    <div class="flex items-center gap-2"><span class="w-3 h-3 rounded-sm" style="background:#FF6B35"></span><span class="font-medium">GTM</span></div>
+    <div class="flex items-center gap-2"><span class="w-3 h-3 rounded-sm" style="background:#ec4899"></span><span class="font-medium">Branding</span></div>
+    <div class="flex items-center gap-2 ml-4"><span class="text-brand-navy/50">P0 = bloqueante esta semana</span></div>
+  </div>
+</header>
+
+<!-- Timeline -->
+<main class="max-w-[1400px] mx-auto px-6 pb-20">
+  <div id="timeline-shell" class="bg-white rounded-2xl border border-brand-navy/10 shadow-sm overflow-hidden">
+    <div id="timeline-scroll" class="overflow-x-auto scrollbar-thin">
+      <div id="timeline-grid" class="relative" style="min-width: 1600px;">
+        <!-- Header axis -->
+        <div id="axis" class="grid sticky top-0 bg-white z-20 border-b border-brand-navy/10"></div>
+        <!-- Lanes -->
+        <div id="lanes"></div>
+        <!-- Today marker -->
+        <div id="today" class="today-line"><div class="today-flag">HOY · 28 ABR</div></div>
+      </div>
+    </div>
+  </div>
+
+  <p class="mt-4 text-xs text-brand-navy/50">Click cualquier hito para ver detalles. Scroll horizontal en pantallas chicas.</p>
+</main>
+
+<!-- Modal -->
+<div id="modal" class="modal-backdrop" onclick="if(event.target===this)closeModal()">
+  <div class="modal">
+    <div id="modal-track" class="text-xs font-semibold uppercase tracking-widest mb-2"></div>
+    <h3 id="modal-title" class="font-display text-2xl font-bold text-brand-navy mb-2"></h3>
+    <div id="modal-week" class="text-sm text-brand-navy/60 mb-4"></div>
+    <p id="modal-detail" class="text-sm text-brand-navy/80 leading-relaxed"></p>
+    <div class="mt-6 flex justify-end">
+      <button onclick="closeModal()" class="px-4 py-2 text-sm font-semibold rounded-md bg-brand-navy text-white hover:bg-brand-navy/90">Cerrar</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ============================================================
+// DATA MODEL
+// ============================================================
+const LANES = [
+  { id: 'legal',    label: 'Legal',    color: '#64748b' },
+  { id: 'brand',    label: 'Branding', color: '#ec4899' },
+  { id: 'producto', label: 'Producto', color: '#0A2540' },
+  { id: 'tech',     label: 'Tech',     color: '#7c3aed' },
+  { id: 'gtm',      label: 'GTM',      color: '#FF6B35' },
+];
+
+// Time anchor: today is 2026-04-28
+const TODAY = new Date('2026-04-28T00:00:00');
+
+// Helper: compute days from start of timeline
+const TIMELINE_START = new Date('2026-04-27T00:00:00'); // start of week 0
+const TIMELINE_END   = new Date('2026-10-31T00:00:00'); // end of October 2026
+
+const DAY_MS = 24 * 60 * 60 * 1000;
+const totalDays = Math.round((TIMELINE_END - TIMELINE_START) / DAY_MS);
+
+function dayOffset(d) {
+  return Math.round((d - TIMELINE_START) / DAY_MS);
+}
+function pctOf(date) {
+  return (dayOffset(date) / totalDays) * 100;
+}
+function pctSpan(start, end) {
+  const s = pctOf(start);
+  const e = pctOf(end);
+  return { left: s, width: Math.max(e - s, 1.2) };
+}
+
+// Milestones: { lane, title, start, end, p, week, detail }
+const MILESTONES = [
+  // ----- Semana 0 (28 abr - 5 may) -----
+  { lane:'legal', title:'Consulta abogado laboral', start:'2026-04-28', end:'2026-04-30', p:'P0', week:'Sem 0 · Esta semana',
+    detail:'Agendar cita martes. Validar status de salida Semantiks 27-abr y conflictos de no-compete antes de firmar contratos Shelfly.' },
+  { lane:'legal', title:'IMPI: validar 4 nombres', start:'2026-04-29', end:'2026-04-30', p:'P0', week:'Sem 0 · Esta semana',
+    detail:'Búsqueda fonética en IMPI para Shelvel, Venshel, Covdal y nombre 4. Filtrar conflictos antes de comprar dominios.' },
+
+  { lane:'brand', title:'Comprar 4 dominios .com', start:'2026-04-28', end:'2026-04-29', p:'P0', week:'Sem 0 · Esta semana',
+    detail:'Hoy mismo. Cloudflare Registrar. 4 candidatos en simultáneo para no perder ventana mientras se valida IMPI.' },
+  { lane:'brand', title:'Decisión nombre final con Diego', start:'2026-04-30', end:'2026-05-01', p:'P0', week:'Sem 0 · Esta semana',
+    detail:'Jueves. Cruzar IMPI + USPTO + dominios disponibles + criterio de marca. Output: nombre congelado + brief al diseñador.' },
+
+  { lane:'gtm', title:'Llamada con Diego · 4 slides', start:'2026-04-29', end:'2026-04-30', p:'P0', week:'Sem 0 · Esta semana',
+    detail:'Miércoles. Solo slides 1, 5, 6, 10 del deck v2. Confirmar capital, canal Time Tracker, pipeline brands warm.' },
+
+  { lane:'tech', title:'Approve builds + Supabase staging', start:'2026-04-30', end:'2026-05-04', p:'P1', week:'Sem 0 · Esta semana',
+    detail:'Aprovisionar proyecto Supabase staging (db + auth + storage). Verificar Expo EAS builds + Vercel preview deploys conectados.' },
+
+  // ----- Semana 1 (6-12 may) -----
+  { lane:'legal', title:'Filing trademark USPTO + IMPI', start:'2026-05-06', end:'2026-05-12', p:'P1', week:'Sem 1',
+    detail:'Con abogado PI: USPTO Class 35/42 + IMPI clases equivalentes. Use intent-to-use en USPTO mientras sale producto.' },
+  { lane:'brand', title:'Identidad visual final', start:'2026-05-06', end:'2026-05-12', p:'P1', week:'Sem 1',
+    detail:'Logo definitivo + landing page V1 con dominio elegido. Sistema de tipografía Inter + Space Grotesk implementado en CSS vars.' },
+  { lane:'tech', title:'Schema migration + RLS + auth', start:'2026-05-06', end:'2026-05-12', p:'P1', week:'Sem 1',
+    detail:'Prisma migrate deploy a Supabase. Policies RLS por organization_id + role. Supabase Auth con magic link + phone OTP rep.' },
+  { lane:'producto', title:'Brand console UI funcional', start:'2026-05-06', end:'2026-05-12', p:'P1', week:'Sem 1',
+    detail:'Dashboard, missions/new, listado de misiones. No más mockups; queries reales a Supabase via Prisma o RLS directo.' },
+
+  // ----- Semana 2 (13-19 may) -----
+  { lane:'tech', title:'Mobile rep app skeleton + EAS', start:'2026-05-13', end:'2026-05-19', p:'P1', week:'Sem 2',
+    detail:'Expo router + auth + feed + accept mission flow. EAS Build dev profile listo. Deep link a expo://shelfly/feed.' },
+  { lane:'tech', title:'Mercado Pago Marketplace · spike 3 días', start:'2026-05-13', end:'2026-05-16', p:'P0', week:'Sem 2',
+    detail:'3 días time-boxed para validar split payments, payout a CLABE, KYC requerido. Si rojo: plan B = STP via API o pagos manuales acumulados.' },
+  { lane:'tech', title:'Cloudflare R2 + CORS upload directo', start:'2026-05-16', end:'2026-05-19', p:'P1', week:'Sem 2',
+    detail:'Buckets evidences/private + brand-logos/public. Signed URLs presigned 5min. Upload directo desde mobile sin pasar por API.' },
+
+  // ----- Semana 3 (20-26 may) -----
+  { lane:'tech', title:'Ejecución end-to-end', start:'2026-05-20', end:'2026-05-26', p:'P0', week:'Sem 3',
+    detail:'Check-in geo + foto antes/después + upload R2 + validación auto (geofence, EXIF, hash). Mission status transitions.' },
+  { lane:'tech', title:'Validación manual UI admin', start:'2026-05-22', end:'2026-05-26', p:'P1', week:'Sem 3',
+    detail:'Cola de evidencias en /validation con aprobar/rechazar/marcar revisión. Bulk actions. Audit log automático.' },
+  { lane:'tech', title:'Webhooks Time Tracker [VALIDAR]', start:'2026-05-23', end:'2026-05-26', p:'P2', week:'Sem 3',
+    detail:'Placeholder. Validar con Diego qué eventos quiere bidireccional (asistencia rep, cierre misión). No bloquear si no hay specs.' },
+
+  // ----- Semana 4 (27 may - 2 jun) -----
+  { lane:'tech', title:'Mercado Pago Marketplace LIVE sandbox', start:'2026-05-27', end:'2026-06-02', p:'P0', week:'Sem 4',
+    detail:'Pago real (sandbox) tras validación: split a brand wallet → release a rep CLABE. Reintentos + estado payment.' },
+  { lane:'tech', title:'KYC ligero rep (CURP+INE+CLABE)', start:'2026-05-27', end:'2026-06-02', p:'P0', week:'Sem 4',
+    detail:'Flow guiado en mobile: CURP, INE foto frente/dorso, selfie liveness, CLABE validada. Status pending_review hasta aprobar.' },
+  { lane:'producto', title:'Onboarding 3 brands warm', start:'2026-05-30', end:'2026-06-02', p:'P1', week:'Sem 4',
+    detail:'Brands del pipeline Diego en staging. Crear org, invitar admin, importar PDVs CSV, crear primera misión draft.' },
+
+  // ----- Semana 5 (3-9 jun) -----
+  { lane:'tech', title:'Hardening fraud (geo + EXIF + IQ)', start:'2026-06-03', end:'2026-06-09', p:'P1', week:'Sem 5',
+    detail:'Geofence radius enforcement. EXIF GPS vs check-in. Image quality threshold (blur, brightness). Hash dup detection.' },
+  { lane:'tech', title:'Sentry + PostHog', start:'2026-06-03', end:'2026-06-06', p:'P1', week:'Sem 5',
+    detail:'Error monitoring web+mobile. Funnels: rep onboarding, brand mission creation, execution submit-to-paid.' },
+  { lane:'producto', title:'30 reps onboardeados staging', start:'2026-06-04', end:'2026-06-09', p:'P1', week:'Sem 5',
+    detail:'Reclutar reps via Diego/Time Tracker. Completar KYC. Probar feed + accept + execute misiones de prueba.' },
+  { lane:'gtm', title:'Documentación + FAQs públicos', start:'2026-06-05', end:'2026-06-09', p:'P2', week:'Sem 5',
+    detail:'Help center: cómo crear misión (brand), cómo cobrar (rep), políticas de validación. Notion público o Mintlify.' },
+
+  // ----- Semanas 6-8 (10-30 jun) -----
+  { lane:'tech', title:'Producción switch (DB+R2+MP LIVE)', start:'2026-06-10', end:'2026-06-16', p:'P0', week:'Sem 6',
+    detail:'Cutover staging → prod. DB con backups, R2 dominio custom, MP credenciales prod. DNS. Smoke test E2E antes de invitar.' },
+  { lane:'gtm', title:'Beta cerrada · 3 brands CDMX', start:'2026-06-15', end:'2026-06-30', p:'P0', week:'Sem 6-8',
+    detail:'Tres brands del pipeline Diego corren misiones reales en CDMX. Entre 50-150 misiones totales. Pedro en soporte 1:1.' },
+  { lane:'producto', title:'Iteración producto vs feedback', start:'2026-06-15', end:'2026-06-30', p:'P1', week:'Sem 6-8',
+    detail:'Daily fixes basados en lo que rompe en beta. UX de campo, edge cases de validación, claridad en pago al rep.' },
+  { lane:'legal', title:'Contratos rep firmados digital', start:'2026-06-12', end:'2026-06-30', p:'P1', week:'Sem 6-8',
+    detail:'Acuerdo prestación servicios independientes + cesión de imagen. Firma e-doc (Mifiel/Weetrust). Gating al primer pago.' },
+  { lane:'tech', title:'Time Tracker integración completa', start:'2026-06-18', end:'2026-06-30', p:'P1', week:'Sem 6-8',
+    detail:'SSO, KPI consolidado bidireccional. Diego define spec final. Output: cliente Time Tracker ve métricas Shelfly en su dashboard.' },
+
+  // ----- Mes 3 (julio) -----
+  { lane:'gtm', title:'Primera misión real validada y pagada', start:'2026-07-01', end:'2026-07-15', p:'P0', week:'Julio',
+    detail:'Hito celebración. Primera misión post-beta cerrada con pago liberado a rep en menos de 72h. Caso de estudio público.' },
+  { lane:'tech', title:'Misiones recurrentes / rutas optimizadas', start:'2026-07-08', end:'2026-07-31', p:'P1', week:'Julio',
+    detail:'Cron de creación de misiones recurrentes. Optimizador de ruta para rep (visita N PDVs en sesión). Beneficia churn rep.' },
+  { lane:'tech', title:'OCR planograma fase 2', start:'2026-07-15', end:'2026-07-31', p:'P2', week:'Julio',
+    detail:'Visión computadora para validar share-of-shelf y planograma compliance. Modelo cloud (Anthropic Vision o similar).' },
+  { lane:'gtm', title:'100 misiones validadas / semana', start:'2026-07-20', end:'2026-07-31', p:'P1', week:'Julio',
+    detail:'Métrica north-star primer trimestre. Implica 5 brands activas + 50 reps activos. Soporte tracking en dashboard interno.' },
+
+  // ----- Mes 4-5 (ago-sep) -----
+  { lane:'gtm', title:'Expansión GDL + MTY', start:'2026-08-01', end:'2026-08-31', p:'P1', week:'Agosto',
+    detail:'Reclutamiento rep en GDL y MTY. PDVs cargados. Primer brand dispara misiones fuera CDMX. Logística pago multi-region.' },
+  { lane:'producto', title:'Marketplace campañas premium', start:'2026-08-15', end:'2026-09-15', p:'P2', week:'Ago-Sep',
+    detail:'Brands pueden lanzar campañas multi-misión con presupuestos altos y reps top-tier filtrados por rating.' },
+  { lane:'tech', title:'API para marcas con DAM existente', start:'2026-08-20', end:'2026-09-20', p:'P2', week:'Ago-Sep',
+    detail:'Integración bidireccional con sistemas de las brands grandes. Webhooks salientes + REST API documentada.' },
+  { lane:'producto', title:'Rating bidireccional avanzado', start:'2026-09-01', end:'2026-09-20', p:'P2', week:'Septiembre',
+    detail:'Score compuesto rep (puntualidad, calidad, geofence). Brand-side puede preferir reps top-rated. Apela disputas.' },
+  { lane:'gtm', title:'500 misiones / semana', start:'2026-09-15', end:'2026-09-30', p:'P1', week:'Septiembre',
+    detail:'5x crecimiento vs julio. Implica 15 brands + 200 reps. Métrica para ronda institucional.' },
+
+  // ----- Mes 6 (octubre) -----
+  { lane:'producto', title:'Insights products (share-of-shelf)', start:'2026-10-01', end:'2026-10-20', p:'P1', week:'Octubre',
+    detail:'Producto data: brands compran reportes agregados de share-of-shelf, precio competidor, presencia. Margen alto, no por misión.' },
+  { lane:'gtm', title:'Decisión seed institucional ($7-15M MXN)', start:'2026-10-10', end:'2026-10-31', p:'P0', week:'Octubre',
+    detail:'Basado en métricas Q3 (volumen, retención brand, NPS rep, margen). Si rojo: bootstrap más con flujo Time Tracker.' },
+  { lane:'producto', title:'Roadmap 2027', start:'2026-10-20', end:'2026-10-31', p:'P2', week:'Octubre',
+    detail:'Estratégico. Plan multi-país (Colombia? Perú?), retail audit como producto enterprise, integraciones SAP/Oracle BI.' },
+];
+
+// ============================================================
+// RENDER
+// ============================================================
+let currentMode = 'month';
+
+function dateLabel(d) {
+  const months = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
+  return `${d.getDate()} ${months[d.getMonth()]}`;
+}
+
+function renderAxis(mode) {
+  const axis = document.getElementById('axis');
+  axis.innerHTML = '';
+  if (mode === 'month') {
+    // Months: May, Jun, Jul, Aug, Sep, Oct (6 months) + sliver for Apr 27-30
+    const cells = [];
+    // April (27-30) a sliver
+    cells.push({ label: 'Abr (sem 0)', start: new Date('2026-04-27'), end: new Date('2026-05-01') });
+    cells.push({ label: 'Mayo',       start: new Date('2026-05-01'), end: new Date('2026-06-01') });
+    cells.push({ label: 'Junio',      start: new Date('2026-06-01'), end: new Date('2026-07-01') });
+    cells.push({ label: 'Julio',      start: new Date('2026-07-01'), end: new Date('2026-08-01') });
+    cells.push({ label: 'Agosto',     start: new Date('2026-08-01'), end: new Date('2026-09-01') });
+    cells.push({ label: 'Septiembre', start: new Date('2026-09-01'), end: new Date('2026-10-01') });
+    cells.push({ label: 'Octubre',    start: new Date('2026-10-01'), end: new Date('2026-11-01') });
+    const cols = cells.map(c => {
+      const days = (c.end - c.start) / DAY_MS;
+      return `${days}fr`;
+    }).join(' ');
+    axis.style.gridTemplateColumns = `200px ${cols}`;
+    axis.innerHTML = `<div class="axis-cell lane-label" style="text-transform:none;letter-spacing:0">Track</div>` +
+      cells.map(c => `<div class="axis-cell">${c.label}</div>`).join('');
+  } else {
+    // Weekly: 8 weeks starting from week of Apr 27
+    const cells = [];
+    const startWeek = new Date('2026-04-27');
+    for (let i = 0; i < 9; i++) {
+      const s = new Date(startWeek.getTime() + i*7*DAY_MS);
+      const e = new Date(s.getTime() + 7*DAY_MS);
+      const label = i === 0 ? `Sem 0 · ${dateLabel(s)}` : `Sem ${i} · ${dateLabel(s)}`;
+      cells.push({ label, start: s, end: e });
+    }
+    const cols = cells.map(() => '1fr').join(' ');
+    axis.style.gridTemplateColumns = `200px ${cols}`;
+    axis.innerHTML = `<div class="axis-cell lane-label" style="text-transform:none;letter-spacing:0">Track</div>` +
+      cells.map(c => `<div class="axis-cell">${c.label}</div>`).join('');
+  }
+}
+
+function getViewBounds() {
+  if (currentMode === 'month') {
+    return { start: TIMELINE_START, end: TIMELINE_END };
+  }
+  // 8 weeks + sliver of week 0
+  const start = new Date('2026-04-27');
+  const end = new Date(start.getTime() + 9 * 7 * DAY_MS);
+  return { start, end };
+}
+
+function renderLanes() {
+  const bounds = getViewBounds();
+  const total = (bounds.end - bounds.start) / DAY_MS;
+  const lanes = document.getElementById('lanes');
+  lanes.innerHTML = '';
+
+  LANES.forEach(lane => {
+    const items = MILESTONES.filter(m => m.lane === lane.id);
+    const row = document.createElement('div');
+    row.className = `lane-row lane-${lane.id} grid week-bg`;
+    // match grid cols of axis: 200px + N flex cols. We just stretch using 1fr.
+    row.style.gridTemplateColumns = `200px 1fr`;
+    row.style.minHeight = '110px';
+
+    // label
+    const label = document.createElement('div');
+    label.className = 'lane-label flex items-center px-4 py-3';
+    label.innerHTML = `
+      <div class="flex items-center gap-3">
+        <span class="w-2.5 h-2.5 rounded-full" style="background:${lane.color}"></span>
+        <span class="font-display font-semibold text-brand-navy text-sm">${lane.label}</span>
+      </div>
+    `;
+    row.appendChild(label);
+
+    // track area
+    const track = document.createElement('div');
+    track.className = 'relative';
+    track.style.minHeight = '110px';
+
+    items.forEach((m, idx) => {
+      const ms = new Date(m.start);
+      const me = new Date(m.end);
+      // Skip items outside view range
+      if (me < bounds.start || ms > bounds.end) return;
+
+      const clampedStart = ms < bounds.start ? bounds.start : ms;
+      const clampedEnd   = me > bounds.end   ? bounds.end   : me;
+
+      const left = ((clampedStart - bounds.start) / DAY_MS / total) * 100;
+      const width = Math.max(((clampedEnd - clampedStart) / DAY_MS / total) * 100, 2);
+
+      const card = document.createElement('div');
+      card.className = `milestone ${m.p === 'P0' ? 'is-p0' : ''}`;
+      card.style.left = left + '%';
+      card.style.width = width + '%';
+
+      // Stack vertically inside lane based on overlap
+      const verticalSlot = (idx % 3);
+      card.style.top = (verticalSlot === 0 ? '50%' : verticalSlot === 1 ? '22%' : '78%');
+      card.style.transform = 'translateY(-50%)';
+
+      const priColor = m.p === 'P0' ? '#FF6B35' : (m.p === 'P1' ? '#0A2540' : '#94a3b8');
+      card.innerHTML = `<span class="pri" style="color:${priColor}">${m.p}</span>${m.title}`;
+      card.title = m.title;
+      card.addEventListener('click', () => openModal(m, lane));
+      track.appendChild(card);
+    });
+
+    row.appendChild(track);
+    lanes.appendChild(row);
+  });
+
+  positionTodayMarker(bounds);
+}
+
+function positionTodayMarker(bounds) {
+  const total = (bounds.end - bounds.start) / DAY_MS;
+  const offset = (TODAY - bounds.start) / DAY_MS;
+  if (offset < 0 || offset > total) {
+    document.getElementById('today').style.display = 'none';
+    return;
+  }
+  document.getElementById('today').style.display = 'block';
+  const labelW = 200;
+  const containerW = document.getElementById('timeline-grid').offsetWidth;
+  const trackW = containerW - labelW;
+  const px = labelW + (offset / total) * trackW;
+  document.getElementById('today').style.left = px + 'px';
+}
+
+function openModal(m, lane) {
+  document.getElementById('modal-track').textContent = lane.label;
+  document.getElementById('modal-track').style.color = lane.color;
+  document.getElementById('modal-title').textContent = m.title;
+  const fmt = (s) => {
+    const d = new Date(s);
+    return `${d.getDate()} ${['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'][d.getMonth()]}`;
+  };
+  document.getElementById('modal-week').textContent = `${m.week} · ${fmt(m.start)} → ${fmt(m.end)} · prioridad ${m.p}`;
+  document.getElementById('modal-detail').textContent = m.detail;
+  document.getElementById('modal').classList.add('open');
+}
+function closeModal() {
+  document.getElementById('modal').classList.remove('open');
+}
+
+function setMode(mode) {
+  currentMode = mode;
+  document.getElementById('btn-month').className = mode === 'month'
+    ? 'px-4 py-2 text-sm font-semibold rounded-md bg-brand-navy text-white'
+    : 'px-4 py-2 text-sm font-semibold rounded-md text-brand-navy/70 hover:text-brand-navy';
+  document.getElementById('btn-week').className = mode === 'week'
+    ? 'px-4 py-2 text-sm font-semibold rounded-md bg-brand-navy text-white'
+    : 'px-4 py-2 text-sm font-semibold rounded-md text-brand-navy/70 hover:text-brand-navy';
+  // Adjust min-width of the grid for week mode (more breathing room)
+  const grid = document.getElementById('timeline-grid');
+  grid.style.minWidth = mode === 'week' ? '1800px' : '1600px';
+  renderAxis(mode);
+  renderLanes();
+}
+
+document.getElementById('btn-month').addEventListener('click', () => setMode('month'));
+document.getElementById('btn-week').addEventListener('click', () => setMode('week'));
+window.addEventListener('resize', () => positionTodayMarker(getViewBounds()));
+document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeModal(); });
+
+setMode('month');
+</script>
+</body>
+</html>

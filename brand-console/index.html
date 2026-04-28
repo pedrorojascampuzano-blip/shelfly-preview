@@ -1,0 +1,1198 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Shelfly · Brand Console — Bebida Viva</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        colors: {
+          orange: {
+            50:  '#FFF1EA',
+            100: '#FFDFCC',
+            200: '#FFC09E',
+            300: '#FF9A6B',
+            400: '#FF824A',
+            500: '#FF6B35',  /* brand */
+            600: '#E5541F',
+            700: '#B83F14',
+          },
+          navy: {
+            50:  '#EEF2F7',
+            100: '#D6DEEA',
+            200: '#A6B5CC',
+            300: '#5A6F90',
+            400: '#22416B',
+            500: '#0A2540',  /* brand */
+            600: '#081C32',
+            700: '#051322',
+          },
+          cream: {
+            50:  '#FFFCF8',
+            100: '#FFF8F3',  /* brand */
+            200: '#F8EFE5',
+            300: '#EDE0D0',
+          },
+          ink: {
+            DEFAULT: '#0A2540',
+            soft:    '#3E4F6B',
+            muted:   '#6B7A93',
+            faint:   '#9BA7BC',
+          },
+          line:   '#E8E0D2',
+          line2:  '#EDE6D7',
+          good:   '#1F8A5B',
+          goodBg: '#E6F4ED',
+          warn:   '#C97A0F',
+          warnBg: '#FBEFD8',
+          bad:    '#B91C1C',
+          badBg:  '#FBE6E6',
+        },
+        fontFamily: {
+          sans:    ['Inter', 'system-ui', 'sans-serif'],
+          display: ['"Space Grotesk"', 'Inter', 'sans-serif'],
+          mono:    ['"JetBrains Mono"', 'ui-monospace', 'monospace'],
+        },
+        boxShadow: {
+          soft: '0 1px 0 rgba(10,37,64,0.04), 0 1px 2px rgba(10,37,64,0.04)',
+          lift: '0 8px 24px -8px rgba(10,37,64,0.12), 0 2px 4px rgba(10,37,64,0.04)',
+        },
+      }
+    }
+  }
+</script>
+
+<style>
+  html, body { background: #FFF8F3; color: #0A2540; font-family: 'Inter', sans-serif; }
+  .num { font-family: 'JetBrains Mono', ui-monospace, monospace; font-feature-settings: 'tnum' 1, 'zero' 1; }
+  .display { font-family: 'Space Grotesk', sans-serif; letter-spacing: -0.01em; }
+  .hairline { border-color: #E8E0D2; }
+  .lift { transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease; }
+  .lift:hover { transform: translateY(-2px); box-shadow: 0 8px 24px -8px rgba(10,37,64,0.12), 0 2px 4px rgba(10,37,64,0.04); border-color: #D6CDB9; }
+  .nav-item { transition: background-color .12s ease, color .12s ease; }
+  .nav-item:hover { background-color: #FFF8F3; color: #0A2540; }
+  .pill-tab { transition: color .15s ease, background-color .15s ease, border-color .15s ease; }
+  .row-hover:hover { background-color: #FFFCF8; }
+  .map-pin { transition: transform .15s ease; transform-origin: center bottom; cursor: pointer; }
+  .map-pin:hover { transform: scale(1.25); }
+  .scrollbar-thin::-webkit-scrollbar { height: 6px; width: 6px; }
+  .scrollbar-thin::-webkit-scrollbar-thumb { background: #EDE0D0; border-radius: 3px; }
+  /* focus */
+  button:focus-visible, a:focus-visible, input:focus-visible {
+    outline: 2px solid #FF6B35; outline-offset: 2px; border-radius: 6px;
+  }
+  /* modal */
+  .modal-backdrop { background: rgba(10, 37, 64, 0.45); backdrop-filter: blur(4px); }
+  /* small dot pulse for active mission */
+  @keyframes pulse-ring {
+    0%   { box-shadow: 0 0 0 0 rgba(255,107,53,.45); }
+    70%  { box-shadow: 0 0 0 8px rgba(255,107,53,0); }
+    100% { box-shadow: 0 0 0 0 rgba(255,107,53,0); }
+  }
+  .pulse-dot { animation: pulse-ring 2s infinite; }
+</style>
+</head>
+<body class="min-h-screen">
+
+<!-- ============== TOP BAR ============== -->
+<header class="fixed top-0 inset-x-0 z-40 h-14 bg-cream-100/95 backdrop-blur border-b hairline">
+  <div class="h-full px-5 flex items-center gap-6">
+
+    <!-- Logo -->
+    <div class="flex items-center gap-2 shrink-0">
+      <div class="w-8 h-8 rounded-lg bg-navy-500 flex items-center justify-center">
+        <!-- Shelf icon -->
+        <svg viewBox="0 0 24 24" class="w-4 h-4 text-orange-500" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M3 6h18"/><path d="M3 12h18"/><path d="M3 18h18"/>
+          <path d="M6 6v6"/><path d="M14 6v6"/><path d="M9 12v6"/><path d="M17 12v6"/>
+        </svg>
+      </div>
+      <span class="display text-[19px] font-bold text-navy-500 tracking-tight">Shelfly</span>
+    </div>
+
+    <!-- Portfolio switcher -->
+    <div class="hidden md:flex flex-col items-center mx-auto">
+      <span class="text-[10px] uppercase tracking-[0.18em] text-ink-faint mb-0.5">Portafolio retail ops</span>
+      <nav class="flex items-center gap-1 text-sm">
+        <button data-product="tt" class="pill-tab px-3 py-1 rounded-full text-ink-muted hover:text-ink-soft hover:bg-cream-200 font-medium">Time Tracker</button>
+        <span class="text-line">·</span>
+        <button data-product="sc" class="pill-tab px-3 py-1 rounded-full text-ink-muted hover:text-ink-soft hover:bg-cream-200 font-medium">Storecheck</button>
+        <span class="text-line">·</span>
+        <button data-product="sh" class="pill-tab px-3 py-1 rounded-full text-navy-500 font-semibold relative">
+          Shelfly
+          <span class="absolute left-3 right-3 -bottom-[7px] h-[2px] bg-orange-500 rounded-full"></span>
+        </button>
+      </nav>
+    </div>
+
+    <!-- Right cluster -->
+    <div class="flex items-center gap-2 ml-auto">
+      <div class="hidden md:flex items-center gap-2 bg-cream-200/70 border hairline rounded-lg px-2.5 py-1.5 w-64">
+        <svg viewBox="0 0 24 24" class="w-3.5 h-3.5 text-ink-faint" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+        <input type="text" placeholder="Buscar misión, rep, PDV…" class="bg-transparent text-sm text-ink-soft placeholder:text-ink-faint w-full focus:outline-none" />
+        <kbd class="hidden lg:inline text-[10px] num text-ink-faint bg-cream-50 border hairline rounded px-1 py-0.5">⌘K</kbd>
+      </div>
+
+      <button class="relative w-9 h-9 rounded-lg hover:bg-cream-200 flex items-center justify-center text-ink-soft" aria-label="Notificaciones">
+        <svg viewBox="0 0 24 24" class="w-[18px] h-[18px]" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/>
+          <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/>
+        </svg>
+        <span class="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-orange-500 ring-2 ring-cream-100"></span>
+      </button>
+
+      <div class="flex items-center gap-2 pl-2 border-l hairline ml-1">
+        <div class="w-8 h-8 rounded-full bg-gradient-to-br from-orange-500 to-orange-600 text-white text-xs font-semibold flex items-center justify-center">BV</div>
+        <div class="hidden sm:flex flex-col leading-tight">
+          <span class="text-xs font-semibold text-navy-500">Karla Fernández</span>
+          <span class="text-[10px] text-ink-faint">Brand Manager</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- ============== SIDE NAV ============== -->
+<aside class="fixed top-14 bottom-0 left-0 w-60 bg-cream-50 border-r hairline hidden md:flex flex-col z-30">
+  <!-- Brand badge -->
+  <div class="p-4 border-b hairline">
+    <div class="flex items-center gap-3">
+      <div class="w-10 h-10 rounded-md bg-navy-500 text-cream-100 flex items-center justify-center display font-bold text-sm tracking-tight">BV</div>
+      <div class="flex flex-col leading-tight min-w-0">
+        <span class="text-sm font-semibold text-navy-500 truncate">Bebida Viva</span>
+        <span class="flex items-center gap-1.5 mt-0.5">
+          <span class="text-[10px] uppercase tracking-wider px-1.5 py-0.5 rounded bg-orange-50 text-orange-600 font-semibold">Pro</span>
+          <span class="text-[10px] text-ink-faint num">+900 PDVs</span>
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Nav -->
+  <nav class="flex-1 px-2 py-3 space-y-0.5 text-sm">
+    <a href="#" class="nav-item relative flex items-center gap-2.5 px-3 py-2 rounded-md font-medium text-navy-500 bg-cream-200">
+      <span class="absolute left-0 top-1.5 bottom-1.5 w-[3px] rounded-r-full bg-orange-500"></span>
+      <svg viewBox="0 0 24 24" class="w-4 h-4 text-orange-500" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg>
+      Dashboard
+    </a>
+
+    <a href="#" class="nav-item flex items-center justify-between gap-2.5 px-3 py-2 rounded-md text-ink-soft">
+      <span class="flex items-center gap-2.5">
+        <svg viewBox="0 0 24 24" class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 14 4-4"/><path d="M3.34 19a10 10 0 1 1 17.32 0"/></svg>
+        Misiones
+      </span>
+      <span class="text-[10px] num font-semibold px-1.5 py-0.5 rounded-full bg-orange-50 text-orange-600">12 activas</span>
+    </a>
+
+    <a href="#" class="nav-item flex items-center gap-2.5 px-3 py-2 rounded-md text-ink-soft">
+      <svg viewBox="0 0 24 24" class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+      Reps
+    </a>
+
+    <a href="#" class="nav-item flex items-center gap-2.5 px-3 py-2 rounded-md text-ink-soft">
+      <svg viewBox="0 0 24 24" class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 19V6l-6 3v13l6-3 6 3 6-3V3l-6 3"/><path d="M9 6l6 3"/><path d="M15 9v13"/></svg>
+      Mapa
+    </a>
+
+    <a href="#" class="nav-item flex items-center justify-between gap-2.5 px-3 py-2 rounded-md text-ink-soft">
+      <span class="flex items-center gap-2.5">
+        <svg viewBox="0 0 24 24" class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 4h-9a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h13a2 2 0 0 0 2-2v-7.5"/><circle cx="8.5" cy="9.5" r="1.5"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/><path d="m17 4 4 4"/></svg>
+        Evidencias
+      </span>
+      <span class="text-[10px] num font-semibold px-1.5 py-0.5 rounded-full bg-cream-200 text-navy-400">8 nuevas</span>
+    </a>
+
+    <a href="#" class="nav-item flex items-center gap-2.5 px-3 py-2 rounded-md text-ink-soft">
+      <svg viewBox="0 0 24 24" class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M7 16l4-7 4 4 5-9"/></svg>
+      Reportes
+    </a>
+
+    <div class="pt-3 mt-3 border-t hairline space-y-0.5">
+      <a href="#" class="nav-item flex items-center gap-2.5 px-3 py-2 rounded-md text-ink-soft">
+        <svg viewBox="0 0 24 24" class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.6 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+        Configuración
+      </a>
+    </div>
+  </nav>
+
+  <!-- Footer -->
+  <div class="p-3 border-t hairline space-y-2">
+    <a href="#" class="flex items-center gap-2 px-2 py-1.5 rounded text-xs text-ink-muted hover:text-navy-500">
+      <svg viewBox="0 0 24 24" class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg>
+      Soporte
+    </a>
+    <div class="flex items-center justify-between text-[10px] text-ink-faint num px-2">
+      <span>v2.4 [VALIDAR]</span>
+      <span class="flex items-center gap-1">
+        <span class="w-1.5 h-1.5 rounded-full bg-good"></span> ok
+      </span>
+    </div>
+  </div>
+</aside>
+
+<!-- ============== MAIN ============== -->
+<main class="md:ml-60 pt-14">
+  <div class="px-6 lg:px-12 py-8 lg:py-10 max-w-[1480px] mx-auto">
+
+    <!-- 3a Header strip -->
+    <section class="flex items-end justify-between gap-6 mb-8">
+      <div class="min-w-0">
+        <p class="text-xs text-ink-muted mb-1.5">Lunes 27 de abril · Semana 18</p>
+        <h1 class="display text-3xl lg:text-[34px] font-bold text-navy-500 leading-tight">Buenos días, Karla</h1>
+        <p class="text-sm text-ink-soft mt-1.5">
+          <span class="font-semibold text-navy-500">Bebida Viva</span>
+          <span class="text-ink-faint">·</span>
+          CDMX · Bajío · Norte
+          <span class="text-ink-faint mx-1.5">·</span>
+          <span class="num text-ink-muted">912 PDVs activos</span>
+        </p>
+      </div>
+
+      <button id="open-modal" class="group inline-flex items-center gap-2.5 bg-orange-500 hover:bg-orange-600 active:bg-orange-700 text-white px-5 py-3 rounded-xl shadow-lift font-semibold text-sm transition-colors">
+        <svg viewBox="0 0 24 24" class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M12 5v14"/><path d="M5 12h14"/></svg>
+        Crear misión
+        <kbd class="hidden lg:inline text-[10px] num font-semibold bg-white/15 px-1.5 py-0.5 rounded ml-1">N</kbd>
+      </button>
+    </section>
+
+    <!-- 3b KPI Grid -->
+    <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-10">
+
+      <!-- KPI 1 -->
+      <article class="lift bg-white border hairline rounded-2xl p-6">
+        <header class="flex items-center justify-between mb-3">
+          <span class="text-xs uppercase tracking-wider text-ink-muted font-semibold">Misiones activas</span>
+          <span class="w-7 h-7 rounded-md bg-orange-50 text-orange-600 flex items-center justify-center">
+            <svg viewBox="0 0 24 24" class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+          </span>
+        </header>
+        <div class="flex items-baseline gap-2">
+          <span class="num text-6xl lg:text-7xl font-semibold text-navy-500 leading-none tracking-tight">12</span>
+          <span class="text-sm text-ink-faint mb-1">activas</span>
+        </div>
+        <footer class="mt-4 pt-3 border-t hairline flex items-center justify-between text-xs">
+          <span class="inline-flex items-center gap-1 text-good font-medium">
+            <svg viewBox="0 0 24 24" class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 12 18 12"/><polyline points="14 6 20 12 14 18"/></svg>
+            +3 esta semana
+          </span>
+          <span class="text-ink-faint">12 reps asignados</span>
+        </footer>
+      </article>
+
+      <!-- KPI 2 -->
+      <article class="lift bg-white border hairline rounded-2xl p-6">
+        <header class="flex items-center justify-between mb-3">
+          <span class="text-xs uppercase tracking-wider text-ink-muted font-semibold">Fill rate</span>
+          <span class="w-7 h-7 rounded-md bg-cream-200 text-navy-400 flex items-center justify-center">
+            <svg viewBox="0 0 24 24" class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M7 14l3-3 4 4 6-7"/></svg>
+          </span>
+        </header>
+        <div class="flex items-baseline gap-2">
+          <span class="num text-6xl lg:text-7xl font-semibold text-navy-500 leading-none tracking-tight">82</span>
+          <span class="num text-3xl text-ink-soft font-medium leading-none">%</span>
+        </div>
+        <!-- Mini sparkline -->
+        <div class="mt-4">
+          <svg viewBox="0 0 200 32" class="w-full h-7" preserveAspectRatio="none">
+            <defs>
+              <linearGradient id="g1" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#FF6B35" stop-opacity="0.25"/>
+                <stop offset="100%" stop-color="#FF6B35" stop-opacity="0"/>
+              </linearGradient>
+            </defs>
+            <path d="M0,24 L18,22 L36,25 L54,20 L72,21 L90,17 L108,19 L126,14 L144,12 L162,9 L180,8 L200,4 L200,32 L0,32 Z" fill="url(#g1)"/>
+            <path d="M0,24 L18,22 L36,25 L54,20 L72,21 L90,17 L108,19 L126,14 L144,12 L162,9 L180,8 L200,4" fill="none" stroke="#FF6B35" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <footer class="mt-3 pt-3 border-t hairline flex items-center justify-between text-xs">
+          <span class="text-ink-soft">vs <span class="num text-ink-faint">71%</span> hace 30d</span>
+          <span class="text-good font-medium num">+11 pts</span>
+        </footer>
+      </article>
+
+      <!-- KPI 3 -->
+      <article class="lift bg-white border hairline rounded-2xl p-6">
+        <header class="flex items-center justify-between mb-3">
+          <span class="text-xs uppercase tracking-wider text-ink-muted font-semibold">Evidencias validadas</span>
+          <span class="w-7 h-7 rounded-md bg-cream-200 text-navy-400 flex items-center justify-center">
+            <svg viewBox="0 0 24 24" class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="9.5" r="1.5"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>
+          </span>
+        </header>
+        <div class="flex items-baseline gap-2">
+          <span class="num text-6xl lg:text-7xl font-semibold text-navy-500 leading-none tracking-tight">247</span>
+          <span class="text-sm text-ink-faint mb-1">/ mes</span>
+        </div>
+        <footer class="mt-4 pt-3 border-t hairline flex items-center justify-between text-xs">
+          <span class="text-ink-soft num"><span class="font-semibold text-good">94%</span> al 1er review</span>
+          <span class="text-ink-faint">8 pendientes</span>
+        </footer>
+      </article>
+
+      <!-- KPI 4 -->
+      <article class="lift bg-white border hairline rounded-2xl p-6">
+        <header class="flex items-center justify-between mb-3">
+          <span class="text-xs uppercase tracking-wider text-ink-muted font-semibold">GMV mes</span>
+          <span class="w-7 h-7 rounded-md bg-cream-200 text-navy-400 flex items-center justify-center">
+            <svg viewBox="0 0 24 24" class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+          </span>
+        </header>
+        <div class="flex items-baseline gap-1">
+          <span class="num text-3xl text-ink-muted font-medium leading-none">$</span>
+          <span class="num text-6xl lg:text-7xl font-semibold text-navy-500 leading-none tracking-tight">48,300</span>
+        </div>
+        <p class="text-xs text-ink-faint num mt-1">MXN · payouts a reps</p>
+        <footer class="mt-3 pt-3 border-t hairline flex items-center justify-between text-xs">
+          <span class="text-good font-medium num">+12.4%</span>
+          <span class="text-ink-faint">vs mes pasado</span>
+        </footer>
+      </article>
+    </section>
+
+    <!-- 3c Misión activa -->
+    <section class="mb-10">
+      <div class="flex items-center justify-between mb-4">
+        <div class="flex items-center gap-3">
+          <h2 class="display text-xl font-semibold text-navy-500">Misión recién validada</h2>
+          <span class="inline-flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-wider text-good bg-goodBg px-2 py-1 rounded-full">
+            <span class="relative w-1.5 h-1.5 rounded-full bg-good pulse-dot"></span>
+            En vivo
+          </span>
+        </div>
+        <a href="#" class="text-sm text-ink-soft hover:text-navy-500 font-medium">Ver historial completo →</a>
+      </div>
+
+      <article class="bg-white border hairline rounded-2xl overflow-hidden grid md:grid-cols-2 gap-0">
+
+        <!-- Antes / Después -->
+        <div class="grid grid-cols-2 gap-1 bg-cream-200 p-1 md:border-r hairline">
+          <!-- ANTES -->
+          <figure class="relative bg-cream-100 rounded-lg overflow-hidden aspect-[4/5] flex flex-col">
+            <div class="absolute top-2.5 left-2.5 z-10">
+              <span class="text-[10px] font-semibold uppercase tracking-[0.18em] bg-navy-500 text-cream-100 px-2 py-1 rounded">Antes</span>
+            </div>
+            <span class="absolute top-2.5 right-2.5 z-10 num text-[10px] text-cream-50 bg-navy-500/80 px-1.5 py-0.5 rounded">14:32</span>
+
+            <!-- SVG illustration: messy shelf -->
+            <svg viewBox="0 0 200 250" class="w-full h-full" preserveAspectRatio="xMidYMid slice">
+              <rect width="200" height="250" fill="#F8EFE5"/>
+              <!-- back wall -->
+              <rect x="0" y="0" width="200" height="180" fill="#EDE0D0"/>
+              <!-- shelves -->
+              <rect x="10" y="55"  width="180" height="3" fill="#0A2540"/>
+              <rect x="10" y="110" width="180" height="3" fill="#0A2540"/>
+              <rect x="10" y="165" width="180" height="3" fill="#0A2540"/>
+              <!-- floor -->
+              <rect x="0" y="180" width="200" height="70" fill="#D6CDB9"/>
+
+              <!-- bottles row 1 (messy: gaps + tilted) -->
+              <g transform="translate(20,16)">
+                <rect x="0"  y="2"  width="10" height="38" fill="#FF824A" rx="1.5" transform="rotate(-8 5 21)"/>
+                <rect x="14" y="0"  width="10" height="40" fill="#FF6B35" rx="1.5"/>
+                <rect x="44" y="3"  width="10" height="37" fill="#FF824A" rx="1.5"/>
+                <!-- gap -->
+                <rect x="86" y="0"  width="10" height="40" fill="#FF6B35" rx="1.5"/>
+                <rect x="100" y="2"  width="10" height="38" fill="#FF824A" rx="1.5" transform="rotate(6 105 21)"/>
+                <!-- gap -->
+                <rect x="142" y="0"  width="10" height="40" fill="#FF6B35" rx="1.5"/>
+              </g>
+              <!-- row 2 (sparse) -->
+              <g transform="translate(20,71)">
+                <rect x="0"   y="0" width="10" height="40" fill="#1F8A5B" rx="1.5"/>
+                <rect x="28"  y="0" width="10" height="40" fill="#1F8A5B" rx="1.5"/>
+                <rect x="56"  y="0" width="10" height="40" fill="#1F8A5B" rx="1.5"/>
+                <!-- big gap, shelf empty -->
+                <rect x="158" y="0" width="10" height="40" fill="#1F8A5B" rx="1.5"/>
+              </g>
+              <!-- row 3 -->
+              <g transform="translate(20,126)">
+                <rect x="0"  y="2" width="10" height="38" fill="#0A2540" rx="1.5" transform="rotate(-12 5 21)"/>
+                <rect x="14" y="0" width="10" height="40" fill="#22416B" rx="1.5"/>
+                <!-- gap -->
+                <rect x="70" y="0" width="10" height="40" fill="#0A2540" rx="1.5"/>
+                <rect x="84" y="0" width="10" height="40" fill="#22416B" rx="1.5"/>
+                <rect x="98" y="3" width="10" height="37" fill="#0A2540" rx="1.5" transform="rotate(8 103 21)"/>
+              </g>
+              <!-- price tag misaligned -->
+              <rect x="60" y="172" width="22" height="9" fill="#FF6B35" rx="1" transform="rotate(-6 71 176)"/>
+              <rect x="125" y="172" width="22" height="9" fill="#FFC09E" rx="1"/>
+              <!-- shadow / vignette -->
+              <rect x="0" y="180" width="200" height="6" fill="#0A2540" opacity="0.06"/>
+            </svg>
+
+            <figcaption class="absolute inset-x-0 bottom-0 px-3 py-1.5 bg-gradient-to-t from-navy-500/85 to-transparent">
+              <p class="text-[10px] num text-cream-100">Anaquel inicial · 4 facings · 2 OOS</p>
+            </figcaption>
+          </figure>
+
+          <!-- DESPUÉS -->
+          <figure class="relative bg-cream-100 rounded-lg overflow-hidden aspect-[4/5] flex flex-col">
+            <div class="absolute top-2.5 left-2.5 z-10">
+              <span class="text-[10px] font-semibold uppercase tracking-[0.18em] bg-orange-500 text-white px-2 py-1 rounded">Después</span>
+            </div>
+            <span class="absolute top-2.5 right-2.5 z-10 num text-[10px] text-cream-50 bg-navy-500/80 px-1.5 py-0.5 rounded">14:48</span>
+
+            <!-- SVG: tidy shelf -->
+            <svg viewBox="0 0 200 250" class="w-full h-full" preserveAspectRatio="xMidYMid slice">
+              <rect width="200" height="250" fill="#F8EFE5"/>
+              <rect x="0" y="0" width="200" height="180" fill="#EDE0D0"/>
+              <rect x="10" y="55"  width="180" height="3" fill="#0A2540"/>
+              <rect x="10" y="110" width="180" height="3" fill="#0A2540"/>
+              <rect x="10" y="165" width="180" height="3" fill="#0A2540"/>
+              <rect x="0" y="180" width="200" height="70" fill="#D6CDB9"/>
+
+              <!-- row 1: full, aligned -->
+              <g transform="translate(20,16)">
+                <rect x="0"   y="0" width="10" height="40" fill="#FF6B35" rx="1.5"/>
+                <rect x="14"  y="0" width="10" height="40" fill="#FF6B35" rx="1.5"/>
+                <rect x="28"  y="0" width="10" height="40" fill="#FF824A" rx="1.5"/>
+                <rect x="42"  y="0" width="10" height="40" fill="#FF6B35" rx="1.5"/>
+                <rect x="56"  y="0" width="10" height="40" fill="#FF824A" rx="1.5"/>
+                <rect x="70"  y="0" width="10" height="40" fill="#FF6B35" rx="1.5"/>
+                <rect x="84"  y="0" width="10" height="40" fill="#FF824A" rx="1.5"/>
+                <rect x="98"  y="0" width="10" height="40" fill="#FF6B35" rx="1.5"/>
+                <rect x="112" y="0" width="10" height="40" fill="#FF824A" rx="1.5"/>
+                <rect x="126" y="0" width="10" height="40" fill="#FF6B35" rx="1.5"/>
+                <rect x="140" y="0" width="10" height="40" fill="#FF824A" rx="1.5"/>
+                <rect x="154" y="0" width="10" height="40" fill="#FF6B35" rx="1.5"/>
+              </g>
+              <!-- row 2 -->
+              <g transform="translate(20,71)">
+                <rect x="0"   y="0" width="10" height="40" fill="#1F8A5B" rx="1.5"/>
+                <rect x="14"  y="0" width="10" height="40" fill="#1F8A5B" rx="1.5"/>
+                <rect x="28"  y="0" width="10" height="40" fill="#22416B" rx="1.5"/>
+                <rect x="42"  y="0" width="10" height="40" fill="#1F8A5B" rx="1.5"/>
+                <rect x="56"  y="0" width="10" height="40" fill="#22416B" rx="1.5"/>
+                <rect x="70"  y="0" width="10" height="40" fill="#1F8A5B" rx="1.5"/>
+                <rect x="84"  y="0" width="10" height="40" fill="#22416B" rx="1.5"/>
+                <rect x="98"  y="0" width="10" height="40" fill="#1F8A5B" rx="1.5"/>
+                <rect x="112" y="0" width="10" height="40" fill="#22416B" rx="1.5"/>
+                <rect x="126" y="0" width="10" height="40" fill="#1F8A5B" rx="1.5"/>
+                <rect x="140" y="0" width="10" height="40" fill="#22416B" rx="1.5"/>
+                <rect x="154" y="0" width="10" height="40" fill="#1F8A5B" rx="1.5"/>
+              </g>
+              <!-- row 3 -->
+              <g transform="translate(20,126)">
+                <rect x="0"   y="0" width="10" height="40" fill="#0A2540" rx="1.5"/>
+                <rect x="14"  y="0" width="10" height="40" fill="#22416B" rx="1.5"/>
+                <rect x="28"  y="0" width="10" height="40" fill="#0A2540" rx="1.5"/>
+                <rect x="42"  y="0" width="10" height="40" fill="#22416B" rx="1.5"/>
+                <rect x="56"  y="0" width="10" height="40" fill="#0A2540" rx="1.5"/>
+                <rect x="70"  y="0" width="10" height="40" fill="#22416B" rx="1.5"/>
+                <rect x="84"  y="0" width="10" height="40" fill="#0A2540" rx="1.5"/>
+                <rect x="98"  y="0" width="10" height="40" fill="#22416B" rx="1.5"/>
+                <rect x="112" y="0" width="10" height="40" fill="#0A2540" rx="1.5"/>
+                <rect x="126" y="0" width="10" height="40" fill="#22416B" rx="1.5"/>
+                <rect x="140" y="0" width="10" height="40" fill="#0A2540" rx="1.5"/>
+                <rect x="154" y="0" width="10" height="40" fill="#22416B" rx="1.5"/>
+              </g>
+              <!-- price tags aligned -->
+              <rect x="22" y="172" width="22" height="9" fill="#FF6B35" rx="1"/>
+              <rect x="89" y="172" width="22" height="9" fill="#FF6B35" rx="1"/>
+              <rect x="156" y="172" width="22" height="9" fill="#FF6B35" rx="1"/>
+              <rect x="0" y="180" width="200" height="6" fill="#0A2540" opacity="0.06"/>
+            </svg>
+
+            <figcaption class="absolute inset-x-0 bottom-0 px-3 py-1.5 bg-gradient-to-t from-navy-500/85 to-transparent">
+              <p class="text-[10px] num text-cream-100">Anaquel ejecutado · 12 facings · 0 OOS</p>
+            </figcaption>
+          </figure>
+        </div>
+
+        <!-- Detalle -->
+        <div class="p-6 lg:p-8 flex flex-col">
+          <div class="flex items-start justify-between gap-3 mb-1">
+            <span class="num text-[11px] text-ink-faint">SHF-2814</span>
+            <span class="inline-flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-wider text-good bg-goodBg px-2 py-1 rounded-full">
+              <svg viewBox="0 0 24 24" class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+              Validada
+            </span>
+          </div>
+
+          <h3 class="display text-2xl font-semibold text-navy-500 leading-tight">Reposición Bebida Viva limón</h3>
+          <p class="text-sm text-ink-soft mt-1">12 facings · planograma A-3 · OOS reportado por el rep al inicio</p>
+
+          <!-- Grid datos -->
+          <dl class="grid grid-cols-2 gap-x-6 gap-y-4 mt-7 pt-6 border-t hairline">
+            <div>
+              <dt class="text-[10px] uppercase tracking-wider text-ink-faint font-semibold mb-1.5">Rep</dt>
+              <dd class="flex items-center gap-2">
+                <div class="w-7 h-7 rounded-full bg-navy-100 text-navy-500 text-[11px] font-semibold flex items-center justify-center">DM</div>
+                <div class="leading-tight">
+                  <p class="text-sm font-semibold text-navy-500">Daniel M.</p>
+                  <p class="num text-[11px] text-ink-muted flex items-center gap-1">
+                    <svg viewBox="0 0 24 24" class="w-2.5 h-2.5 text-orange-500" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                    4.92 · 318 misiones
+                  </p>
+                </div>
+              </dd>
+            </div>
+
+            <div>
+              <dt class="text-[10px] uppercase tracking-wider text-ink-faint font-semibold mb-1.5">Geo</dt>
+              <dd class="text-sm text-navy-500 leading-tight">
+                Tienda La Esquina
+                <p class="text-[11px] text-ink-muted mt-0.5">Roma Norte · Cuauhtémoc</p>
+              </dd>
+            </div>
+
+            <div>
+              <dt class="text-[10px] uppercase tracking-wider text-ink-faint font-semibold mb-1.5">Tiempo en sitio</dt>
+              <dd class="num text-sm text-navy-500 leading-tight">
+                14:32 → 14:48
+                <p class="text-[11px] text-ink-muted mt-0.5">16 min · target ≤ 25 min</p>
+              </dd>
+            </div>
+
+            <div>
+              <dt class="text-[10px] uppercase tracking-wider text-ink-faint font-semibold mb-1.5">Payout</dt>
+              <dd class="leading-tight">
+                <span class="num text-sm font-semibold text-navy-500">$85.00 MXN</span>
+                <p class="text-[11px] text-ink-muted mt-0.5">Liberado al rep · 14:51</p>
+              </dd>
+            </div>
+          </dl>
+
+          <!-- Actions -->
+          <div class="mt-auto pt-7 flex flex-wrap gap-2">
+            <button class="inline-flex items-center gap-2 bg-navy-500 hover:bg-navy-600 text-white px-4 py-2.5 rounded-lg text-sm font-semibold transition-colors">
+              <svg viewBox="0 0 24 24" class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+              Ver evidencia completa
+            </button>
+            <button class="inline-flex items-center gap-2 border hairline hover:bg-cream-100 text-ink-soft px-4 py-2.5 rounded-lg text-sm font-medium transition-colors">
+              <svg viewBox="0 0 24 24" class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+              Reportar problema
+            </button>
+          </div>
+        </div>
+      </article>
+    </section>
+
+    <!-- 3d Tabla misiones -->
+    <section class="mb-10">
+      <div class="flex flex-wrap items-center justify-between gap-4 mb-4">
+        <h2 class="display text-xl font-semibold text-navy-500">Misiones recientes</h2>
+
+        <div class="flex flex-wrap items-center gap-1.5 bg-cream-200/60 border hairline rounded-xl p-1" id="filter-tabs">
+          <button data-filter="all"      class="filter-pill px-3 py-1.5 text-xs font-semibold rounded-lg bg-white text-navy-500 shadow-soft">Todas <span class="num text-ink-faint ml-0.5">42</span></button>
+          <button data-filter="curso"    class="filter-pill px-3 py-1.5 text-xs font-medium rounded-lg text-ink-muted hover:text-navy-500">En curso <span class="num text-ink-faint ml-0.5">5</span></button>
+          <button data-filter="valid"    class="filter-pill px-3 py-1.5 text-xs font-medium rounded-lg text-ink-muted hover:text-navy-500">Validadas <span class="num text-ink-faint ml-0.5">28</span></button>
+          <button data-filter="disp"     class="filter-pill px-3 py-1.5 text-xs font-medium rounded-lg text-ink-muted hover:text-navy-500">Disputadas <span class="num text-ink-faint ml-0.5">2</span></button>
+          <button data-filter="pend"     class="filter-pill px-3 py-1.5 text-xs font-medium rounded-lg text-ink-muted hover:text-navy-500">Pendientes <span class="num text-ink-faint ml-0.5">7</span></button>
+        </div>
+      </div>
+
+      <div class="bg-white border hairline rounded-2xl overflow-hidden">
+        <div class="overflow-x-auto scrollbar-thin">
+          <table class="w-full text-sm">
+            <thead>
+              <tr class="text-[10px] uppercase tracking-wider text-ink-muted font-semibold bg-cream-50 border-b hairline">
+                <th class="px-5 py-3 text-left font-semibold">ID</th>
+                <th class="px-5 py-3 text-left font-semibold">Tipo</th>
+                <th class="px-5 py-3 text-left font-semibold">PDV</th>
+                <th class="px-5 py-3 text-left font-semibold">Rep</th>
+                <th class="px-5 py-3 text-left font-semibold">Status</th>
+                <th class="px-5 py-3 text-left font-semibold">Geo</th>
+                <th class="px-5 py-3 text-left font-semibold">Fecha</th>
+                <th class="px-5 py-3 text-right font-semibold">Payout</th>
+                <th class="px-5 py-3 text-right font-semibold">·</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y hairline">
+
+              <!-- Row 1 -->
+              <tr class="row-hover">
+                <td class="px-5 py-3.5 num text-[12px] text-ink-muted">SHF-2814</td>
+                <td class="px-5 py-3.5"><span class="text-navy-500 font-medium">Reposición</span></td>
+                <td class="px-5 py-3.5">
+                  <p class="text-navy-500 font-medium leading-tight">Tienda La Esquina</p>
+                  <p class="text-[11px] text-ink-faint">Roma Norte</p>
+                </td>
+                <td class="px-5 py-3.5"><span class="text-ink-soft">Daniel M.</span></td>
+                <td class="px-5 py-3.5"><span class="inline-flex items-center gap-1 text-[11px] font-semibold uppercase tracking-wider text-good bg-goodBg px-2 py-0.5 rounded-full">Validada</span></td>
+                <td class="px-5 py-3.5 num text-[11px] text-ink-muted">19.412, -99.165</td>
+                <td class="px-5 py-3.5 num text-[12px] text-ink-soft">Hoy 14:48</td>
+                <td class="px-5 py-3.5 num text-right font-semibold text-navy-500">$85</td>
+                <td class="px-5 py-3.5 text-right">
+                  <button class="text-ink-faint hover:text-navy-500"><svg viewBox="0 0 24 24" class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg></button>
+                </td>
+              </tr>
+
+              <!-- Row 2 -->
+              <tr class="row-hover">
+                <td class="px-5 py-3.5 num text-[12px] text-ink-muted">SHF-2813</td>
+                <td class="px-5 py-3.5"><span class="text-navy-500 font-medium">Foto antes/después</span></td>
+                <td class="px-5 py-3.5">
+                  <p class="text-navy-500 font-medium leading-tight">OXXO Polanco Masaryk</p>
+                  <p class="text-[11px] text-ink-faint">Polanco IV</p>
+                </td>
+                <td class="px-5 py-3.5"><span class="text-ink-soft">Andrés R.</span></td>
+                <td class="px-5 py-3.5"><span class="inline-flex items-center gap-1 text-[11px] font-semibold uppercase tracking-wider text-warn bg-warnBg px-2 py-0.5 rounded-full">
+                  <span class="w-1.5 h-1.5 rounded-full bg-warn"></span> En curso
+                </span></td>
+                <td class="px-5 py-3.5 num text-[11px] text-ink-muted">19.434, -99.197</td>
+                <td class="px-5 py-3.5 num text-[12px] text-ink-soft">Hoy 14:21</td>
+                <td class="px-5 py-3.5 num text-right text-ink-muted">$75</td>
+                <td class="px-5 py-3.5 text-right">
+                  <button class="text-ink-faint hover:text-navy-500"><svg viewBox="0 0 24 24" class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg></button>
+                </td>
+              </tr>
+
+              <!-- Row 3 -->
+              <tr class="row-hover">
+                <td class="px-5 py-3.5 num text-[12px] text-ink-muted">SHF-2812</td>
+                <td class="px-5 py-3.5"><span class="text-navy-500 font-medium">Conteo SKUs</span></td>
+                <td class="px-5 py-3.5">
+                  <p class="text-navy-500 font-medium leading-tight">La Bonita Iztapalapa</p>
+                  <p class="text-[11px] text-ink-faint">Santa Cruz Meyehualco</p>
+                </td>
+                <td class="px-5 py-3.5"><span class="text-ink-soft">Sofía L.</span></td>
+                <td class="px-5 py-3.5"><span class="inline-flex items-center gap-1 text-[11px] font-semibold uppercase tracking-wider text-good bg-goodBg px-2 py-0.5 rounded-full">Validada</span></td>
+                <td class="px-5 py-3.5 num text-[11px] text-ink-muted">19.357, -99.043</td>
+                <td class="px-5 py-3.5 num text-[12px] text-ink-soft">Hoy 13:02</td>
+                <td class="px-5 py-3.5 num text-right font-semibold text-navy-500">$60</td>
+                <td class="px-5 py-3.5 text-right">
+                  <button class="text-ink-faint hover:text-navy-500"><svg viewBox="0 0 24 24" class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg></button>
+                </td>
+              </tr>
+
+              <!-- Row 4 -->
+              <tr class="row-hover">
+                <td class="px-5 py-3.5 num text-[12px] text-ink-muted">SHF-2811</td>
+                <td class="px-5 py-3.5"><span class="text-navy-500 font-medium">Planograma</span></td>
+                <td class="px-5 py-3.5">
+                  <p class="text-navy-500 font-medium leading-tight">Super Aki Coyoacán</p>
+                  <p class="text-[11px] text-ink-faint">Del Carmen</p>
+                </td>
+                <td class="px-5 py-3.5"><span class="text-ink-soft">Mauricio T.</span></td>
+                <td class="px-5 py-3.5"><span class="inline-flex items-center gap-1 text-[11px] font-semibold uppercase tracking-wider text-bad bg-badBg px-2 py-0.5 rounded-full">
+                  <svg viewBox="0 0 24 24" class="w-2.5 h-2.5" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                  Disputada
+                </span></td>
+                <td class="px-5 py-3.5 num text-[11px] text-ink-muted">19.348, -99.158</td>
+                <td class="px-5 py-3.5 num text-[12px] text-ink-soft">Hoy 11:47</td>
+                <td class="px-5 py-3.5 num text-right text-ink-muted">$110</td>
+                <td class="px-5 py-3.5 text-right">
+                  <button class="text-ink-faint hover:text-navy-500"><svg viewBox="0 0 24 24" class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg></button>
+                </td>
+              </tr>
+
+              <!-- Row 5 -->
+              <tr class="row-hover">
+                <td class="px-5 py-3.5 num text-[12px] text-ink-muted">SHF-2810</td>
+                <td class="px-5 py-3.5"><span class="text-navy-500 font-medium">Reposición</span></td>
+                <td class="px-5 py-3.5">
+                  <p class="text-navy-500 font-medium leading-tight">Tienda Los Pinos</p>
+                  <p class="text-[11px] text-ink-faint">Tlatelolco · Cuauhtémoc</p>
+                </td>
+                <td class="px-5 py-3.5"><span class="text-ink-soft">Valeria H.</span></td>
+                <td class="px-5 py-3.5"><span class="inline-flex items-center gap-1 text-[11px] font-semibold uppercase tracking-wider text-good bg-goodBg px-2 py-0.5 rounded-full">Validada</span></td>
+                <td class="px-5 py-3.5 num text-[11px] text-ink-muted">19.452, -99.142</td>
+                <td class="px-5 py-3.5 num text-[12px] text-ink-soft">Hoy 10:33</td>
+                <td class="px-5 py-3.5 num text-right font-semibold text-navy-500">$95</td>
+                <td class="px-5 py-3.5 text-right">
+                  <button class="text-ink-faint hover:text-navy-500"><svg viewBox="0 0 24 24" class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg></button>
+                </td>
+              </tr>
+
+              <!-- Row 6 -->
+              <tr class="row-hover">
+                <td class="px-5 py-3.5 num text-[12px] text-ink-muted">SHF-2809</td>
+                <td class="px-5 py-3.5"><span class="text-navy-500 font-medium">OOS report</span></td>
+                <td class="px-5 py-3.5">
+                  <p class="text-navy-500 font-medium leading-tight">Abarrotes Don Memo</p>
+                  <p class="text-[11px] text-ink-faint">Doctores · Cuauhtémoc</p>
+                </td>
+                <td class="px-5 py-3.5"><span class="text-ink-soft">Iván P.</span></td>
+                <td class="px-5 py-3.5"><span class="inline-flex items-center gap-1 text-[11px] font-semibold uppercase tracking-wider text-ink-muted bg-cream-200 px-2 py-0.5 rounded-full">Pendiente</span></td>
+                <td class="px-5 py-3.5 num text-[11px] text-ink-muted">19.418, -99.150</td>
+                <td class="px-5 py-3.5 num text-[12px] text-ink-soft">Hoy 09:18</td>
+                <td class="px-5 py-3.5 num text-right text-ink-muted">$50</td>
+                <td class="px-5 py-3.5 text-right">
+                  <button class="text-ink-faint hover:text-navy-500"><svg viewBox="0 0 24 24" class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg></button>
+                </td>
+              </tr>
+
+              <!-- Row 7 -->
+              <tr class="row-hover">
+                <td class="px-5 py-3.5 num text-[12px] text-ink-muted">SHF-2808</td>
+                <td class="px-5 py-3.5"><span class="text-navy-500 font-medium">Foto antes/después</span></td>
+                <td class="px-5 py-3.5">
+                  <p class="text-navy-500 font-medium leading-tight">Mini Súper La Joya</p>
+                  <p class="text-[11px] text-ink-faint">Narvarte · Benito Juárez</p>
+                </td>
+                <td class="px-5 py-3.5"><span class="text-ink-soft">Daniel M.</span></td>
+                <td class="px-5 py-3.5"><span class="inline-flex items-center gap-1 text-[11px] font-semibold uppercase tracking-wider text-good bg-goodBg px-2 py-0.5 rounded-full">Validada</span></td>
+                <td class="px-5 py-3.5 num text-[11px] text-ink-muted">19.395, -99.157</td>
+                <td class="px-5 py-3.5 num text-[12px] text-ink-soft">Ayer 18:02</td>
+                <td class="px-5 py-3.5 num text-right font-semibold text-navy-500">$75</td>
+                <td class="px-5 py-3.5 text-right">
+                  <button class="text-ink-faint hover:text-navy-500"><svg viewBox="0 0 24 24" class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg></button>
+                </td>
+              </tr>
+
+              <!-- Row 8 -->
+              <tr class="row-hover">
+                <td class="px-5 py-3.5 num text-[12px] text-ink-muted">SHF-2807</td>
+                <td class="px-5 py-3.5"><span class="text-navy-500 font-medium">Reposición</span></td>
+                <td class="px-5 py-3.5">
+                  <p class="text-navy-500 font-medium leading-tight">Súper Tlalpan Centro</p>
+                  <p class="text-[11px] text-ink-faint">Tlalpan Centro</p>
+                </td>
+                <td class="px-5 py-3.5"><span class="text-ink-soft">Andrés R.</span></td>
+                <td class="px-5 py-3.5"><span class="inline-flex items-center gap-1 text-[11px] font-semibold uppercase tracking-wider text-good bg-goodBg px-2 py-0.5 rounded-full">Validada</span></td>
+                <td class="px-5 py-3.5 num text-[11px] text-ink-muted">19.293, -99.165</td>
+                <td class="px-5 py-3.5 num text-[12px] text-ink-soft">Ayer 16:44</td>
+                <td class="px-5 py-3.5 num text-right font-semibold text-navy-500">$120</td>
+                <td class="px-5 py-3.5 text-right">
+                  <button class="text-ink-faint hover:text-navy-500"><svg viewBox="0 0 24 24" class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg></button>
+                </td>
+              </tr>
+
+            </tbody>
+          </table>
+        </div>
+
+        <footer class="flex items-center justify-between px-5 py-3 border-t hairline bg-cream-50 text-xs text-ink-muted">
+          <span>Mostrando <span class="num text-navy-500 font-semibold">8</span> de <span class="num text-navy-500 font-semibold">42</span> misiones</span>
+          <div class="flex items-center gap-1">
+            <button class="px-2.5 py-1 rounded-md hover:bg-cream-200 text-ink-muted">‹ Anterior</button>
+            <button class="px-2.5 py-1 rounded-md hover:bg-cream-200 text-navy-500 font-semibold">Siguiente ›</button>
+          </div>
+        </footer>
+      </div>
+    </section>
+
+    <!-- 3e Mapa CDMX -->
+    <section class="mb-12">
+      <div class="flex flex-wrap items-center justify-between gap-4 mb-4">
+        <div>
+          <h2 class="display text-xl font-semibold text-navy-500">Cobertura CDMX</h2>
+          <p class="text-xs text-ink-muted mt-0.5 num">912 PDVs activos · 16 alcaldías · datos en vivo</p>
+        </div>
+        <div class="flex items-center gap-2 text-xs">
+          <button class="px-3 py-1.5 rounded-lg bg-white border hairline text-navy-500 font-medium">CDMX</button>
+          <button class="px-3 py-1.5 rounded-lg text-ink-muted hover:text-navy-500">Bajío</button>
+          <button class="px-3 py-1.5 rounded-lg text-ink-muted hover:text-navy-500">Norte</button>
+        </div>
+      </div>
+
+      <div class="bg-white border hairline rounded-2xl overflow-hidden grid lg:grid-cols-[1fr_280px]">
+
+        <!-- Map area -->
+        <div class="relative bg-cream-50 overflow-hidden" style="height: 460px;">
+          <!-- Dotted grid background -->
+          <div class="absolute inset-0 opacity-50" style="background-image: radial-gradient(#EDE0D0 1px, transparent 1px); background-size: 16px 16px;"></div>
+
+          <!-- SVG mapa -->
+          <svg viewBox="0 0 720 480" class="absolute inset-0 w-full h-full" preserveAspectRatio="xMidYMid meet">
+
+            <!-- Outer CDMX boundary (simplified rough shape) -->
+            <path d="M 360 30
+                     L 480 60 L 540 130 L 580 220 L 600 320
+                     L 540 410 L 460 450 L 360 460
+                     L 270 450 L 200 410 L 150 350
+                     L 130 260 L 160 170 L 220 100 L 290 50 Z"
+                  fill="#FFFCF8" stroke="#E8E0D2" stroke-width="1.5"/>
+
+            <!-- Alcaldías (simplified polygons) -->
+            <!-- GAM (north) -->
+            <path d="M 290 50 L 360 30 L 480 60 L 460 140 L 380 160 L 300 130 Z" fill="#FAF3E8" stroke="#EDE0D0" stroke-width="1"/>
+            <text x="380" y="100" text-anchor="middle" class="text-[10px]" fill="#9BA7BC" font-family="Inter" font-weight="500">G.A. Madero</text>
+
+            <!-- Azcapotzalco -->
+            <path d="M 220 100 L 290 50 L 300 130 L 240 170 Z" fill="#FAF3E8" stroke="#EDE0D0" stroke-width="1"/>
+            <text x="270" y="115" text-anchor="middle" class="text-[10px]" fill="#9BA7BC" font-family="Inter" font-weight="500">Azcapotzalco</text>
+
+            <!-- Miguel Hidalgo -->
+            <path d="M 240 170 L 300 130 L 380 160 L 360 230 L 280 230 Z" fill="#FAF3E8" stroke="#EDE0D0" stroke-width="1"/>
+            <text x="320" y="195" text-anchor="middle" class="text-[10px]" fill="#9BA7BC" font-family="Inter" font-weight="500">M. Hidalgo</text>
+
+            <!-- Cuauhtémoc (centro) -->
+            <path d="M 360 230 L 380 160 L 460 140 L 470 230 L 410 260 Z" fill="#FFEEE3" stroke="#EDE0D0" stroke-width="1"/>
+            <text x="420" y="200" text-anchor="middle" class="text-[10px]" fill="#9BA7BC" font-family="Inter" font-weight="500">Cuauhtémoc</text>
+
+            <!-- Venustiano Carranza -->
+            <path d="M 460 140 L 540 130 L 540 230 L 470 230 Z" fill="#FAF3E8" stroke="#EDE0D0" stroke-width="1"/>
+            <text x="500" y="190" text-anchor="middle" class="text-[10px]" fill="#9BA7BC" font-family="Inter" font-weight="500">V. Carranza</text>
+
+            <!-- Iztacalco -->
+            <path d="M 470 230 L 540 230 L 540 310 L 480 310 Z" fill="#FAF3E8" stroke="#EDE0D0" stroke-width="1"/>
+            <text x="510" y="275" text-anchor="middle" class="text-[10px]" fill="#9BA7BC" font-family="Inter" font-weight="500">Iztacalco</text>
+
+            <!-- Iztapalapa -->
+            <path d="M 480 310 L 540 230 L 580 220 L 600 320 L 540 410 L 470 380 Z" fill="#FAF3E8" stroke="#EDE0D0" stroke-width="1"/>
+            <text x="540" y="340" text-anchor="middle" class="text-[10px]" fill="#9BA7BC" font-family="Inter" font-weight="500">Iztapalapa</text>
+
+            <!-- B. Juárez -->
+            <path d="M 360 230 L 410 260 L 410 320 L 340 320 L 320 280 Z" fill="#FAF3E8" stroke="#EDE0D0" stroke-width="1"/>
+            <text x="375" y="290" text-anchor="middle" class="text-[10px]" fill="#9BA7BC" font-family="Inter" font-weight="500">B. Juárez</text>
+
+            <!-- A. Obregón -->
+            <path d="M 280 230 L 360 230 L 320 280 L 240 290 Z" fill="#FAF3E8" stroke="#EDE0D0" stroke-width="1"/>
+            <text x="295" y="265" text-anchor="middle" class="text-[10px]" fill="#9BA7BC" font-family="Inter" font-weight="500">Á. Obregón</text>
+
+            <!-- Coyoacán -->
+            <path d="M 320 280 L 410 320 L 410 380 L 320 400 Z" fill="#FAF3E8" stroke="#EDE0D0" stroke-width="1"/>
+            <text x="365" y="350" text-anchor="middle" class="text-[10px]" fill="#9BA7BC" font-family="Inter" font-weight="500">Coyoacán</text>
+
+            <!-- Xochimilco -->
+            <path d="M 320 400 L 410 380 L 470 380 L 460 450 L 380 450 Z" fill="#FAF3E8" stroke="#EDE0D0" stroke-width="1"/>
+            <text x="400" y="420" text-anchor="middle" class="text-[10px]" fill="#9BA7BC" font-family="Inter" font-weight="500">Xochimilco</text>
+
+            <!-- Tlalpan -->
+            <path d="M 240 290 L 320 280 L 320 400 L 380 450 L 270 450 L 200 410 Z" fill="#FAF3E8" stroke="#EDE0D0" stroke-width="1"/>
+            <text x="290" y="380" text-anchor="middle" class="text-[10px]" fill="#9BA7BC" font-family="Inter" font-weight="500">Tlalpan</text>
+
+            <!-- Cuajimalpa -->
+            <path d="M 150 350 L 200 410 L 240 290 L 160 270 Z" fill="#F4ECDF" stroke="#EDE0D0" stroke-width="1"/>
+            <text x="190" y="335" text-anchor="middle" class="text-[10px]" fill="#9BA7BC" font-family="Inter" font-weight="500">Cuajimalpa</text>
+
+            <!-- M. Contreras -->
+            <path d="M 160 270 L 240 290 L 200 410 L 150 350 Z" fill="#F4ECDF" stroke="#EDE0D0" stroke-width="1" opacity="0"/>
+
+            <!-- ============ PINS (clusters densos en Roma/Condesa/Polanco) ============ -->
+
+            <!-- Cluster Polanco / M. Hidalgo -->
+            <g class="pins-cluster">
+              <circle cx="305" cy="200" r="5" fill="#1F8A5B" stroke="#FFFCF8" stroke-width="1.5" class="map-pin"/>
+              <circle cx="318" cy="195" r="5" fill="#1F8A5B" stroke="#FFFCF8" stroke-width="1.5" class="map-pin"/>
+              <circle cx="312" cy="210" r="5" fill="#1F8A5B" stroke="#FFFCF8" stroke-width="1.5" class="map-pin"/>
+              <circle cx="328" cy="206" r="5" fill="#FF6B35" stroke="#FFFCF8" stroke-width="1.5" class="map-pin"/>
+              <circle cx="295" cy="215" r="5" fill="#1F8A5B" stroke="#FFFCF8" stroke-width="1.5" class="map-pin"/>
+              <circle cx="335" cy="220" r="5" fill="#1F8A5B" stroke="#FFFCF8" stroke-width="1.5" class="map-pin"/>
+              <circle cx="320" cy="225" r="5" fill="#A6B5CC" stroke="#FFFCF8" stroke-width="1.5" class="map-pin"/>
+              <circle cx="345" cy="195" r="5" fill="#1F8A5B" stroke="#FFFCF8" stroke-width="1.5" class="map-pin"/>
+            </g>
+
+            <!-- Cluster Roma/Condesa/Cuauhtémoc -->
+            <g class="pins-cluster">
+              <circle cx="395" cy="225" r="5" fill="#1F8A5B" stroke="#FFFCF8" stroke-width="1.5" class="map-pin"/>
+              <circle cx="408" cy="218" r="5" fill="#1F8A5B" stroke="#FFFCF8" stroke-width="1.5" class="map-pin"/>
+              <circle cx="420" cy="212" r="5" fill="#1F8A5B" stroke="#FFFCF8" stroke-width="1.5" class="map-pin"/>
+              <circle cx="402" cy="240" r="5" fill="#FF6B35" stroke="#FFFCF8" stroke-width="1.5" class="map-pin pulse-dot"/>
+              <circle cx="415" cy="232" r="5" fill="#1F8A5B" stroke="#FFFCF8" stroke-width="1.5" class="map-pin"/>
+              <circle cx="430" cy="225" r="5" fill="#1F8A5B" stroke="#FFFCF8" stroke-width="1.5" class="map-pin"/>
+              <circle cx="385" cy="230" r="5" fill="#FF6B35" stroke="#FFFCF8" stroke-width="1.5" class="map-pin"/>
+              <circle cx="445" cy="200" r="5" fill="#1F8A5B" stroke="#FFFCF8" stroke-width="1.5" class="map-pin"/>
+              <circle cx="438" cy="215" r="5" fill="#1F8A5B" stroke="#FFFCF8" stroke-width="1.5" class="map-pin"/>
+              <circle cx="425" cy="195" r="5" fill="#1F8A5B" stroke="#FFFCF8" stroke-width="1.5" class="map-pin"/>
+            </g>
+
+            <!-- Centro / Doctores -->
+            <g class="pins-cluster">
+              <circle cx="450" cy="245" r="5" fill="#1F8A5B" stroke="#FFFCF8" stroke-width="1.5" class="map-pin"/>
+              <circle cx="465" cy="235" r="5" fill="#A6B5CC" stroke="#FFFCF8" stroke-width="1.5" class="map-pin"/>
+              <circle cx="455" cy="255" r="5" fill="#FF6B35" stroke="#FFFCF8" stroke-width="1.5" class="map-pin"/>
+              <circle cx="478" cy="248" r="5" fill="#1F8A5B" stroke="#FFFCF8" stroke-width="1.5" class="map-pin"/>
+            </g>
+
+            <!-- B. Juárez (Narvarte / Del Valle) -->
+            <g class="pins-cluster">
+              <circle cx="365" cy="275" r="5" fill="#1F8A5B" stroke="#FFFCF8" stroke-width="1.5" class="map-pin"/>
+              <circle cx="378" cy="285" r="5" fill="#1F8A5B" stroke="#FFFCF8" stroke-width="1.5" class="map-pin"/>
+              <circle cx="390" cy="295" r="5" fill="#1F8A5B" stroke="#FFFCF8" stroke-width="1.5" class="map-pin"/>
+              <circle cx="375" cy="305" r="5" fill="#1F8A5B" stroke="#FFFCF8" stroke-width="1.5" class="map-pin"/>
+              <circle cx="395" cy="278" r="5" fill="#1F8A5B" stroke="#FFFCF8" stroke-width="1.5" class="map-pin"/>
+            </g>
+
+            <!-- Coyoacán -->
+            <g class="pins-cluster">
+              <circle cx="355" cy="345" r="5" fill="#1F8A5B" stroke="#FFFCF8" stroke-width="1.5" class="map-pin"/>
+              <circle cx="375" cy="360" r="5" fill="#1F8A5B" stroke="#FFFCF8" stroke-width="1.5" class="map-pin"/>
+              <circle cx="365" cy="375" r="5" fill="#A6B5CC" stroke="#FFFCF8" stroke-width="1.5" class="map-pin"/>
+              <circle cx="385" cy="350" r="5" fill="#FF6B35" stroke="#FFFCF8" stroke-width="1.5" class="map-pin"/>
+            </g>
+
+            <!-- Iztapalapa (sparse, low coverage) -->
+            <g class="pins-cluster">
+              <circle cx="510" cy="320" r="5" fill="#A6B5CC" stroke="#FFFCF8" stroke-width="1.5" class="map-pin"/>
+              <circle cx="540" cy="350" r="5" fill="#1F8A5B" stroke="#FFFCF8" stroke-width="1.5" class="map-pin"/>
+              <circle cx="555" cy="370" r="5" fill="#A6B5CC" stroke="#FFFCF8" stroke-width="1.5" class="map-pin"/>
+            </g>
+
+            <!-- GAM (sparse) -->
+            <g class="pins-cluster">
+              <circle cx="370" cy="80" r="5" fill="#A6B5CC" stroke="#FFFCF8" stroke-width="1.5" class="map-pin"/>
+              <circle cx="395" cy="105" r="5" fill="#1F8A5B" stroke="#FFFCF8" stroke-width="1.5" class="map-pin"/>
+              <circle cx="420" cy="90" r="5" fill="#A6B5CC" stroke="#FFFCF8" stroke-width="1.5" class="map-pin"/>
+              <circle cx="445" cy="115" r="5" fill="#1F8A5B" stroke="#FFFCF8" stroke-width="1.5" class="map-pin"/>
+            </g>
+
+            <!-- Tlalpan -->
+            <g class="pins-cluster">
+              <circle cx="280" cy="370" r="5" fill="#1F8A5B" stroke="#FFFCF8" stroke-width="1.5" class="map-pin"/>
+              <circle cx="295" cy="400" r="5" fill="#A6B5CC" stroke="#FFFCF8" stroke-width="1.5" class="map-pin"/>
+              <circle cx="260" cy="410" r="5" fill="#1F8A5B" stroke="#FFFCF8" stroke-width="1.5" class="map-pin"/>
+            </g>
+
+            <!-- Á. Obregón -->
+            <g class="pins-cluster">
+              <circle cx="290" cy="255" r="5" fill="#1F8A5B" stroke="#FFFCF8" stroke-width="1.5" class="map-pin"/>
+              <circle cx="305" cy="270" r="5" fill="#1F8A5B" stroke="#FFFCF8" stroke-width="1.5" class="map-pin"/>
+              <circle cx="278" cy="275" r="5" fill="#FF6B35" stroke="#FFFCF8" stroke-width="1.5" class="map-pin"/>
+            </g>
+
+            <!-- Xochimilco (sparse) -->
+            <g class="pins-cluster">
+              <circle cx="400" cy="425" r="5" fill="#A6B5CC" stroke="#FFFCF8" stroke-width="1.5" class="map-pin"/>
+              <circle cx="430" cy="410" r="5" fill="#1F8A5B" stroke="#FFFCF8" stroke-width="1.5" class="map-pin"/>
+            </g>
+
+          </svg>
+
+          <!-- Map watermark / disclaimer -->
+          <div class="absolute bottom-3 left-3 bg-white/85 backdrop-blur border hairline rounded-md px-2.5 py-1.5 text-[10px] text-ink-muted num">
+            Mapa interactivo Mapbox en producción <span class="text-orange-600 font-semibold">[VALIDAR]</span>
+          </div>
+
+          <!-- Map controls -->
+          <div class="absolute top-3 right-3 flex flex-col gap-1 bg-white border hairline rounded-md shadow-soft">
+            <button class="w-7 h-7 flex items-center justify-center text-ink-soft hover:bg-cream-100 border-b hairline" aria-label="Zoom in">
+              <svg viewBox="0 0 24 24" class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            </button>
+            <button class="w-7 h-7 flex items-center justify-center text-ink-soft hover:bg-cream-100" aria-label="Zoom out">
+              <svg viewBox="0 0 24 24" class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- Sidebar -->
+        <aside class="border-t lg:border-t-0 lg:border-l hairline p-5 bg-cream-50 flex flex-col">
+          <h3 class="text-[10px] uppercase tracking-wider font-semibold text-ink-muted mb-3">Leyenda</h3>
+          <ul class="space-y-2 text-xs text-ink-soft mb-6">
+            <li class="flex items-center gap-2.5"><span class="w-2.5 h-2.5 rounded-full bg-good"></span> Misión validada · <span class="num text-ink-muted">31</span></li>
+            <li class="flex items-center gap-2.5"><span class="w-2.5 h-2.5 rounded-full bg-orange-500"></span> En curso ahora · <span class="num text-ink-muted">5</span></li>
+            <li class="flex items-center gap-2.5"><span class="w-2.5 h-2.5 rounded-full bg-navy-200"></span> Pendiente · <span class="num text-ink-muted">7</span></li>
+          </ul>
+
+          <div class="border-t hairline pt-5">
+            <div class="flex items-baseline justify-between mb-3">
+              <h3 class="text-sm font-semibold text-navy-500">Baja cobertura</h3>
+              <span class="num text-[11px] text-orange-600 font-semibold">5 zonas</span>
+            </div>
+            <ul class="space-y-2 text-xs">
+              <li class="flex items-center justify-between gap-2 group cursor-pointer hover:bg-cream-100 -mx-2 px-2 py-1.5 rounded">
+                <span class="flex items-center gap-2">
+                  <span class="w-1 h-4 rounded-full bg-orange-500"></span>
+                  <span class="text-ink-soft">Iztapalapa Sur</span>
+                </span>
+                <span class="num text-ink-faint">3 PDV</span>
+              </li>
+              <li class="flex items-center justify-between gap-2 group cursor-pointer hover:bg-cream-100 -mx-2 px-2 py-1.5 rounded">
+                <span class="flex items-center gap-2">
+                  <span class="w-1 h-4 rounded-full bg-orange-500"></span>
+                  <span class="text-ink-soft">G.A. Madero Norte</span>
+                </span>
+                <span class="num text-ink-faint">4 PDV</span>
+              </li>
+              <li class="flex items-center justify-between gap-2 group cursor-pointer hover:bg-cream-100 -mx-2 px-2 py-1.5 rounded">
+                <span class="flex items-center gap-2">
+                  <span class="w-1 h-4 rounded-full bg-orange-300"></span>
+                  <span class="text-ink-soft">Cuajimalpa</span>
+                </span>
+                <span class="num text-ink-faint">6 PDV</span>
+              </li>
+              <li class="flex items-center justify-between gap-2 group cursor-pointer hover:bg-cream-100 -mx-2 px-2 py-1.5 rounded">
+                <span class="flex items-center gap-2">
+                  <span class="w-1 h-4 rounded-full bg-orange-300"></span>
+                  <span class="text-ink-soft">Xochimilco</span>
+                </span>
+                <span class="num text-ink-faint">7 PDV</span>
+              </li>
+              <li class="flex items-center justify-between gap-2 group cursor-pointer hover:bg-cream-100 -mx-2 px-2 py-1.5 rounded">
+                <span class="flex items-center gap-2">
+                  <span class="w-1 h-4 rounded-full bg-orange-300"></span>
+                  <span class="text-ink-soft">Milpa Alta</span>
+                </span>
+                <span class="num text-ink-faint">2 PDV</span>
+              </li>
+            </ul>
+
+            <button class="mt-5 w-full text-xs font-semibold text-orange-600 hover:text-orange-700 border hairline rounded-lg py-2 hover:bg-cream-100 transition-colors">
+              Crear misión en zona →
+            </button>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <footer class="text-[11px] text-ink-faint flex items-center justify-between pb-8 num">
+      <span>Shelfly · v2.4 · Bebida Viva tier Pro</span>
+      <span>Última sync hace 12s</span>
+    </footer>
+
+  </div>
+</main>
+
+<!-- ============== MODAL CREAR MISIÓN ============== -->
+<div id="modal" class="hidden fixed inset-0 z-50 modal-backdrop flex items-end md:items-center justify-center p-0 md:p-6">
+  <div class="bg-cream-50 w-full md:max-w-2xl md:rounded-2xl shadow-lift border hairline overflow-hidden flex flex-col max-h-[92vh]">
+
+    <!-- Modal header -->
+    <header class="flex items-center justify-between px-6 py-4 border-b hairline">
+      <div>
+        <p class="text-[11px] uppercase tracking-wider text-ink-faint font-semibold">Nueva misión</p>
+        <h3 class="display text-lg font-semibold text-navy-500">Brief de ejecución</h3>
+      </div>
+      <button id="close-modal" class="w-8 h-8 rounded-md hover:bg-cream-200 flex items-center justify-center text-ink-soft" aria-label="Cerrar">
+        <svg viewBox="0 0 24 24" class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </header>
+
+    <!-- Stepper -->
+    <ol class="grid grid-cols-3 gap-0 border-b hairline">
+      <li class="flex items-center gap-3 px-5 py-4 border-r hairline bg-white">
+        <span class="w-7 h-7 rounded-full bg-orange-500 text-white text-xs font-semibold flex items-center justify-center num">1</span>
+        <div class="leading-tight">
+          <p class="text-[10px] uppercase tracking-wider text-ink-faint font-semibold">Paso 1</p>
+          <p class="text-sm font-semibold text-navy-500">¿Dónde?</p>
+        </div>
+      </li>
+      <li class="flex items-center gap-3 px-5 py-4 border-r hairline">
+        <span class="w-7 h-7 rounded-full bg-cream-200 text-ink-muted text-xs font-semibold flex items-center justify-center num">2</span>
+        <div class="leading-tight">
+          <p class="text-[10px] uppercase tracking-wider text-ink-faint font-semibold">Paso 2</p>
+          <p class="text-sm font-medium text-ink-soft">¿Qué pedir?</p>
+        </div>
+      </li>
+      <li class="flex items-center gap-3 px-5 py-4">
+        <span class="w-7 h-7 rounded-full bg-cream-200 text-ink-muted text-xs font-semibold flex items-center justify-center num">3</span>
+        <div class="leading-tight">
+          <p class="text-[10px] uppercase tracking-wider text-ink-faint font-semibold">Paso 3</p>
+          <p class="text-sm font-medium text-ink-soft">Presupuesto</p>
+        </div>
+      </li>
+    </ol>
+
+    <!-- Body -->
+    <div class="flex-1 overflow-y-auto px-6 py-6 space-y-5">
+
+      <div>
+        <label class="block text-xs uppercase tracking-wider text-ink-muted font-semibold mb-2">Ciudad / región</label>
+        <div class="flex gap-2 flex-wrap">
+          <button class="px-3 py-1.5 rounded-lg border border-orange-500 bg-orange-50 text-orange-600 text-sm font-semibold">CDMX</button>
+          <button class="px-3 py-1.5 rounded-lg border hairline text-ink-soft text-sm hover:border-navy-200">Bajío</button>
+          <button class="px-3 py-1.5 rounded-lg border hairline text-ink-soft text-sm hover:border-navy-200">Norte</button>
+          <button class="px-3 py-1.5 rounded-lg border hairline text-ink-soft text-sm hover:border-navy-200">+ Otra</button>
+        </div>
+      </div>
+
+      <div>
+        <label class="block text-xs uppercase tracking-wider text-ink-muted font-semibold mb-2">Punto de venta</label>
+        <div class="border hairline rounded-xl bg-white divide-y hairline">
+          <label class="flex items-center gap-3 p-3 cursor-pointer hover:bg-cream-50">
+            <input type="radio" name="pdv" class="accent-orange-500" checked>
+            <div class="flex-1 min-w-0">
+              <p class="text-sm font-semibold text-navy-500">Tienda La Esquina · Roma Norte</p>
+              <p class="text-[11px] text-ink-faint num">Última visita: hoy 14:48 · 12 facings</p>
+            </div>
+            <span class="text-[10px] num text-ink-faint">19.412, -99.165</span>
+          </label>
+          <label class="flex items-center gap-3 p-3 cursor-pointer hover:bg-cream-50">
+            <input type="radio" name="pdv" class="accent-orange-500">
+            <div class="flex-1 min-w-0">
+              <p class="text-sm font-semibold text-navy-500">OXXO Polanco Masaryk</p>
+              <p class="text-[11px] text-ink-faint num">Última visita: hoy 14:21 · 8 facings</p>
+            </div>
+            <span class="text-[10px] num text-ink-faint">19.434, -99.197</span>
+          </label>
+          <label class="flex items-center gap-3 p-3 cursor-pointer hover:bg-cream-50">
+            <input type="radio" name="pdv" class="accent-orange-500">
+            <div class="flex-1 min-w-0">
+              <p class="text-sm font-semibold text-navy-500">La Bonita Iztapalapa</p>
+              <p class="text-[11px] text-ink-faint num">Última visita: hace 3 días · sin datos</p>
+            </div>
+            <span class="text-[10px] num text-ink-faint">19.357, -99.043</span>
+          </label>
+        </div>
+      </div>
+
+      <div>
+        <label class="block text-xs uppercase tracking-wider text-ink-muted font-semibold mb-2">Tipo de misión</label>
+        <div class="grid grid-cols-2 gap-2">
+          <button class="text-left p-3 border-2 border-orange-500 bg-orange-50 rounded-xl">
+            <p class="text-sm font-semibold text-navy-500">Foto antes/después</p>
+            <p class="text-[11px] text-ink-muted mt-0.5">Evidencia visual · payout $75-95</p>
+          </button>
+          <button class="text-left p-3 border hairline rounded-xl hover:border-navy-200 bg-white">
+            <p class="text-sm font-semibold text-navy-500">Conteo SKUs</p>
+            <p class="text-[11px] text-ink-muted mt-0.5">Inventario en sitio · payout $50-80</p>
+          </button>
+          <button class="text-left p-3 border hairline rounded-xl hover:border-navy-200 bg-white">
+            <p class="text-sm font-semibold text-navy-500">Planograma check</p>
+            <p class="text-[11px] text-ink-muted mt-0.5">Validación cumplimiento · $90-130</p>
+          </button>
+          <button class="text-left p-3 border hairline rounded-xl hover:border-navy-200 bg-white">
+            <p class="text-sm font-semibold text-navy-500">OOS report</p>
+            <p class="text-[11px] text-ink-muted mt-0.5">Detección faltantes · $50</p>
+          </button>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Footer modal -->
+    <footer class="flex items-center justify-between px-6 py-4 border-t hairline bg-white">
+      <button id="cancel-modal" class="text-sm text-ink-muted hover:text-navy-500 font-medium px-3 py-2">Cancelar</button>
+      <div class="flex items-center gap-2">
+        <button class="text-sm text-ink-soft hover:text-navy-500 font-medium px-4 py-2 border hairline rounded-lg">← Anterior</button>
+        <button class="bg-navy-500 hover:bg-navy-600 text-white text-sm font-semibold px-5 py-2 rounded-lg transition-colors">
+          Siguiente →
+        </button>
+      </div>
+    </footer>
+  </div>
+</div>
+
+<script>
+  // Modal toggle
+  const modal = document.getElementById('modal');
+  const open  = document.getElementById('open-modal');
+  const close = document.getElementById('close-modal');
+  const cancel= document.getElementById('cancel-modal');
+  open.addEventListener('click',  () => { modal.classList.remove('hidden'); document.body.style.overflow='hidden'; });
+  const closeFn = () => { modal.classList.add('hidden'); document.body.style.overflow=''; };
+  close.addEventListener('click',  closeFn);
+  cancel.addEventListener('click', closeFn);
+  modal.addEventListener('click', (e) => { if (e.target === modal) closeFn(); });
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && !modal.classList.contains('hidden')) closeFn();
+    if ((e.key === 'n' || e.key === 'N') && !e.metaKey && !e.ctrlKey && document.activeElement.tagName !== 'INPUT' && modal.classList.contains('hidden')) {
+      modal.classList.remove('hidden'); document.body.style.overflow='hidden';
+    }
+  });
+
+  // Filter pills
+  const filterTabs = document.querySelectorAll('#filter-tabs .filter-pill');
+  filterTabs.forEach(btn => {
+    btn.addEventListener('click', () => {
+      filterTabs.forEach(b => {
+        b.classList.remove('bg-white','text-navy-500','shadow-soft','font-semibold');
+        b.classList.add('text-ink-muted','font-medium');
+      });
+      btn.classList.add('bg-white','text-navy-500','shadow-soft','font-semibold');
+      btn.classList.remove('text-ink-muted','font-medium');
+    });
+  });
+
+  // Portfolio switcher (TT / SC ghost)
+  document.querySelectorAll('[data-product]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const p = btn.dataset.product;
+      if (p === 'tt' || p === 'sc') {
+        alert('Disponible si Diego habilita acceso [VALIDAR integration]');
+      }
+    });
+  });
+</script>
+
+</body>
+</html>
