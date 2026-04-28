@@ -13,7 +13,10 @@
   'use strict';
 
   var STORAGE_KEY = 'shelfly_nda_v1';
-  var FORMSPREE_ENDPOINT = ''; // pegar https://formspree.io/f/XXXXX cuando se cree
+  // FormSubmit.co: cero cuenta. La primera firma dispara un email de
+  // confirmacion a pedroc11@gmail.com. Click una vez para activar.
+  // Despues, cada firma llega por email automaticamente.
+  var NOTIFY_ENDPOINT = 'https://formsubmit.co/ajax/pedroc11@gmail.com';
 
   // Si ya firmo, salir sin hacer nada
   try {
@@ -121,20 +124,31 @@
       localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
     } catch (err) {}
 
-    // Opcional: log a Formspree
     var done = function () {
       document.body.style.overflow = prevOverflow;
       overlay.remove();
     };
 
-    if (FORMSPREE_ENDPOINT) {
-      fetch(FORMSPREE_ENDPOINT, {
+    if (NOTIFY_ENDPOINT) {
+      // FormSubmit.co espera campos planos. Agregamos meta opcionales.
+      var payload = {
+        _subject: 'Shelfly NDA firmado: ' + data.nombre + ' (' + data.empresa + ')',
+        _template: 'box',
+        _captcha: 'false',
+        nombre: data.nombre,
+        empresa: data.empresa,
+        email: data.email,
+        timestamp: data.timestamp,
+        url: data.url,
+        referrer: data.referrer || '(direct)',
+        userAgent: data.userAgent,
+      };
+      fetch(NOTIFY_ENDPOINT, {
         method: 'POST',
         headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' },
-        body: JSON.stringify(data),
-      }).finally(done);
+        body: JSON.stringify(payload),
+      }).catch(function () {}).finally(done);
     } else {
-      // Sin endpoint configurado, solo localStorage
       setTimeout(done, 200);
     }
   });
