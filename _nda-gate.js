@@ -14,9 +14,9 @@
 
   var STORAGE_KEY = 'shelfly_nda_v1';
   // FormSubmit.co: cero cuenta. La primera firma dispara un email de
-  // confirmacion a pedroc11@gmail.com. Click una vez para activar.
+  // confirmacion a pedro.rojas.campuzano@gmail.com. Click una vez para activar.
   // Despues, cada firma llega por email automaticamente.
-  var NOTIFY_ENDPOINT = 'https://formsubmit.co/ajax/pedroc11@gmail.com';
+  var NOTIFY_ENDPOINT = 'https://formsubmit.co/ajax/pedro.rojas.campuzano@gmail.com';
 
   // ============================================================
   // WHITELIST · editar y push a GitHub para actualizar
@@ -26,7 +26,7 @@
   // Match es case-insensitive. Email exact match. Dominio compara sufijo.
   // Fallback hardcoded en caso de que el archivo _whitelist.txt no cargue.
   // La fuente autoritativa es _whitelist.txt (editable desde GitHub web UI).
-  var ALLOWED_EMAILS = ['pedroc11@gmail.com'];
+  var ALLOWED_EMAILS = ['pedro.rojas.campuzano@gmail.com'];
   var ALLOWED_DOMAINS = ['timetracker.com.mx', 'storecheck.com.mx', 'vuelocapital.com'];
 
   // Calcula la URL del whitelist a partir del src del script
@@ -172,7 +172,7 @@
         '<button type="submit" id="shelfly-nda-submit" style="margin-top:12px;background:#FF6B35;color:white;border:none;padding:14px 24px;border-radius:10px;font-size:15px;font-weight:600;cursor:pointer;font-family:inherit;letter-spacing:0.01em;transition:all 0.15s;">Aceptar y continuar</button>',
       '</form>',
 
-      '<p style="font-size:11px;color:rgba(10,37,64,0.5);margin-top:20px;text-align:center;line-height:1.5;">Para preguntas o solicitar acceso adicional: <span style="color:#FF6B35;font-weight:600;">pedroc11@gmail.com</span></p>',
+      '<p style="font-size:11px;color:rgba(10,37,64,0.5);margin-top:20px;text-align:center;line-height:1.5;">Para preguntas o solicitar acceso adicional: <span style="color:#FF6B35;font-weight:600;">pedro.rojas.campuzano@gmail.com</span></p>',
     '</div>',
   ].join('');
 
@@ -206,7 +206,7 @@
 
     var emailVal = form.email.value.trim();
     if (!isAllowed(emailVal)) {
-      showError('Tu email no esta autorizado. Contacta a Pedro Rojas (pedroc11@gmail.com) para solicitar acceso.');
+      showError('Tu email no esta autorizado. Contacta a Pedro Rojas (pedro.rojas.campuzano@gmail.com) para solicitar acceso.');
       return;
     }
 
