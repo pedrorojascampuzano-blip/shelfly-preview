@@ -1,0 +1,878 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Shelfly · Deck Confidencial</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        colors: {
+          primary: '#FF6B35',
+          navy: '#0A2540',
+          cream: '#FFF8F3',
+          ink: '#0F172A',
+          success: '#10B981',
+        },
+        fontFamily: {
+          sans: ['Inter', 'system-ui', 'sans-serif'],
+        },
+      },
+    },
+  };
+</script>
+<style>
+  html, body { margin: 0; padding: 0; }
+  body {
+    font-family: 'Inter', system-ui, sans-serif;
+    color: #0F172A;
+    background: #FFF8F3;
+    scroll-snap-type: y mandatory;
+    overflow-y: scroll;
+    scroll-behavior: smooth;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  .slide {
+    scroll-snap-align: start;
+    scroll-snap-stop: always;
+    height: 100vh;
+    width: 100vw;
+    overflow: hidden;
+    position: relative;
+  }
+  .num-mega { font-feature-settings: "tnum" 1, "lnum" 1; letter-spacing: -0.04em; }
+  .ws-tight { letter-spacing: -0.03em; }
+  .gradient-navy {
+    background: radial-gradient(120% 80% at 30% 20%, #11355c 0%, #0A2540 45%, #060f1c 100%);
+  }
+  .stripe-orange {
+    background-image: linear-gradient(90deg, #FF6B35 0%, #FF8854 100%);
+  }
+  .dot-active { background: #FF6B35; transform: scale(1.5); }
+  .nav-dot { transition: all 0.25s ease; }
+  .validate-tag {
+    display: inline-block;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    color: #FF6B35;
+    background: rgba(255,107,53,0.08);
+    border: 1px solid rgba(255,107,53,0.25);
+    padding: 2px 6px;
+    border-radius: 4px;
+    vertical-align: middle;
+    margin-left: 6px;
+    text-transform: uppercase;
+  }
+  .validate-tag.dark {
+    color: #FFB494;
+    background: rgba(255,180,148,0.1);
+    border-color: rgba(255,180,148,0.3);
+  }
+  .card {
+    border: 1px solid rgba(10, 37, 64, 0.1);
+    border-radius: 1rem;
+    background: #ffffff;
+    box-shadow: 0 10px 30px -12px rgba(10,37,64,0.12);
+  }
+  .card-dark {
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 1rem;
+    background: rgba(255,255,255,0.04);
+    backdrop-filter: blur(12px);
+  }
+  .pie-chart {
+    width: 280px;
+    height: 280px;
+    border-radius: 50%;
+    background: conic-gradient(
+      #FF6B35 0% 50%,
+      #0A2540 50% 75%,
+      #10B981 75% 90%,
+      #94A3B8 90% 100%
+    );
+    box-shadow: 0 30px 60px -20px rgba(10,37,64,0.25);
+  }
+  .pie-chart::after {
+    content: '';
+    display: block;
+    width: 130px;
+    height: 130px;
+    border-radius: 50%;
+    background: #FFF8F3;
+    margin: 75px;
+  }
+  /* Step arrow connector */
+  .step-arrow {
+    flex: 1;
+    height: 2px;
+    background: repeating-linear-gradient(90deg, rgba(10,37,64,0.2) 0 6px, transparent 6px 12px);
+    position: relative;
+    margin-top: 32px;
+  }
+  /* Side dots nav */
+  #dots {
+    position: fixed;
+    right: 28px;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 50;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+  #dots button {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: rgba(10,37,64,0.25);
+    border: none;
+    cursor: pointer;
+  }
+  #dots button:hover { background: #FF6B35; }
+  /* Footer slide indicator */
+  .slide-num {
+    position: absolute;
+    bottom: 24px;
+    left: 32px;
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    opacity: 0.55;
+  }
+  .slide-brand {
+    position: absolute;
+    bottom: 24px;
+    right: 60px;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    opacity: 0.55;
+  }
+  /* Print: one slide per page, landscape */
+  @media print {
+    @page { size: letter landscape; margin: 0; }
+    html, body { background: #ffffff; overflow: visible; height: auto; }
+    #dots { display: none; }
+    .slide {
+      page-break-after: always;
+      break-after: page;
+      height: 100vh;
+      width: 100vw;
+      box-shadow: none;
+    }
+    .slide:last-child { page-break-after: auto; }
+    * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+  }
+</style>
+</head>
+<body class="font-sans">
+
+<!-- Side dots navigation -->
+<nav id="dots" aria-label="Slide navigation"></nav>
+
+<!-- =========================================================
+     SLIDE 1 - TITLE
+     ========================================================= -->
+<section id="s1" class="slide gradient-navy text-white flex items-center justify-center">
+  <div class="px-12 lg:px-24 max-w-6xl w-full">
+    <div class="flex items-center gap-3 mb-12 opacity-80">
+      <div class="w-1.5 h-1.5 rounded-full bg-primary"></div>
+      <span class="text-xs font-semibold tracking-[0.3em] uppercase text-primary">Marketplace de reps · México</span>
+    </div>
+    <h1 class="num-mega ws-tight font-extrabold text-white leading-[0.92]" style="font-size: clamp(72px, 11vw, 168px);">
+      Shelfly<span class="text-primary">.</span>
+    </h1>
+    <p class="mt-10 text-2xl lg:text-3xl font-medium text-white/90 max-w-4xl leading-snug ws-tight">
+      Cobertura de reps en cualquier punto de venta de México, on-demand.
+    </p>
+    <div class="mt-16 flex flex-wrap items-center gap-x-10 gap-y-3 text-sm font-medium text-white/55">
+      <span class="uppercase tracking-[0.18em]">Confidencial</span>
+      <span class="w-1 h-1 rounded-full bg-white/30"></span>
+      <span data-pedro>Pedro</span>
+      <span class="text-white/30">+</span>
+      <span data-socio>Socio</span>
+      <span class="w-1 h-1 rounded-full bg-white/30"></span>
+      <span>Abril 2026</span>
+    </div>
+  </div>
+  <span class="slide-num text-white/55">01 / 10</span>
+  <span class="slide-brand text-white/55">Shelfly</span>
+</section>
+
+<!-- =========================================================
+     SLIDE 2 - EL PROBLEMA
+     ========================================================= -->
+<section id="s2" class="slide bg-cream flex items-center">
+  <div class="px-12 lg:px-20 max-w-7xl mx-auto w-full">
+    <div class="flex items-center gap-3 mb-6">
+      <div class="w-8 h-px bg-primary"></div>
+      <span class="text-xs font-semibold tracking-[0.25em] uppercase text-primary">Problema</span>
+    </div>
+    <h2 class="ws-tight font-bold text-navy leading-[1.05] max-w-5xl" style="font-size: clamp(36px, 5vw, 56px);">
+      Las marcas CPG mid no tienen cómo ejecutar en el long-tail de PDV.
+    </h2>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-14">
+      <div class="card p-8">
+        <div class="text-7xl num-mega font-extrabold text-navy">1.2M</div>
+        <p class="mt-4 text-base text-navy/80 leading-relaxed">
+          Tiendas tradicionales en México fuera de cadenas grandes (canal tradicional ANTAD/INEGI).
+          <span class="validate-tag">Validar</span>
+        </p>
+      </div>
+      <div class="card p-8">
+        <div class="text-7xl num-mega font-extrabold text-navy">&lt;20<span class="text-primary">%</span></div>
+        <p class="mt-4 text-base text-navy/80 leading-relaxed">
+          De marcas mid tienen fuerza de campo nacional propia. El resto depende de agencias o no cubre.
+          <span class="validate-tag">Validar</span>
+        </p>
+      </div>
+      <div class="card p-8">
+        <div class="text-3xl num-mega font-extrabold text-navy leading-tight">
+          Caras, contratos largos, sin cobertura secundaria
+        </div>
+        <p class="mt-4 text-base text-navy/80 leading-relaxed">
+          Agencias tradicionales (Smollan, locales) operan plantilla fija enfocada en key accounts.
+        </p>
+      </div>
+    </div>
+
+    <div class="mt-12 max-w-4xl">
+      <blockquote class="border-l-2 border-primary pl-6 italic text-navy/80 text-lg leading-relaxed">
+        "El 99.5% de los tickets de compra en México pasa por canal tradicional, y nadie nos da visibilidad de qué pasa ahí en menos de dos semanas."
+      </blockquote>
+      <p class="mt-3 text-xs text-navy/40 uppercase tracking-[0.18em]">Brand Manager CPG mid · cita ilustrativa</p>
+    </div>
+  </div>
+  <span class="slide-num text-navy/60">02 / 10</span>
+  <span class="slide-brand text-navy/60">Shelfly</span>
+</section>
+
+<!-- =========================================================
+     SLIDE 3 - LA SOLUCIÓN
+     ========================================================= -->
+<section id="s3" class="slide bg-white flex items-center">
+  <div class="px-12 lg:px-20 max-w-7xl mx-auto w-full">
+    <div class="flex items-center gap-3 mb-6">
+      <div class="w-8 h-px bg-primary"></div>
+      <span class="text-xs font-semibold tracking-[0.25em] uppercase text-primary">Solución</span>
+    </div>
+    <h2 class="ws-tight font-bold text-navy leading-[1.05] max-w-5xl" style="font-size: clamp(36px, 5vw, 56px);">
+      Shelfly es el marketplace que conecta marcas con reps de campo on-demand.
+    </h2>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mt-16">
+      <!-- Para marcas -->
+      <div class="border-t-4 border-primary pt-7">
+        <div class="flex items-center gap-3 mb-4">
+          <!-- lucide: store -->
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#FF6B35" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m2 7 4.41-4.41A2 2 0 0 1 7.83 2h8.34a2 2 0 0 1 1.42.59L22 7"/><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><path d="M15 22v-4a2 2 0 0 0-2-2h-2a2 2 0 0 0-2 2v4"/><path d="M2 7h20"/><path d="M22 7v3a2 2 0 0 1-2 2v0a2.7 2.7 0 0 1-1.59-.63.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 16 12a2.7 2.7 0 0 1-1.59-.63.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 12 12a2.7 2.7 0 0 1-1.59-.63.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 8 12a2.7 2.7 0 0 1-1.59-.63.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 4 12v0a2 2 0 0 1-2-2V7"/></svg>
+          <h3 class="text-xs font-bold tracking-[0.22em] uppercase text-navy/70">Para marcas</h3>
+        </div>
+        <h4 class="text-2xl font-bold text-navy ws-tight leading-tight mb-4">Cobertura sin contratar plantilla.</h4>
+        <ul class="space-y-3 text-base text-navy/80 leading-relaxed">
+          <li class="flex gap-2"><span class="text-primary font-bold">·</span> Misiones en cualquier PDV en horas, no semanas.</li>
+          <li class="flex gap-2"><span class="text-primary font-bold">·</span> Evidencia georeferenciada con foto y validación automática.</li>
+          <li class="flex gap-2"><span class="text-primary font-bold">·</span> Pago por resultado, no por plantilla fija.</li>
+        </ul>
+      </div>
+
+      <!-- Para reps -->
+      <div class="border-t-4 border-navy pt-7">
+        <div class="flex items-center gap-3 mb-4">
+          <!-- lucide: user-round -->
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#0A2540" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="5"/><path d="M20 21a8 8 0 0 0-16 0"/></svg>
+          <h3 class="text-xs font-bold tracking-[0.22em] uppercase text-navy/70">Para reps</h3>
+        </div>
+        <h4 class="text-2xl font-bold text-navy ws-tight leading-tight mb-4">Ingreso flexible cerca de su ruta.</h4>
+        <ul class="space-y-3 text-base text-navy/80 leading-relaxed">
+          <li class="flex gap-2"><span class="text-navy font-bold">·</span> Misiones en mapa, acepta y ejecuta.</li>
+          <li class="flex gap-2"><span class="text-navy font-bold">·</span> Pago semanal claro vía Mercado Pago.</li>
+          <li class="flex gap-2"><span class="text-navy font-bold">·</span> Onboarding en horas, no días.</li>
+        </ul>
+      </div>
+
+      <!-- Para el ecosistema retail -->
+      <div class="border-t-4 border-success pt-7">
+        <div class="flex items-center gap-3 mb-4">
+          <!-- lucide: trending-up -->
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>
+          <h3 class="text-xs font-bold tracking-[0.22em] uppercase text-navy/70">Para el ecosistema</h3>
+        </div>
+        <h4 class="text-2xl font-bold text-navy ws-tight leading-tight mb-4">Visibilidad de un canal opaco.</h4>
+        <ul class="space-y-3 text-base text-navy/80 leading-relaxed">
+          <li class="flex gap-2"><span class="text-success font-bold">·</span> Data de share-of-shelf y OOS donde no llegaba nadie.</li>
+          <li class="flex gap-2"><span class="text-success font-bold">·</span> Estandarización de planograma en long-tail.</li>
+          <li class="flex gap-2"><span class="text-success font-bold">·</span> Capa data agregada como producto independiente.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <span class="slide-num text-navy/60">03 / 10</span>
+  <span class="slide-brand text-navy/60">Shelfly</span>
+</section>
+
+<!-- =========================================================
+     SLIDE 4 - HOW IT WORKS
+     ========================================================= -->
+<section id="s4" class="slide bg-cream flex items-center">
+  <div class="px-12 lg:px-20 max-w-7xl mx-auto w-full">
+    <div class="flex items-center gap-3 mb-6">
+      <div class="w-8 h-px bg-primary"></div>
+      <span class="text-xs font-semibold tracking-[0.25em] uppercase text-primary">Cómo funciona</span>
+    </div>
+    <h2 class="ws-tight font-bold text-navy leading-[1.05] max-w-5xl mb-16" style="font-size: clamp(36px, 5vw, 56px);">
+      De brief a evidencia validada en 72 horas.
+    </h2>
+
+    <div class="flex items-start gap-2 lg:gap-4">
+      <!-- Step 1 -->
+      <div class="flex-1 max-w-xs">
+        <div class="w-16 h-16 rounded-2xl bg-white border border-navy/10 flex items-center justify-center shadow-sm mb-5">
+          <!-- lucide: clipboard-list -->
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#FF6B35" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="8" height="4" x="8" y="2" rx="1" ry="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="M12 11h4"/><path d="M12 16h4"/><path d="M8 11h.01"/><path d="M8 16h.01"/></svg>
+        </div>
+        <div class="text-xs font-bold tracking-[0.2em] uppercase text-primary mb-2">Paso 01</div>
+        <h3 class="text-xl font-bold text-navy ws-tight leading-tight mb-2">La marca crea una misión</h3>
+        <p class="text-sm text-navy/70 leading-relaxed">Foto de referencia, geo, planograma, presupuesto, deadline. Plantillas reutilizables.</p>
+      </div>
+
+      <div class="step-arrow"></div>
+
+      <!-- Step 2 -->
+      <div class="flex-1 max-w-xs">
+        <div class="w-16 h-16 rounded-2xl bg-white border border-navy/10 flex items-center justify-center shadow-sm mb-5">
+          <!-- lucide: map-pin -->
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#FF6B35" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"/><circle cx="12" cy="10" r="3"/></svg>
+        </div>
+        <div class="text-xs font-bold tracking-[0.2em] uppercase text-primary mb-2">Paso 02</div>
+        <h3 class="text-xl font-bold text-navy ws-tight leading-tight mb-2">Reps cercanos la aceptan</h3>
+        <p class="text-sm text-navy/70 leading-relaxed">Mapa con pins de misiones disponibles. Tap, lock 2h, ruta a Maps o Waze.</p>
+      </div>
+
+      <div class="step-arrow"></div>
+
+      <!-- Step 3 -->
+      <div class="flex-1 max-w-xs">
+        <div class="w-16 h-16 rounded-2xl bg-white border border-navy/10 flex items-center justify-center shadow-sm mb-5">
+          <!-- lucide: camera -->
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#FF6B35" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/></svg>
+        </div>
+        <div class="text-xs font-bold tracking-[0.2em] uppercase text-primary mb-2">Paso 03</div>
+        <h3 class="text-xl font-bold text-navy ws-tight leading-tight mb-2">Ejecuta con check-in y foto</h3>
+        <p class="text-sm text-navy/70 leading-relaxed">Geofence + EXIF + image hash. Cero fotos recicladas, cero reps fantasma.</p>
+      </div>
+
+      <div class="step-arrow"></div>
+
+      <!-- Step 4 -->
+      <div class="flex-1 max-w-xs">
+        <div class="w-16 h-16 rounded-2xl bg-white border border-navy/10 flex items-center justify-center shadow-sm mb-5">
+          <!-- lucide: badge-check -->
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#FF6B35" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3.85 8.62a4 4 0 0 1 4.78-4.77 4 4 0 0 1 6.74 0 4 4 0 0 1 4.78 4.78 4 4 0 0 1 0 6.74 4 4 0 0 1-4.77 4.78 4 4 0 0 1-6.75 0 4 4 0 0 1-4.78-4.77 4 4 0 0 1 0-6.76Z"/><path d="m9 12 2 2 4-4"/></svg>
+        </div>
+        <div class="text-xs font-bold tracking-[0.2em] uppercase text-primary mb-2">Paso 04</div>
+        <h3 class="text-xl font-bold text-navy ws-tight leading-tight mb-2">Validación y pago semanal</h3>
+        <p class="text-sm text-navy/70 leading-relaxed">Reglas + CV en fase 2. Payout vía Mercado Pago, conciliación automática.</p>
+      </div>
+    </div>
+
+    <div class="mt-16 inline-flex items-center gap-3 px-5 py-3 rounded-full border border-navy/10 bg-white text-sm font-medium text-navy">
+      <span class="w-2 h-2 rounded-full bg-success"></span>
+      Stack: Next.js · Supabase · Expo · Mercado Pago · Cloudflare R2
+    </div>
+  </div>
+  <span class="slide-num text-navy/60">04 / 10</span>
+  <span class="slide-brand text-navy/60">Shelfly</span>
+</section>
+
+<!-- =========================================================
+     SLIDE 5 - DIFERENCIADOR VS PORTAFOLIO ACTUAL
+     ========================================================= -->
+<section id="s5" class="slide bg-white flex items-center">
+  <div class="px-12 lg:px-20 max-w-7xl mx-auto w-full">
+    <div class="flex items-center gap-3 mb-6">
+      <div class="w-8 h-px bg-primary"></div>
+      <span class="text-xs font-semibold tracking-[0.25em] uppercase text-primary">Posicionamiento</span>
+    </div>
+    <h2 class="ws-tight font-bold text-navy leading-[1.05] max-w-5xl mb-12" style="font-size: clamp(32px, 4.5vw, 52px);">
+      Shelfly es vertical complementario, no competidor.
+    </h2>
+
+    <div class="grid grid-cols-12 gap-0 border border-navy/10 rounded-2xl overflow-hidden shadow-xl">
+      <!-- Header row -->
+      <div class="col-span-3 bg-cream px-6 py-5 border-b border-navy/10">
+        <span class="text-xs font-bold tracking-[0.2em] uppercase text-navy/50">Dimensión</span>
+      </div>
+      <div class="col-span-4 lg:col-span-4 bg-navy text-white px-6 py-5 border-b border-white/10">
+        <span class="text-xs font-bold tracking-[0.2em] uppercase text-white/60">Empresa actual del socio</span>
+        <p class="text-base font-semibold mt-1">Biométricos enterprise · cadenas modernas</p>
+      </div>
+      <div class="col-span-5 lg:col-span-5 stripe-orange text-white px-6 py-5 border-b border-white/20">
+        <span class="text-xs font-bold tracking-[0.2em] uppercase text-white/85">Shelfly</span>
+        <p class="text-base font-semibold mt-1">Marketplace · long-tail on-demand</p>
+      </div>
+
+      <!-- Row template -->
+      <div class="col-span-3 bg-cream/40 px-6 py-4 border-b border-navy/5 text-sm font-semibold text-navy">Tipo de PDV</div>
+      <div class="col-span-4 px-6 py-4 border-b border-navy/5 text-sm text-navy/80">Walmart, Soriana, Chedraui, Superley</div>
+      <div class="col-span-5 px-6 py-4 border-b border-navy/5 text-sm text-navy/80">Changarros, conveniencia, farmacia local, regional</div>
+
+      <div class="col-span-3 bg-cream/40 px-6 py-4 border-b border-navy/5 text-sm font-semibold text-navy">Modelo</div>
+      <div class="col-span-4 px-6 py-4 border-b border-navy/5 text-sm text-navy/80">SaaS enterprise + plantilla con biométricos</div>
+      <div class="col-span-5 px-6 py-4 border-b border-navy/5 text-sm text-navy/80">Marketplace transaccional, take rate por misión</div>
+
+      <div class="col-span-3 bg-cream/40 px-6 py-4 border-b border-navy/5 text-sm font-semibold text-navy">Take to market</div>
+      <div class="col-span-4 px-6 py-4 border-b border-navy/5 text-sm text-navy/80">Ciclo enterprise 6-12 meses, contratos anuales</div>
+      <div class="col-span-5 px-6 py-4 border-b border-navy/5 text-sm text-navy/80">Self-serve + concierge, primera misión en días</div>
+
+      <div class="col-span-3 bg-cream/40 px-6 py-4 border-b border-navy/5 text-sm font-semibold text-navy">Ticket</div>
+      <div class="col-span-4 px-6 py-4 border-b border-navy/5 text-sm text-navy/80">6 cifras USD anuales por cuenta</div>
+      <div class="col-span-5 px-6 py-4 border-b border-navy/5 text-sm text-navy/80">$250 MXN promedio por misión <span class="validate-tag">Validar</span></div>
+
+      <div class="col-span-3 bg-cream/40 px-6 py-4 text-sm font-semibold text-navy">Cliente típico</div>
+      <div class="col-span-4 px-6 py-4 text-sm text-navy/80">Tier-1 CPG global con plantilla propia</div>
+      <div class="col-span-5 px-6 py-4 text-sm text-navy/80">CPG mid (200M-2B MXN) sin fuerza de campo nacional</div>
+    </div>
+
+    <p class="mt-8 text-base text-navy/70 max-w-3xl">
+      La empresa actual del socio cubre key accounts con plantilla fija. Shelfly abre el long-tail con modelo marketplace, sin canibalizar el negocio enterprise existente.
+    </p>
+  </div>
+  <span class="slide-num text-navy/60">05 / 10</span>
+  <span class="slide-brand text-navy/60">Shelfly</span>
+</section>
+
+<!-- =========================================================
+     SLIDE 6 - MERCADO
+     ========================================================= -->
+<section id="s6" class="slide bg-cream flex items-center">
+  <div class="px-12 lg:px-20 max-w-7xl mx-auto w-full">
+    <div class="flex items-center gap-3 mb-6">
+      <div class="w-8 h-px bg-primary"></div>
+      <span class="text-xs font-semibold tracking-[0.25em] uppercase text-primary">Mercado</span>
+    </div>
+    <h2 class="ws-tight font-bold text-navy leading-[1.05] max-w-5xl mb-14" style="font-size: clamp(36px, 5vw, 56px);">
+      Mercado de trade execution en México.
+    </h2>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div class="card p-10">
+        <div class="text-xs font-bold tracking-[0.22em] uppercase text-navy/50 mb-3">TAM</div>
+        <div class="num-mega font-extrabold text-navy" style="font-size: clamp(64px, 7vw, 96px); line-height: 1;">
+          $3.5<span class="text-primary">B</span>
+        </div>
+        <p class="mt-3 text-sm font-semibold text-navy/80">USD anuales en gasto de servicios de campo MX</p>
+        <p class="mt-4 text-xs text-navy/60 leading-relaxed">
+          1.2M PDV × 2 visitas/mes × USD 10. Trade marketing total estimado USD 11.7B con 15% de ventas grocery.
+          <span class="validate-tag">Validar ANTAD/Nielsen</span>
+        </p>
+      </div>
+
+      <div class="card p-10">
+        <div class="text-xs font-bold tracking-[0.22em] uppercase text-navy/50 mb-3">SAM</div>
+        <div class="num-mega font-extrabold text-navy" style="font-size: clamp(64px, 7vw, 96px); line-height: 1;">
+          $500<span class="text-primary">M</span>
+        </div>
+        <p class="mt-3 text-sm font-semibold text-navy/80">USD addressable mid-market sin fuerza propia</p>
+        <p class="mt-4 text-xs text-navy/60 leading-relaxed">
+          ~300K PDV en ciudades primarias y secundarias. 200-500 marcas CPG mid en MX.
+          <span class="validate-tag">Validar</span>
+        </p>
+      </div>
+
+      <div class="card p-10 border-primary/30 bg-gradient-to-br from-white to-primary/5">
+        <div class="text-xs font-bold tracking-[0.22em] uppercase text-primary mb-3">SOM Año 2</div>
+        <div class="num-mega font-extrabold text-navy" style="font-size: clamp(64px, 7vw, 96px); line-height: 1;">
+          $5<span class="text-primary">M</span>
+        </div>
+        <p class="mt-3 text-sm font-semibold text-navy/80">USD revenue plataforma con 1% del SAM y take 17%</p>
+        <p class="mt-4 text-xs text-navy/60 leading-relaxed">
+          ~10K visitas/mes activas, 500-1,000 reps, 3-5 ciudades.
+          <span class="validate-tag">Validar supuesto</span>
+        </p>
+      </div>
+    </div>
+
+    <div class="mt-12 grid grid-cols-1 lg:grid-cols-2 gap-8 pt-8 border-t border-navy/10">
+      <div>
+        <div class="text-xs font-bold tracking-[0.22em] uppercase text-navy/50 mb-2">Por qué ahora</div>
+        <p class="text-base text-navy/80 leading-relaxed">
+          99.5% de tickets de compra en MX pasa por canal tradicional, pero ningún marketplace de ejecución continua opera ahí. Storecheck, Trax, Repsly y Smollan asumen plantilla propia o cubren solo enterprise.
+        </p>
+      </div>
+      <div>
+        <div class="text-xs font-bold tracking-[0.22em] uppercase text-navy/50 mb-2">Gap defendible</div>
+        <p class="text-base text-navy/80 leading-relaxed">
+          Field Agent y Gigwalk no operan en MX con escala. Smollan no tiene oficinas en México. La capa de matching y reclutamiento de reps independientes no existe como producto.
+        </p>
+      </div>
+    </div>
+  </div>
+  <span class="slide-num text-navy/60">06 / 10</span>
+  <span class="slide-brand text-navy/60">Shelfly</span>
+</section>
+
+<!-- =========================================================
+     SLIDE 7 - MODELO DE NEGOCIO
+     ========================================================= -->
+<section id="s7" class="slide bg-white flex items-center">
+  <div class="px-12 lg:px-20 max-w-7xl mx-auto w-full">
+    <div class="flex items-center gap-3 mb-6">
+      <div class="w-8 h-px bg-primary"></div>
+      <span class="text-xs font-semibold tracking-[0.25em] uppercase text-primary">Modelo de negocio</span>
+    </div>
+    <h2 class="ws-tight font-bold text-navy leading-[1.05] max-w-5xl mb-12" style="font-size: clamp(32px, 4.5vw, 52px);">
+      Take rate <span class="text-primary">17%</span> sobre GMV + SaaS opcional desde mes 6.
+    </h2>
+
+    <div class="grid grid-cols-12 gap-0 border border-navy/10 rounded-2xl overflow-hidden shadow-lg mb-10">
+      <div class="col-span-3 bg-navy text-white/80 px-6 py-4 text-xs font-bold tracking-[0.2em] uppercase">Stream</div>
+      <div class="col-span-3 bg-navy text-white/80 px-6 py-4 text-xs font-bold tracking-[0.2em] uppercase">Target</div>
+      <div class="col-span-3 bg-navy text-white/80 px-6 py-4 text-xs font-bold tracking-[0.2em] uppercase">Pricing</div>
+      <div class="col-span-3 bg-navy text-white/80 px-6 py-4 text-xs font-bold tracking-[0.2em] uppercase">Timing</div>
+
+      <div class="col-span-3 px-6 py-5 border-b border-navy/10 font-semibold text-navy">Take rate</div>
+      <div class="col-span-3 px-6 py-5 border-b border-navy/10 text-sm text-navy/80">Toda marca activa</div>
+      <div class="col-span-3 px-6 py-5 border-b border-navy/10 text-sm text-navy/80">17% sobre ticket de misión</div>
+      <div class="col-span-3 px-6 py-5 border-b border-navy/10 text-sm text-navy/80">Mes 1 · core</div>
+
+      <div class="col-span-3 px-6 py-5 border-b border-navy/10 font-semibold text-navy">SaaS dashboard</div>
+      <div class="col-span-3 px-6 py-5 border-b border-navy/10 text-sm text-navy/80">Marcas mid-enterprise &gt;50 misiones/mes</div>
+      <div class="col-span-3 px-6 py-5 border-b border-navy/10 text-sm text-navy/80">$8K-$25K MXN/mes</div>
+      <div class="col-span-3 px-6 py-5 border-b border-navy/10 text-sm text-navy/80">Mes 6 · opcional</div>
+
+      <div class="col-span-3 px-6 py-5 border-b border-navy/10 font-semibold text-navy">Setup fee</div>
+      <div class="col-span-3 px-6 py-5 border-b border-navy/10 text-sm text-navy/80">Marca nueva</div>
+      <div class="col-span-3 px-6 py-5 border-b border-navy/10 text-sm text-navy/80">$5K-$15K MXN one-time</div>
+      <div class="col-span-3 px-6 py-5 border-b border-navy/10 text-sm text-navy/80">Mes 1 · filtra serias</div>
+
+      <div class="col-span-3 px-6 py-5 font-semibold text-navy">Data products</div>
+      <div class="col-span-3 px-6 py-5 text-sm text-navy/80">Marcas que no son operadoras</div>
+      <div class="col-span-3 px-6 py-5 text-sm text-navy/80">Por reporte / API</div>
+      <div class="col-span-3 px-6 py-5 text-sm text-navy/80">Mes 18+ con cobertura</div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div class="card p-6">
+        <div class="text-xs font-bold tracking-[0.22em] uppercase text-navy/50 mb-2">Contribution margin</div>
+        <div class="num-mega text-5xl font-extrabold text-navy">$34.50</div>
+        <p class="mt-2 text-sm text-navy/70">MXN por misión (13.8% del ticket)</p>
+      </div>
+      <div class="card p-6">
+        <div class="text-xs font-bold tracking-[0.22em] uppercase text-navy/50 mb-2">LTV / CAC marca</div>
+        <div class="num-mega text-5xl font-extrabold text-navy">6.4<span class="text-primary">×</span></div>
+        <p class="mt-2 text-sm text-navy/70">Por arriba del benchmark 3× SaaS</p>
+      </div>
+      <div class="card p-6 border-primary/30 bg-primary/5">
+        <div class="text-xs font-bold tracking-[0.22em] uppercase text-primary mb-2">Payback marca</div>
+        <div class="num-mega text-5xl font-extrabold text-navy">3.9<span class="text-primary text-3xl ml-1">m</span></div>
+        <p class="mt-2 text-sm text-navy/70">Baja a ~3.0 con SaaS uplift <span class="validate-tag">Validar discovery</span></p>
+      </div>
+    </div>
+  </div>
+  <span class="slide-num text-navy/60">07 / 10</span>
+  <span class="slide-brand text-navy/60">Shelfly</span>
+</section>
+
+<!-- =========================================================
+     SLIDE 8 - ROADMAP
+     ========================================================= -->
+<section id="s8" class="slide bg-cream flex items-center">
+  <div class="px-12 lg:px-20 max-w-7xl mx-auto w-full">
+    <div class="flex items-center gap-3 mb-6">
+      <div class="w-8 h-px bg-primary"></div>
+      <span class="text-xs font-semibold tracking-[0.25em] uppercase text-primary">Roadmap</span>
+    </div>
+    <h2 class="ws-tight font-bold text-navy leading-[1.05] max-w-5xl mb-16" style="font-size: clamp(36px, 5vw, 56px);">
+      De repo vacío a seed institucional en 18 meses.
+    </h2>
+
+    <div class="relative">
+      <!-- Timeline bar -->
+      <div class="absolute left-0 right-0 top-6 h-0.5 bg-navy/15"></div>
+      <div class="absolute left-0 top-6 h-0.5 bg-primary" style="width: 12%;"></div>
+
+      <div class="grid grid-cols-4 gap-6 relative">
+        <!-- Mes 1 -->
+        <div>
+          <div class="w-12 h-12 rounded-full bg-primary text-white flex items-center justify-center font-bold text-sm shadow-lg relative z-10 mb-6">M1</div>
+          <h3 class="text-lg font-bold text-navy ws-tight leading-tight mb-2">Repo + auth + esqueleto</h3>
+          <p class="text-sm text-navy/70 leading-relaxed">Next.js, Supabase, Expo. Auth de marca y rep. Modelo de misión y evidencia.</p>
+          <div class="mt-3 inline-flex items-center gap-2 text-xs font-semibold text-primary">
+            <span class="w-1.5 h-1.5 rounded-full bg-primary"></span>
+            Tramo 1 capital
+          </div>
+        </div>
+
+        <!-- Mes 3 -->
+        <div>
+          <div class="w-12 h-12 rounded-full bg-white border-2 border-navy/30 text-navy flex items-center justify-center font-bold text-sm relative z-10 mb-6">M3</div>
+          <h3 class="text-lg font-bold text-navy ws-tight leading-tight mb-2">Beta cerrada</h3>
+          <p class="text-sm text-navy/70 leading-relaxed">3 marcas anchor del socio. 50+ reps activos en CDMX y GDL. Concierge MVP.</p>
+          <div class="mt-3 inline-flex items-center gap-2 text-xs font-semibold text-navy/60">
+            <span class="w-1.5 h-1.5 rounded-full bg-navy/40"></span>
+            ~1,200 misiones/mes
+          </div>
+        </div>
+
+        <!-- Mes 6 -->
+        <div>
+          <div class="w-12 h-12 rounded-full bg-white border-2 border-navy/30 text-navy flex items-center justify-center font-bold text-sm relative z-10 mb-6">M6</div>
+          <h3 class="text-lg font-bold text-navy ws-tight leading-tight mb-2">PMF check</h3>
+          <p class="text-sm text-navy/70 leading-relaxed">12 marcas activas, 110 reps, $300K MXN GMV/mes. SaaS layer opcional. Tramo 2.</p>
+          <div class="mt-3 inline-flex items-center gap-2 text-xs font-semibold text-navy/60">
+            <span class="w-1.5 h-1.5 rounded-full bg-navy/40"></span>
+            Validación métricas
+          </div>
+        </div>
+
+        <!-- Mes 12-18 -->
+        <div>
+          <div class="w-12 h-12 rounded-full bg-white border-2 border-navy/30 text-navy flex items-center justify-center font-bold text-sm relative z-10 mb-6">M12-18</div>
+          <h3 class="text-lg font-bold text-navy ws-tight leading-tight mb-2">Escala geo + seed</h3>
+          <p class="text-sm text-navy/70 leading-relaxed">50+ marcas, 700+ reps, expansión a Monterrey y Bajío. Ronda institucional $7M-$15M MXN.</p>
+          <div class="mt-3 inline-flex items-center gap-2 text-xs font-semibold text-navy/60">
+            <span class="w-1.5 h-1.5 rounded-full bg-navy/40"></span>
+            Camino a EBITDA
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="mt-16 grid grid-cols-1 lg:grid-cols-3 gap-6 pt-8 border-t border-navy/10">
+      <div>
+        <span class="text-xs font-bold tracking-[0.2em] uppercase text-navy/50">Geo M1</span>
+        <p class="text-lg font-semibold text-navy mt-1">CDMX + Edo. Mex</p>
+      </div>
+      <div>
+        <span class="text-xs font-bold tracking-[0.2em] uppercase text-navy/50">Vertical M1</span>
+        <p class="text-lg font-semibold text-navy mt-1">Higiene + cuidado del hogar</p>
+      </div>
+      <div>
+        <span class="text-xs font-bold tracking-[0.2em] uppercase text-navy/50">Stack</span>
+        <p class="text-lg font-semibold text-navy mt-1">Next.js · Supabase · Expo</p>
+      </div>
+    </div>
+  </div>
+  <span class="slide-num text-navy/60">08 / 10</span>
+  <span class="slide-brand text-navy/60">Shelfly</span>
+</section>
+
+<!-- =========================================================
+     SLIDE 9 - CAPITAL Y USO DE FONDOS
+     ========================================================= -->
+<section id="s9" class="slide bg-white flex items-center">
+  <div class="px-12 lg:px-20 max-w-7xl mx-auto w-full">
+    <div class="flex items-center gap-3 mb-6">
+      <div class="w-8 h-px bg-primary"></div>
+      <span class="text-xs font-semibold tracking-[0.25em] uppercase text-primary">Capital</span>
+    </div>
+    <h2 class="ws-tight font-bold text-navy leading-[1.05] max-w-5xl mb-12" style="font-size: clamp(32px, 4.5vw, 52px);">
+      Tres tramos disciplinados, 18 meses de runway.
+    </h2>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-12">
+      <div class="card p-7">
+        <div class="text-xs font-bold tracking-[0.22em] uppercase text-primary mb-2">Tramo 1 · Mes 0</div>
+        <div class="num-mega text-5xl font-extrabold text-navy">$4M<span class="text-2xl text-navy/60 ml-1">MXN</span></div>
+        <p class="mt-3 text-sm text-navy/70 leading-relaxed">Capital del socio (equity o SAFE). Cubre meses 1-6, MVP y primeros 10 clientes.</p>
+      </div>
+      <div class="card p-7">
+        <div class="text-xs font-bold tracking-[0.22em] uppercase text-navy/50 mb-2">Tramo 2 · Mes 6-7</div>
+        <div class="num-mega text-5xl font-extrabold text-navy">$4M<span class="text-2xl text-navy/60 ml-1">MXN</span></div>
+        <p class="mt-3 text-sm text-navy/70 leading-relaxed">Continuación o pre-seed externa con métricas de PMF. Cubre meses 7-14.</p>
+      </div>
+      <div class="card p-7">
+        <div class="text-xs font-bold tracking-[0.22em] uppercase text-navy/50 mb-2">Tramo 3 · Mes 14-16</div>
+        <div class="num-mega text-5xl font-extrabold text-navy">$7-15M<span class="text-2xl text-navy/60 ml-1">MXN</span></div>
+        <p class="mt-3 text-sm text-navy/70 leading-relaxed">Seed institucional con tracción demostrada. Financia escala 18m+ y aceleración.</p>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center pt-8 border-t border-navy/10">
+      <div class="lg:col-span-5 flex justify-center">
+        <div class="pie-chart"></div>
+      </div>
+      <div class="lg:col-span-7">
+        <div class="text-xs font-bold tracking-[0.22em] uppercase text-navy/50 mb-4">Uso de fondos · Tramo 1</div>
+        <ul class="space-y-3">
+          <li class="flex items-center gap-4">
+            <span class="w-3 h-3 rounded-sm" style="background:#FF6B35"></span>
+            <span class="text-sm font-semibold text-navy w-28">Producto</span>
+            <div class="flex-1 h-1.5 bg-navy/10 rounded-full overflow-hidden"><div class="h-full bg-primary" style="width: 100%"></div></div>
+            <span class="text-sm font-bold text-navy num-mega w-12 text-right">50%</span>
+          </li>
+          <li class="flex items-center gap-4">
+            <span class="w-3 h-3 rounded-sm" style="background:#0A2540"></span>
+            <span class="text-sm font-semibold text-navy w-28">Operaciones</span>
+            <div class="flex-1 h-1.5 bg-navy/10 rounded-full overflow-hidden"><div class="h-full bg-navy" style="width: 50%"></div></div>
+            <span class="text-sm font-bold text-navy num-mega w-12 text-right">25%</span>
+          </li>
+          <li class="flex items-center gap-4">
+            <span class="w-3 h-3 rounded-sm" style="background:#10B981"></span>
+            <span class="text-sm font-semibold text-navy w-28">Growth</span>
+            <div class="flex-1 h-1.5 bg-navy/10 rounded-full overflow-hidden"><div class="h-full bg-success" style="width: 30%"></div></div>
+            <span class="text-sm font-bold text-navy num-mega w-12 text-right">15%</span>
+          </li>
+          <li class="flex items-center gap-4">
+            <span class="w-3 h-3 rounded-sm" style="background:#94A3B8"></span>
+            <span class="text-sm font-semibold text-navy w-28">Legal/Admin</span>
+            <div class="flex-1 h-1.5 bg-navy/10 rounded-full overflow-hidden"><div class="h-full" style="width: 20%; background:#94A3B8"></div></div>
+            <span class="text-sm font-bold text-navy num-mega w-12 text-right">10%</span>
+          </li>
+        </ul>
+        <div class="mt-6 pt-6 border-t border-navy/10 flex items-baseline gap-3">
+          <span class="text-sm font-semibold text-navy/60">Burn promedio</span>
+          <span class="num-mega text-3xl font-extrabold text-navy">$650K</span>
+          <span class="text-sm text-navy/60">MXN/mes</span>
+          <span class="validate-tag">Validar</span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <span class="slide-num text-navy/60">09 / 10</span>
+  <span class="slide-brand text-navy/60">Shelfly</span>
+</section>
+
+<!-- =========================================================
+     SLIDE 10 - ASK AL SOCIO
+     ========================================================= -->
+<section id="s10" class="slide gradient-navy text-white flex items-center">
+  <div class="px-12 lg:px-20 max-w-7xl mx-auto w-full">
+    <div class="flex items-center gap-3 mb-6">
+      <div class="w-8 h-px bg-primary"></div>
+      <span class="text-xs font-semibold tracking-[0.25em] uppercase text-primary">Ask al socio</span>
+    </div>
+    <h2 class="ws-tight font-bold text-white leading-[1.05] max-w-5xl mb-14" style="font-size: clamp(36px, 5.5vw, 64px);">
+      Lo que necesitamos para arrancar.
+    </h2>
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-14">
+      <div class="card-dark p-7">
+        <div class="flex items-start gap-5">
+          <div class="num-mega text-5xl font-extrabold text-primary leading-none w-16">01</div>
+          <div>
+            <h3 class="text-xl font-bold text-white mb-2 ws-tight">Estructura societaria</h3>
+            <p class="text-sm text-white/70 leading-relaxed">NewCo S.A.P.I. de C.V. con equity split, vesting 4 años, cliff 1 año. Captable limpio para capital externo posterior.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="card-dark p-7">
+        <div class="flex items-start gap-5">
+          <div class="num-mega text-5xl font-extrabold text-primary leading-none w-16">02</div>
+          <div>
+            <h3 class="text-xl font-bold text-white mb-2 ws-tight">10 marcas warm día 1</h3>
+            <p class="text-sm text-white/70 leading-relaxed">Pre-vender 3-5 anchor tenants del portfolio para piloto. Pipeline de 10 con misiones long-tail no cubiertas hoy.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="card-dark p-7">
+        <div class="flex items-start gap-5">
+          <div class="num-mega text-5xl font-extrabold text-primary leading-none w-16">03</div>
+          <div>
+            <h3 class="text-xl font-bold text-white mb-2 ws-tight">Capital tramo 1</h3>
+            <p class="text-sm text-white/70 leading-relaxed">$4M MXN para meses 1-6. Cubre MVP, primeros 10 clientes, equipo core. Equity o SAFE convertible.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="card-dark p-7">
+        <div class="flex items-start gap-5">
+          <div class="num-mega text-5xl font-extrabold text-primary leading-none w-16">04</div>
+          <div>
+            <h3 class="text-xl font-bold text-white mb-2 ws-tight">Reps enterprise como liquidez</h3>
+            <p class="text-sm text-white/70 leading-relaxed">Acceso al pool de reps verified del sistema enterprise como oferta inicial. Misiones spot entre rutas.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6 pt-10 border-t border-white/10">
+      <div>
+        <p class="text-3xl lg:text-4xl font-bold text-white ws-tight leading-tight max-w-2xl">
+          ¿Cuándo hablamos detalles?
+        </p>
+        <p class="mt-2 text-sm text-white/60">Term sheet listo para revisión. Próximo paso: workshop de 90 minutos para alinear equity, milestones y timing.</p>
+      </div>
+      <div class="flex items-center gap-3 px-6 py-4 rounded-full bg-primary text-white text-sm font-semibold tracking-wide">
+        <span class="w-2 h-2 rounded-full bg-white"></span>
+        Shelfly · Confidencial · Abril 2026
+      </div>
+    </div>
+  </div>
+  <span class="slide-num text-white/55">10 / 10</span>
+  <span class="slide-brand text-white/55">Shelfly</span>
+</section>
+
+<script>
+  // Build side-dot navigation
+  const slides = document.querySelectorAll('.slide');
+  const dotsContainer = document.getElementById('dots');
+  slides.forEach((s, i) => {
+    const b = document.createElement('button');
+    b.setAttribute('aria-label', 'Slide ' + (i + 1));
+    b.dataset.idx = i;
+    b.addEventListener('click', () => {
+      s.scrollIntoView({ behavior: 'smooth' });
+    });
+    dotsContainer.appendChild(b);
+  });
+  const dots = dotsContainer.querySelectorAll('button');
+
+  // Active dot via IntersectionObserver
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach((e) => {
+      if (e.isIntersecting && e.intersectionRatio > 0.55) {
+        const idx = Array.from(slides).indexOf(e.target);
+        dots.forEach((d) => d.classList.remove('dot-active'));
+        if (dots[idx]) dots[idx].classList.add('dot-active');
+      }
+    });
+  }, { threshold: [0.55, 0.75] });
+  slides.forEach((s) => io.observe(s));
+
+  // Keyboard arrows
+  let current = 0;
+  const goTo = (i) => {
+    if (i < 0 || i >= slides.length) return;
+    current = i;
+    slides[i].scrollIntoView({ behavior: 'smooth' });
+  };
+  // Track current via scroll
+  window.addEventListener('scroll', () => {
+    const i = Math.round(window.scrollY / window.innerHeight);
+    current = Math.max(0, Math.min(slides.length - 1, i));
+  }, { passive: true });
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowDown' || e.key === 'PageDown' || e.key === ' ') {
+      e.preventDefault();
+      goTo(current + 1);
+    } else if (e.key === 'ArrowUp' || e.key === 'PageUp') {
+      e.preventDefault();
+      goTo(current - 1);
+    } else if (e.key === 'Home') {
+      e.preventDefault();
+      goTo(0);
+    } else if (e.key === 'End') {
+      e.preventDefault();
+      goTo(slides.length - 1);
+    }
+  });
+
+  // Initial active
+  if (dots[0]) dots[0].classList.add('dot-active');
+</script>
+</body>
+</html>

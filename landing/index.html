@@ -1,0 +1,711 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Shelfly - Cobertura de reps en cualquier punto de venta de México</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+tailwind.config = {
+  theme: {
+    extend: {
+      colors: {
+        cream:  '#FFF8F3',
+        orange: '#FF6B35',
+        navy:   '#0A2540',
+        ink:    '#1C1B19',
+        success:'#10B981',
+        warning:'#F59E0B',
+        warm: {
+          50:  '#FAFAF9',
+          100: '#F4F4F2',
+          200: '#E7E5E1',
+          400: '#A3A19C',
+          600: '#5C5A55',
+          900: '#1C1B19',
+        }
+      },
+      fontFamily: {
+        sans:    ['Inter', 'system-ui', 'sans-serif'],
+        display: ['"Space Grotesk"', 'Inter', 'sans-serif'],
+        mono:    ['"JetBrains Mono"', 'ui-monospace', 'monospace'],
+      },
+      letterSpacing: {
+        tightest: '-0.04em',
+      }
+    }
+  }
+}
+</script>
+<style>
+  :root { --cream: #FFF8F3; --orange: #FF6B35; --navy: #0A2540; }
+  html { scroll-behavior: smooth; }
+  html, body { background: var(--cream); color: #1C1B19; }
+  body { font-feature-settings: "ss01", "cv11"; }
+
+  /* tabular numbers para mono */
+  .mono-num { font-feature-settings: "tnum" 1, "zero" 1; }
+
+  /* fade-in al scroll */
+  .reveal { opacity: 0; transform: translateY(16px); transition: opacity .7s ease, transform .7s ease; }
+  .reveal.is-visible { opacity: 1; transform: none; }
+
+  /* nav underline */
+  .nav-link { position: relative; }
+  .nav-link::after {
+    content: ""; position: absolute; left: 0; bottom: -6px;
+    height: 1px; width: 0; background: #0A2540;
+    transition: width .25s ease;
+  }
+  .nav-link:hover::after { width: 100%; }
+
+  /* card hover sutil */
+  .card { transition: transform .35s ease, border-color .35s ease, box-shadow .35s ease; }
+  .card:hover { transform: translateY(-2px); border-color: #0A2540; }
+
+  /* CTA shadow */
+  .cta-primary {
+    box-shadow: 0 1px 0 rgba(10,37,64,0.04), 0 8px 24px -10px rgba(255,107,53,0.55);
+    transition: transform .2s ease, box-shadow .2s ease;
+  }
+  .cta-primary:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 1px 0 rgba(10,37,64,0.04), 0 12px 28px -10px rgba(255,107,53,0.7);
+  }
+
+  /* pulso muy sutil del badge "validada" */
+  @keyframes pulseDot {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.55; }
+  }
+  .pulse-dot { animation: pulseDot 2.4s ease-in-out infinite; }
+
+  /* línea de ruta animada en el mock */
+  @keyframes dashMove {
+    to { stroke-dashoffset: -40; }
+  }
+  .route-line { animation: dashMove 6s linear infinite; }
+
+  /* hero grain decor */
+  .hero-grid {
+    background-image:
+      linear-gradient(to right, rgba(10,37,64,0.05) 1px, transparent 1px);
+    background-size: 88px 100%;
+  }
+
+  /* timeline rule */
+  .timeline-rule {
+    background: repeating-linear-gradient(to right,
+      rgba(10,37,64,0.25) 0 4px, transparent 4px 10px);
+  }
+
+  /* selection */
+  ::selection { background: #FF6B35; color: #FFF8F3; }
+</style>
+</head>
+<body class="font-sans antialiased text-ink">
+
+<!-- ===================== NAV ===================== -->
+<header class="sticky top-0 z-40 backdrop-blur bg-cream/80 border-b border-warm-200">
+  <div class="max-w-[1280px] mx-auto px-6 lg:px-10 h-[72px] flex items-center justify-between">
+    <a href="#" class="flex items-center gap-2.5">
+      <!-- mini-lockup B reducido -->
+      <svg viewBox="0 0 80 80" width="32" height="32" aria-hidden="true">
+        <rect width="80" height="80" rx="18" fill="#FF6B35"/>
+        <text x="40" y="56" text-anchor="middle"
+              font-family="Space Grotesk, Inter, sans-serif" font-weight="700"
+              font-size="50" letter-spacing="-2.5" fill="#0A2540">SX</text>
+      </svg>
+      <span class="font-display font-semibold text-[22px] tracking-tightest text-navy">Shelfly</span>
+    </a>
+
+    <nav class="hidden md:flex items-center gap-9 text-[15px] text-warm-900">
+      <a href="#marcas"      class="nav-link">Marcas</a>
+      <a href="#reps"        class="nav-link">Reps</a>
+      <a href="#como"        class="nav-link">Cómo funciona</a>
+      <a href="#"            class="nav-link">Login</a>
+    </nav>
+
+    <a href="#cta" class="cta-primary inline-flex items-center gap-2 bg-orange text-white px-5 py-2.5 rounded-full font-medium text-[15px]">
+      Crear misión
+      <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M5 12h14M13 5l7 7-7 7"/>
+      </svg>
+    </a>
+  </div>
+</header>
+
+
+<!-- ===================== HERO ===================== -->
+<section class="relative overflow-hidden">
+  <div class="hero-grid absolute inset-0 pointer-events-none"></div>
+
+  <div class="relative max-w-[1280px] mx-auto px-6 lg:px-10 pt-16 lg:pt-24 pb-20 lg:pb-28">
+    <div class="grid lg:grid-cols-12 gap-10 lg:gap-16 items-center">
+
+      <!-- copy -->
+      <div class="lg:col-span-7">
+        <div class="inline-flex items-center gap-2 mono-num text-[12px] tracking-wider text-warm-600 uppercase mb-8">
+          <span class="w-1.5 h-1.5 rounded-full bg-orange pulse-dot"></span>
+          MX / Marketplace de ejecución en PDV
+        </div>
+
+        <h1 class="font-display font-semibold text-navy tracking-tightest leading-[0.96]
+                   text-[44px] sm:text-[64px] lg:text-[88px]">
+          Cobertura de reps<br>
+          en <span class="relative inline-block">
+            cualquier
+            <svg class="absolute -bottom-2 left-0 w-full" height="14" viewBox="0 0 320 14" preserveAspectRatio="none" aria-hidden="true">
+              <path d="M2 9 C 80 2, 240 2, 318 9" stroke="#FF6B35" stroke-width="4" fill="none" stroke-linecap="round"/>
+            </svg>
+          </span><br>
+          punto de venta de México.
+        </h1>
+
+        <p class="mt-8 text-warm-600 max-w-xl text-lg lg:text-[19px] leading-relaxed">
+          Lanza una misión en 4 minutos. Reps independientes la aceptan, ejecutan y validan con foto geo-referenciada. Tienes evidencia en 6 horas, en cadenas grandes y en el changarro de la esquina.
+        </p>
+
+        <div class="mt-10 flex flex-wrap items-center gap-4">
+          <a href="#cta" class="cta-primary inline-flex items-center gap-2 bg-orange text-white px-6 py-3.5 rounded-full font-medium text-[16px]">
+            Crear primera misión
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M5 12h14M13 5l7 7-7 7"/>
+            </svg>
+          </a>
+          <a href="#reps" class="inline-flex items-center gap-2 text-navy px-2 py-3.5 font-medium text-[16px] underline-offset-4 hover:underline">
+            Soy rep, quiero misiones
+          </a>
+        </div>
+
+        <!-- proof line -->
+        <div class="mt-12 flex flex-wrap items-center gap-x-10 gap-y-3 text-[13px] text-warm-600 mono-num tracking-wide">
+          <div><span class="text-navy font-semibold">200K+</span> PDV alcanzables</div>
+          <div class="w-px h-4 bg-warm-200 hidden sm:block"></div>
+          <div><span class="text-navy font-semibold">&lt;6h</span> mediana brief→evidencia</div>
+          <div class="w-px h-4 bg-warm-200 hidden sm:block"></div>
+          <div><span class="text-navy font-semibold">SPEI</span> pago semanal a reps</div>
+        </div>
+      </div>
+
+      <!-- visual: misión activa card -->
+      <div class="lg:col-span-5">
+        <div class="relative">
+          <!-- card secundaria atrás (offset) -->
+          <div class="absolute -right-3 top-6 w-full h-full rounded-2xl bg-navy/95"></div>
+
+          <!-- card principal -->
+          <div class="relative bg-white rounded-2xl border border-warm-200 shadow-[0_30px_60px_-20px_rgba(10,37,64,0.25)] overflow-hidden">
+            <!-- header card -->
+            <div class="px-5 py-4 border-b border-warm-200 flex items-center justify-between">
+              <div class="flex items-center gap-2">
+                <span class="w-2 h-2 rounded-full bg-success"></span>
+                <span class="text-[13px] font-medium text-navy">Misión activa</span>
+              </div>
+              <span class="mono-num text-[12px] text-warm-600">MSN-04827</span>
+            </div>
+
+            <!-- "foto" del PDV: ilustración SVG (no imagen externa) -->
+            <div class="relative h-44 bg-gradient-to-br from-warm-100 to-warm-50 overflow-hidden">
+              <svg viewBox="0 0 400 180" class="w-full h-full" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+                <!-- pared al fondo -->
+                <rect width="400" height="180" fill="#F4F4F2"/>
+                <!-- mostrador -->
+                <rect x="0" y="140" width="400" height="40" fill="#E7E5E1"/>
+                <!-- anaquel -->
+                <rect x="40" y="40" width="320" height="100" fill="#FFF8F3" stroke="#A3A19C" stroke-width="1"/>
+                <!-- baldas -->
+                <line x1="40" y1="72" x2="360" y2="72" stroke="#A3A19C" stroke-width="1"/>
+                <line x1="40" y1="106" x2="360" y2="106" stroke="#A3A19C" stroke-width="1"/>
+                <!-- productos top shelf -->
+                <rect x="56" y="48" width="22" height="22" fill="#0A2540"/>
+                <rect x="84" y="44" width="20" height="26" fill="#FF6B35"/>
+                <rect x="110" y="48" width="24" height="22" fill="#0A2540" opacity="0.55"/>
+                <rect x="140" y="46" width="18" height="24" fill="#FF6B35" opacity="0.7"/>
+                <rect x="164" y="48" width="22" height="22" fill="#0A2540"/>
+                <rect x="192" y="44" width="20" height="26" fill="#FF6B35" opacity="0.85"/>
+                <rect x="218" y="46" width="24" height="24" fill="#0A2540" opacity="0.7"/>
+                <rect x="248" y="44" width="18" height="26" fill="#0A2540"/>
+                <rect x="272" y="48" width="22" height="22" fill="#FF6B35" opacity="0.55"/>
+                <rect x="300" y="46" width="20" height="24" fill="#0A2540" opacity="0.85"/>
+                <rect x="326" y="48" width="22" height="22" fill="#0A2540"/>
+                <!-- middle shelf -->
+                <rect x="56" y="80" width="28" height="22" fill="#0A2540" opacity="0.7"/>
+                <rect x="92" y="78" width="22" height="26" fill="#FF6B35" opacity="0.7"/>
+                <rect x="120" y="82" width="26" height="22" fill="#0A2540" opacity="0.4"/>
+                <rect x="154" y="80" width="22" height="24" fill="#FF6B35"/>
+                <rect x="184" y="82" width="24" height="22" fill="#0A2540" opacity="0.55"/>
+                <rect x="216" y="78" width="22" height="26" fill="#0A2540"/>
+                <rect x="248" y="82" width="26" height="22" fill="#FF6B35" opacity="0.55"/>
+                <rect x="282" y="80" width="22" height="24" fill="#0A2540" opacity="0.7"/>
+                <rect x="314" y="82" width="24" height="22" fill="#0A2540" opacity="0.4"/>
+                <!-- price tag -->
+                <rect x="232" y="112" width="36" height="14" fill="#FF6B35"/>
+                <text x="250" y="123" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="9" fill="#FFF8F3" font-weight="500">$24.90</text>
+              </svg>
+
+              <!-- badge "Validada" overlay -->
+              <div class="absolute top-3 right-3 inline-flex items-center gap-1.5 bg-white border border-warm-200 px-2.5 py-1 rounded-full">
+                <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="#10B981" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M20 6 9 17l-5-5"/>
+                </svg>
+                <span class="text-[11px] font-medium text-navy">Validada</span>
+              </div>
+
+              <!-- geo pin overlay -->
+              <div class="absolute bottom-3 left-3 inline-flex items-center gap-1.5 bg-navy/90 text-white px-2.5 py-1 rounded-full">
+                <svg viewBox="0 0 24 24" width="11" height="11" fill="currentColor" aria-hidden="true">
+                  <path d="M12 2C8 2 5 5 5 9c0 5 7 13 7 13s7-8 7-13c0-4-3-7-7-7zm0 9.5a2.5 2.5 0 1 1 0-5 2.5 2.5 0 0 1 0 5z"/>
+                </svg>
+                <span class="mono-num text-[11px]">19.4326, -99.1332</span>
+              </div>
+            </div>
+
+            <!-- body card -->
+            <div class="p-5">
+              <div class="flex items-start justify-between gap-4">
+                <div>
+                  <div class="text-[12px] mono-num tracking-wide text-warm-400 uppercase mb-1">Auditoría planograma</div>
+                  <div class="font-display font-semibold text-navy text-[18px] leading-tight">Abarrotes La Reforma</div>
+                  <div class="text-[13px] text-warm-600 mt-0.5">Roma Norte, CDMX</div>
+                </div>
+                <div class="text-right">
+                  <div class="font-display font-semibold text-navy text-[20px]">$185</div>
+                  <div class="text-[11px] text-warm-400 mono-num">MXN</div>
+                </div>
+              </div>
+
+              <!-- timeline mini -->
+              <div class="mt-5 flex items-center gap-2">
+                <div class="flex-1 h-1 rounded-full bg-success"></div>
+                <div class="flex-1 h-1 rounded-full bg-success"></div>
+                <div class="flex-1 h-1 rounded-full bg-success"></div>
+                <div class="flex-1 h-1 rounded-full bg-orange"></div>
+              </div>
+              <div class="mt-2 flex justify-between text-[11px] mono-num text-warm-600">
+                <span>Aceptada</span>
+                <span>En PDV</span>
+                <span>Foto</span>
+                <span class="text-orange font-medium">Pago</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- mini chip flotante: rep -->
+          <div class="absolute -left-4 bottom-10 hidden lg:flex items-center gap-2.5 bg-cream border border-warm-200 rounded-full pl-1 pr-4 py-1 shadow-md">
+            <div class="w-7 h-7 rounded-full bg-navy text-white flex items-center justify-center font-display font-semibold text-[12px]">DM</div>
+            <div>
+              <div class="text-[12px] font-medium text-navy leading-none">Daniel M.</div>
+              <div class="text-[11px] text-warm-600 mt-0.5 mono-num">★ 4.92  ·  127 misiones</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ===================== FEATURES ===================== -->
+<section class="border-t border-warm-200 bg-warm-50/60">
+  <div class="max-w-[1280px] mx-auto px-6 lg:px-10 py-20 lg:py-24">
+    <div class="grid md:grid-cols-12 gap-10 mb-12 reveal">
+      <div class="md:col-span-5">
+        <div class="mono-num text-[12px] tracking-wider text-warm-600 uppercase mb-3">01 / Producto</div>
+        <h2 class="font-display font-semibold text-navy text-[40px] lg:text-[56px] leading-[1.02] tracking-tightest">
+          Lo que las agencias de trade no te dan.
+        </h2>
+      </div>
+      <div class="md:col-span-6 md:col-start-7 self-end">
+        <p class="text-warm-600 text-lg leading-relaxed">
+          No vendemos software para tu equipo de promotores. Te damos el equipo. Marketplace de reps validados que cubre cadenas y long-tail con la misma infraestructura.
+        </p>
+      </div>
+    </div>
+
+    <div class="grid md:grid-cols-3 gap-px bg-warm-200 border border-warm-200 rounded-2xl overflow-hidden reveal">
+      <!-- F1 -->
+      <article class="card bg-cream p-8 lg:p-10">
+        <div class="w-11 h-11 rounded-xl bg-navy text-orange flex items-center justify-center mb-7">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <circle cx="12" cy="12" r="9"/>
+            <path d="M12 7v5l3 2"/>
+          </svg>
+        </div>
+        <h3 class="font-display font-semibold text-navy text-[22px] tracking-tight">Misiones on-demand</h3>
+        <p class="mt-3 text-warm-600 leading-relaxed">
+          Defines alcance, plantilla y deadline. Reps cerca del PDV reciben push y aceptan en minutos. Sin contrato anual, sin headcount fijo.
+        </p>
+        <div class="mt-7 flex items-baseline gap-2">
+          <span class="font-display font-semibold text-navy text-[34px] mono-num">4 min</span>
+          <span class="text-[13px] text-warm-600">crear y lanzar</span>
+        </div>
+      </article>
+
+      <!-- F2 -->
+      <article class="card bg-cream p-8 lg:p-10">
+        <div class="w-11 h-11 rounded-xl bg-navy text-orange flex items-center justify-center mb-7">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M9 12l2 2 4-4"/>
+            <path d="M3 12c0-5 4-9 9-9s9 4 9 9-4 9-9 9-9-4-9-9z"/>
+          </svg>
+        </div>
+        <h3 class="font-display font-semibold text-navy text-[22px] tracking-tight">Validación automática</h3>
+        <p class="mt-3 text-warm-600 leading-relaxed">
+          Geofence + timestamp + reconocimiento de planograma en cada foto. Las evidencias sospechosas suben a revisión, el resto se aprueba sin tocar.
+        </p>
+        <div class="mt-7 flex items-baseline gap-2">
+          <span class="font-display font-semibold text-navy text-[34px] mono-num">82%</span>
+          <span class="text-[13px] text-warm-600">aprobadas en primera vuelta</span>
+        </div>
+      </article>
+
+      <!-- F3 -->
+      <article class="card bg-cream p-8 lg:p-10">
+        <div class="w-11 h-11 rounded-xl bg-navy text-orange flex items-center justify-center mb-7">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <rect x="3" y="6" width="18" height="13" rx="2"/>
+            <path d="M3 10h18"/>
+            <path d="M7 15h3"/>
+          </svg>
+        </div>
+        <h3 class="font-display font-semibold text-navy text-[22px] tracking-tight">Pago semanal</h3>
+        <p class="mt-3 text-warm-600 leading-relaxed">
+          Cada misión validada acumula al payout del viernes. SPEI directo al rep, factura consolidada a la marca. Sin operador en medio cobrando comisión.
+        </p>
+        <div class="mt-7 flex items-baseline gap-2">
+          <span class="font-display font-semibold text-navy text-[34px] mono-num">7 días</span>
+          <span class="text-[13px] text-warm-600">de ejecución a SPEI</span>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
+
+
+<!-- ===================== HOW IT WORKS ===================== -->
+<section id="como" class="border-t border-warm-200">
+  <div class="max-w-[1280px] mx-auto px-6 lg:px-10 py-20 lg:py-24">
+    <div class="reveal mb-14">
+      <div class="mono-num text-[12px] tracking-wider text-warm-600 uppercase mb-3">02 / Cómo funciona</div>
+      <h2 class="font-display font-semibold text-navy text-[40px] lg:text-[56px] leading-[1.02] tracking-tightest max-w-3xl">
+        De brief a evidencia validada en menos de un día.
+      </h2>
+    </div>
+
+    <!-- timeline horizontal -->
+    <div class="relative reveal">
+      <div class="hidden lg:block absolute left-0 right-0 top-7 h-px timeline-rule"></div>
+
+      <ol class="grid lg:grid-cols-4 gap-10 lg:gap-6">
+        <li>
+          <div class="relative flex items-center gap-3 mb-5">
+            <div class="w-14 h-14 rounded-full bg-cream border border-navy flex items-center justify-center font-display font-semibold text-navy text-lg mono-num z-10">01</div>
+            <div class="lg:hidden h-px flex-1 timeline-rule"></div>
+          </div>
+          <h3 class="font-display font-semibold text-navy text-[20px] tracking-tight">La marca crea</h3>
+          <p class="mt-2 text-warm-600 leading-relaxed text-[15px]">
+            Brand Ops elige plantilla (auditoría, planograma, OOS), define PDV o radio, sube referencia y deadline. Shelfly sugiere precio.
+          </p>
+          <div class="mt-4 mono-num text-[12px] text-warm-400">~4 min</div>
+        </li>
+        <li>
+          <div class="flex items-center gap-3 mb-5">
+            <div class="w-14 h-14 rounded-full bg-cream border border-navy flex items-center justify-center font-display font-semibold text-navy text-lg mono-num z-10">02</div>
+          </div>
+          <h3 class="font-display font-semibold text-navy text-[20px] tracking-tight">Reps aceptan</h3>
+          <p class="mt-2 text-warm-600 leading-relaxed text-[15px]">
+            Reps cerca del PDV reciben push. Ven brief, pago y distancia. Aceptan en la app, lock de 2h por default.
+          </p>
+          <div class="mt-4 mono-num text-[12px] text-warm-400">~12 min mediana</div>
+        </li>
+        <li>
+          <div class="flex items-center gap-3 mb-5">
+            <div class="w-14 h-14 rounded-full bg-cream border border-navy flex items-center justify-center font-display font-semibold text-navy text-lg mono-num z-10">03</div>
+          </div>
+          <h3 class="font-display font-semibold text-navy text-[20px] tracking-tight">Rep ejecuta</h3>
+          <p class="mt-2 text-warm-600 leading-relaxed text-[15px]">
+            Geofence detecta proximidad. Check-in, foto antes/después desde la app, formulario corto de OOS y precios. Envía.
+          </p>
+          <div class="mt-4 mono-num text-[12px] text-warm-400">~18 min en PDV</div>
+        </li>
+        <li>
+          <div class="flex items-center gap-3 mb-5">
+            <div class="w-14 h-14 rounded-full bg-orange text-white flex items-center justify-center font-display font-semibold text-lg mono-num z-10">04</div>
+          </div>
+          <h3 class="font-display font-semibold text-navy text-[20px] tracking-tight">Validación + pago</h3>
+          <p class="mt-2 text-warm-600 leading-relaxed text-[15px]">
+            Sistema valida geo, timestamp y planograma. Marca ve evidencia en dashboard. Rep entra al payout del viernes.
+          </p>
+          <div class="mt-4 mono-num text-[12px] text-warm-400">&lt;6h aprobada</div>
+        </li>
+      </ol>
+    </div>
+  </div>
+</section>
+
+
+<!-- ===================== TWO COLUMNS: MARCAS vs REPS ===================== -->
+<section class="border-t border-warm-200 bg-navy text-cream">
+  <div class="max-w-[1280px] mx-auto px-6 lg:px-10 py-20 lg:py-24">
+    <div class="reveal mb-14">
+      <div class="mono-num text-[12px] tracking-wider text-cream/60 uppercase mb-3">03 / Dos lados</div>
+      <h2 class="font-display font-semibold text-cream text-[40px] lg:text-[56px] leading-[1.02] tracking-tightest max-w-3xl">
+        Un marketplace, dos trabajos distintos.
+      </h2>
+    </div>
+
+    <div class="grid md:grid-cols-2 gap-10 reveal" id="marcas">
+      <!-- col: para marcas -->
+      <div class="border-l-2 border-orange pl-8 lg:pl-10">
+        <div class="flex items-center gap-3 mb-6">
+          <span class="font-display font-semibold text-orange text-[15px] tracking-wide">PARA MARCAS</span>
+          <span class="h-px flex-1 bg-cream/15"></span>
+        </div>
+        <h3 class="font-display font-semibold text-cream text-[28px] lg:text-[34px] tracking-tight leading-tight mb-8">
+          Cobertura sin contratar promotoras.
+        </h3>
+        <ul class="space-y-5">
+          <li class="flex gap-4">
+            <svg viewBox="0 0 24 24" width="22" height="22" class="shrink-0 mt-0.5" fill="none" stroke="#FF6B35" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12l4 4L20 5"/></svg>
+            <div>
+              <div class="text-cream font-medium">Long-tail real</div>
+              <div class="text-cream/60 text-[15px] mt-1">Llega a changarro, conveniencia regional y autoservicio mediano que ninguna agencia te visita.</div>
+            </div>
+          </li>
+          <li class="flex gap-4">
+            <svg viewBox="0 0 24 24" width="22" height="22" class="shrink-0 mt-0.5" fill="none" stroke="#FF6B35" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12l4 4L20 5"/></svg>
+            <div>
+              <div class="text-cream font-medium">Costo variable</div>
+              <div class="text-cream/60 text-[15px] mt-1">Pagas por misión completada, no por headcount sentado. Apaga campañas sin penalty.</div>
+            </div>
+          </li>
+          <li class="flex gap-4">
+            <svg viewBox="0 0 24 24" width="22" height="22" class="shrink-0 mt-0.5" fill="none" stroke="#FF6B35" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12l4 4L20 5"/></svg>
+            <div>
+              <div class="text-cream font-medium">Evidencia auditada</div>
+              <div class="text-cream/60 text-[15px] mt-1">Foto + geo + timestamp + reconocimiento de planograma. Las disputas se resuelven en minutos.</div>
+            </div>
+          </li>
+          <li class="flex gap-4">
+            <svg viewBox="0 0 24 24" width="22" height="22" class="shrink-0 mt-0.5" fill="none" stroke="#FF6B35" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12l4 4L20 5"/></svg>
+            <div>
+              <div class="text-cream font-medium">Dashboard único</div>
+              <div class="text-cream/60 text-[15px] mt-1">Brand Ops ve cumplimiento, OOS y precios competencia en un solo lugar. Exporta para junta de KAM.</div>
+            </div>
+          </li>
+        </ul>
+        <a href="#cta" class="mt-10 inline-flex items-center gap-2 text-orange font-medium underline-offset-4 hover:underline">
+          Pedir demo para marca
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
+        </a>
+      </div>
+
+      <!-- col: para reps -->
+      <div class="border-l-2 border-orange pl-8 lg:pl-10" id="reps">
+        <div class="flex items-center gap-3 mb-6">
+          <span class="font-display font-semibold text-orange text-[15px] tracking-wide">PARA REPS</span>
+          <span class="h-px flex-1 bg-cream/15"></span>
+        </div>
+        <h3 class="font-display font-semibold text-cream text-[28px] lg:text-[34px] tracking-tight leading-tight mb-8">
+          Misiones cerca de tu ruta. Pago el viernes.
+        </h3>
+        <ul class="space-y-5">
+          <li class="flex gap-4">
+            <svg viewBox="0 0 24 24" width="22" height="22" class="shrink-0 mt-0.5" fill="none" stroke="#FF6B35" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12l4 4L20 5"/></svg>
+            <div>
+              <div class="text-cream font-medium">Tú decides cuándo</div>
+              <div class="text-cream/60 text-[15px] mt-1">Sin horario fijo. Si vas pasando por un Oxxo, abres la app y revisas si hay misión en ese PDV.</div>
+            </div>
+          </li>
+          <li class="flex gap-4">
+            <svg viewBox="0 0 24 24" width="22" height="22" class="shrink-0 mt-0.5" fill="none" stroke="#FF6B35" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12l4 4L20 5"/></svg>
+            <div>
+              <div class="text-cream font-medium">Pago claro de entrada</div>
+              <div class="text-cream/60 text-[15px] mt-1">Ves el monto antes de aceptar. Si la marca no paga, Shelfly sí. Sin descuentos sorpresa.</div>
+            </div>
+          </li>
+          <li class="flex gap-4">
+            <svg viewBox="0 0 24 24" width="22" height="22" class="shrink-0 mt-0.5" fill="none" stroke="#FF6B35" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12l4 4L20 5"/></svg>
+            <div>
+              <div class="text-cream font-medium">Onboarding en 1 día</div>
+              <div class="text-cream/60 text-[15px] mt-1">Validación de identidad y CLABE en la misma sesión. Tu primera misión disponible el día siguiente.</div>
+            </div>
+          </li>
+          <li class="flex gap-4">
+            <svg viewBox="0 0 24 24" width="22" height="22" class="shrink-0 mt-0.5" fill="none" stroke="#FF6B35" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12l4 4L20 5"/></svg>
+            <div>
+              <div class="text-cream font-medium">Rating que vale</div>
+              <div class="text-cream/60 text-[15px] mt-1">Misiones bien hechas suben tu rating y desbloquean misiones de marcas premium con mejor pago.</div>
+            </div>
+          </li>
+        </ul>
+        <a href="#cta" class="mt-10 inline-flex items-center gap-2 text-orange font-medium underline-offset-4 hover:underline">
+          Quiero ser rep
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ===================== CLIENTES PRONTO ===================== -->
+<section class="border-t border-warm-200">
+  <div class="max-w-[1280px] mx-auto px-6 lg:px-10 py-20 lg:py-24">
+    <div class="reveal flex flex-wrap items-end justify-between gap-8 mb-12">
+      <div>
+        <div class="mono-num text-[12px] tracking-wider text-warm-600 uppercase mb-3">04 / Clientes</div>
+        <h2 class="font-display font-semibold text-navy text-[36px] lg:text-[48px] leading-[1.05] tracking-tightest max-w-2xl">
+          Marcas piloto, primer trimestre.
+        </h2>
+      </div>
+      <p class="text-warm-600 max-w-md leading-relaxed">
+        Estamos arrancando con un grupo cerrado de marcas CPG mexicanas en categorías de bebidas, snacks y cuidado personal. Si tu marca quiere espacio en este lote, escribe.
+      </p>
+    </div>
+
+    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-px bg-warm-200 border border-warm-200 rounded-2xl overflow-hidden reveal">
+      <!-- 6 placeholders -->
+      <div class="bg-cream aspect-[4/3] flex items-center justify-center text-center p-5">
+        <div>
+          <div class="mono-num text-[11px] tracking-wider text-warm-400 uppercase">Pronto aquí</div>
+          <div class="font-display font-semibold text-navy/40 text-[20px] mt-2">Bebidas</div>
+        </div>
+      </div>
+      <div class="bg-cream aspect-[4/3] flex items-center justify-center text-center p-5">
+        <div>
+          <div class="mono-num text-[11px] tracking-wider text-warm-400 uppercase">Pronto aquí</div>
+          <div class="font-display font-semibold text-navy/40 text-[20px] mt-2">Snacks</div>
+        </div>
+      </div>
+      <div class="bg-cream aspect-[4/3] flex items-center justify-center text-center p-5">
+        <div>
+          <div class="mono-num text-[11px] tracking-wider text-warm-400 uppercase">Pronto aquí</div>
+          <div class="font-display font-semibold text-navy/40 text-[20px] mt-2">Cuidado personal</div>
+        </div>
+      </div>
+      <div class="bg-cream aspect-[4/3] flex items-center justify-center text-center p-5">
+        <div>
+          <div class="mono-num text-[11px] tracking-wider text-warm-400 uppercase">Pronto aquí</div>
+          <div class="font-display font-semibold text-navy/40 text-[20px] mt-2">Lácteos</div>
+        </div>
+      </div>
+      <div class="bg-cream aspect-[4/3] flex items-center justify-center text-center p-5">
+        <div>
+          <div class="mono-num text-[11px] tracking-wider text-warm-400 uppercase">Pronto aquí</div>
+          <div class="font-display font-semibold text-navy/40 text-[20px] mt-2">Hogar</div>
+        </div>
+      </div>
+      <div class="bg-cream aspect-[4/3] flex items-center justify-center text-center p-5">
+        <div>
+          <div class="mono-num text-[11px] tracking-wider text-warm-400 uppercase">Pronto aquí</div>
+          <div class="font-display font-semibold text-navy/40 text-[20px] mt-2">Confitería</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ===================== CTA FINAL ===================== -->
+<section id="cta" class="border-t border-warm-200">
+  <div class="max-w-[1280px] mx-auto px-6 lg:px-10 py-24 lg:py-32">
+    <div class="reveal grid lg:grid-cols-12 gap-10 items-end">
+      <div class="lg:col-span-8">
+        <h2 class="font-display font-semibold text-navy text-[44px] lg:text-[72px] leading-[0.98] tracking-tightest">
+          Tu próxima misión empieza en 4 minutos.
+        </h2>
+        <p class="mt-6 text-warm-600 text-lg leading-relaxed max-w-2xl">
+          Pilotos cerrados con marcas CPG en CDMX, Monterrey y Guadalajara. Pídenos una demo de 25 minutos y arma tu primera campaña con tu equipo.
+        </p>
+      </div>
+      <div class="lg:col-span-4 flex flex-col gap-3 lg:items-end">
+        <a href="#" class="cta-primary inline-flex items-center justify-between gap-3 bg-orange text-white px-7 py-4 rounded-full font-medium text-[16px] w-full lg:w-auto">
+          <span>Crear primera misión</span>
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
+        </a>
+        <a href="#" class="inline-flex items-center justify-between gap-3 bg-navy text-cream px-7 py-4 rounded-full font-medium text-[16px] w-full lg:w-auto">
+          <span>Hablar con ventas</span>
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ===================== FOOTER ===================== -->
+<footer class="border-t border-warm-200 bg-cream">
+  <div class="max-w-[1280px] mx-auto px-6 lg:px-10 py-14">
+    <div class="grid md:grid-cols-12 gap-10">
+      <div class="md:col-span-5">
+        <a href="#" class="flex items-center gap-2.5">
+          <svg viewBox="0 0 80 80" width="36" height="36" aria-hidden="true">
+            <rect width="80" height="80" rx="18" fill="#FF6B35"/>
+            <text x="40" y="56" text-anchor="middle"
+                  font-family="Space Grotesk, Inter, sans-serif" font-weight="700"
+                  font-size="50" letter-spacing="-2.5" fill="#0A2540">SX</text>
+          </svg>
+          <span class="font-display font-semibold text-[24px] tracking-tightest text-navy">Shelfly</span>
+        </a>
+        <p class="mt-5 text-warm-600 text-[15px] leading-relaxed max-w-sm">
+          Marketplace de reps de campo independientes para ejecución en punto de venta en México.
+        </p>
+      </div>
+
+      <div class="md:col-span-2">
+        <div class="mono-num text-[12px] tracking-wider text-warm-400 uppercase mb-4">Producto</div>
+        <ul class="space-y-2.5 text-[15px] text-navy">
+          <li><a href="#marcas" class="hover:text-orange">Para marcas</a></li>
+          <li><a href="#reps" class="hover:text-orange">Para reps</a></li>
+          <li><a href="#como" class="hover:text-orange">Cómo funciona</a></li>
+          <li><a href="#" class="hover:text-orange">Precios</a></li>
+        </ul>
+      </div>
+      <div class="md:col-span-2">
+        <div class="mono-num text-[12px] tracking-wider text-warm-400 uppercase mb-4">Empresa</div>
+        <ul class="space-y-2.5 text-[15px] text-navy">
+          <li><a href="#" class="hover:text-orange">Nosotros</a></li>
+          <li><a href="#" class="hover:text-orange">Carreras</a></li>
+          <li><a href="#" class="hover:text-orange">Contacto</a></li>
+          <li><a href="#" class="hover:text-orange">Prensa</a></li>
+        </ul>
+      </div>
+      <div class="md:col-span-3">
+        <div class="mono-num text-[12px] tracking-wider text-warm-400 uppercase mb-4">Legal</div>
+        <ul class="space-y-2.5 text-[15px] text-navy">
+          <li><a href="#" class="hover:text-orange">Términos</a></li>
+          <li><a href="#" class="hover:text-orange">Privacidad</a></li>
+          <li><a href="#" class="hover:text-orange">Aviso de cookies</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="mt-14 pt-6 border-t border-warm-200 flex flex-wrap items-center justify-between gap-4 text-[13px] text-warm-600 mono-num">
+      <span>© 2026 Shelfly Technologies, S.A.P.I. de C.V.</span>
+      <span>Hecho en CDMX</span>
+    </div>
+  </div>
+</footer>
+
+
+<script>
+  // Reveal on scroll, very subtle.
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.classList.add('is-visible');
+        io.unobserve(e.target);
+      }
+    });
+  }, { rootMargin: '0px 0px -10% 0px', threshold: 0.05 });
+
+  document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+</script>
+
+</body>
+</html>
