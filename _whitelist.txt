@@ -17,6 +17,7 @@ pedro.rojas.campuzano@gmail.com
 mariana.lenero94@gmail.com
 adrian@semantiks.com
 adrian@semantiks.ai
+jgg_delavega@hotmail.com
 maria@knomadic.io
 
 # --- Dominios autorizados (todo el equipo) ---
