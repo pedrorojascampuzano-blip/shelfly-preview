@@ -18,6 +18,38 @@
   // Despues, cada firma llega por email automaticamente.
   var NOTIFY_ENDPOINT = 'https://formsubmit.co/ajax/pedroc11@gmail.com';
 
+  // ============================================================
+  // WHITELIST · editar y push a GitHub para actualizar
+  // ============================================================
+  // Si AMBAS listas estan vacias, modo abierto (cualquier email entra).
+  // Si HAY entradas, solo se aceptan las que matchean.
+  // Match es case-insensitive. Email exact match. Dominio compara sufijo.
+  var ALLOWED_EMAILS = [
+    // 'diego@timetracker.com.mx',
+    // 'pedroc11@gmail.com',
+  ];
+  var ALLOWED_DOMAINS = [
+    // 'timetracker.com.mx',
+    // 'storecheck.com.mx',
+    // 'vuelocapital.com',
+  ];
+
+  function isAllowed(email) {
+    var e = (email || '').trim().toLowerCase();
+    if (!e) return false;
+    if (ALLOWED_EMAILS.length === 0 && ALLOWED_DOMAINS.length === 0) return true;
+    for (var i = 0; i < ALLOWED_EMAILS.length; i++) {
+      if (ALLOWED_EMAILS[i].toLowerCase() === e) return true;
+    }
+    var atIdx = e.lastIndexOf('@');
+    if (atIdx < 0) return false;
+    var domain = e.substring(atIdx + 1);
+    for (var j = 0; j < ALLOWED_DOMAINS.length; j++) {
+      if (domain === ALLOWED_DOMAINS[j].toLowerCase()) return true;
+    }
+    return false;
+  }
+
   // Si ya firmo, salir sin hacer nada
   try {
     var signed = JSON.parse(localStorage.getItem(STORAGE_KEY));
@@ -105,15 +137,39 @@
   btn.addEventListener('mouseenter', function () { btn.style.background = '#E85A28'; });
   btn.addEventListener('mouseleave', function () { btn.style.background = '#FF6B35'; });
 
+  // Mostrar / ocultar el mensaje de error de whitelist
+  function showError(msg) {
+    var el = document.getElementById('shelfly-nda-error');
+    if (!el) {
+      el = document.createElement('div');
+      el.id = 'shelfly-nda-error';
+      el.style.cssText = 'background:#FEE2E2;border:1px solid #FCA5A5;color:#991B1B;padding:10px 14px;border-radius:8px;font-size:13px;margin-bottom:12px;line-height:1.5;';
+      form.insertBefore(el, form.firstChild);
+    }
+    el.textContent = msg;
+  }
+  function clearError() {
+    var el = document.getElementById('shelfly-nda-error');
+    if (el) el.remove();
+  }
+
   form.addEventListener('submit', function (e) {
     e.preventDefault();
+    clearError();
+
+    var emailVal = form.email.value.trim();
+    if (!isAllowed(emailVal)) {
+      showError('Tu email no esta autorizado. Contacta a Pedro Rojas (pedroc11@gmail.com) para solicitar acceso.');
+      return;
+    }
+
     btn.disabled = true;
     btn.textContent = 'Procesando...';
 
     var data = {
       nombre: form.nombre.value.trim(),
       empresa: form.empresa.value.trim(),
-      email: form.email.value.trim(),
+      email: emailVal,
       timestamp: new Date().toISOString(),
       url: window.location.href,
       userAgent: navigator.userAgent,
