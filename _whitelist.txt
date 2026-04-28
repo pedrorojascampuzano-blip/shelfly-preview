@@ -1,0 +1,32 @@
+# Shelfly NDA · Whitelist
+# ============================================================
+# Edita este archivo desde GitHub web (un click) para agregar
+# emails o dominios autorizados. Se aplica en ~1 minuto.
+#
+# Formato:
+#   - Lineas vacias y con # se ignoran
+#   - Email exacto: usuario@empresa.com
+#   - Dominio (todo el equipo): @empresa.com
+#
+# Si TODO esta vacio o el archivo no existe, modo abierto:
+# cualquier email entra.
+# ============================================================
+
+# --- Pedro y core ---
+pedroc11@gmail.com
+
+# --- Dominios autorizados (todo el equipo) ---
+@timetracker.com.mx
+@storecheck.com.mx
+@vuelocapital.com
+
+# --- Diego y socios (agregar emails individuales aqui cuando los confirmes) ---
+# diego@timetracker.com.mx
+# ignacio@vuelocapital.com
+
+# --- Abogados / asesores ---
+# abogado@despacho.com
+
+# --- LPs Vuelo (agregar cuando autorice Diego) ---
+# fund@cerralvocapital.com
+# fund@alzacapital.com

@@ -24,16 +24,58 @@
   // Si AMBAS listas estan vacias, modo abierto (cualquier email entra).
   // Si HAY entradas, solo se aceptan las que matchean.
   // Match es case-insensitive. Email exact match. Dominio compara sufijo.
-  var ALLOWED_EMAILS = [
-    'pedroc11@gmail.com',
-    // agrega aqui emails individuales: 'diego@timetracker.com.mx',
-  ];
-  var ALLOWED_DOMAINS = [
-    'timetracker.com.mx',
-    'storecheck.com.mx',
-    'vuelocapital.com',
-    // agrega mas dominios cuando confirmes con Diego (LPs, abogados, etc)
-  ];
+  // Fallback hardcoded en caso de que el archivo _whitelist.txt no cargue.
+  // La fuente autoritativa es _whitelist.txt (editable desde GitHub web UI).
+  var ALLOWED_EMAILS = ['pedroc11@gmail.com'];
+  var ALLOWED_DOMAINS = ['timetracker.com.mx', 'storecheck.com.mx', 'vuelocapital.com'];
+
+  // Calcula la URL del whitelist a partir del src del script
+  function getWhitelistUrl() {
+    var scripts = document.getElementsByTagName('script');
+    for (var i = 0; i < scripts.length; i++) {
+      var src = scripts[i].src || '';
+      if (src.indexOf('_nda-gate.js') !== -1) {
+        return src.replace('_nda-gate.js', '_whitelist.txt');
+      }
+    }
+    return '/_whitelist.txt';
+  }
+
+  function parseWhitelist(text) {
+    var emails = [], domains = [];
+    text.split('\n').forEach(function (raw) {
+      var line = raw.trim();
+      if (!line || line.charAt(0) === '#') return;
+      // strip inline comments
+      var hashIdx = line.indexOf('#');
+      if (hashIdx >= 0) line = line.substring(0, hashIdx).trim();
+      if (!line) return;
+      if (line.charAt(0) === '@') {
+        domains.push(line.substring(1).toLowerCase());
+      } else if (line.indexOf('@') > 0) {
+        emails.push(line.toLowerCase());
+      }
+    });
+    return { emails: emails, domains: domains };
+  }
+
+  function loadWhitelistAsync(callback) {
+    try {
+      var url = getWhitelistUrl() + '?t=' + Date.now(); // cache bust
+      fetch(url, { cache: 'no-store' })
+        .then(function (r) { if (!r.ok) throw new Error('http ' + r.status); return r.text(); })
+        .then(function (text) {
+          var parsed = parseWhitelist(text);
+          // solo overrides si parse retorno algo
+          if (parsed.emails.length || parsed.domains.length) {
+            ALLOWED_EMAILS = parsed.emails;
+            ALLOWED_DOMAINS = parsed.domains;
+          }
+          callback();
+        })
+        .catch(function () { callback(); });
+    } catch (e) { callback(); }
+  }
 
   function isAllowed(email) {
     var e = (email || '').trim().toLowerCase();
@@ -56,6 +98,10 @@
     var signed = JSON.parse(localStorage.getItem(STORAGE_KEY));
     if (signed && signed.timestamp) return;
   } catch (e) {}
+
+  // Cargar whitelist en background. Si llega antes que el usuario submita,
+  // se aplica. Si no, fallback a hardcoded (que ya cubre los principales).
+  loadWhitelistAsync(function () { /* ready */ });
 
   // Inyectar fonts + tailwind si no estan
   var head = document.head;
