@@ -25,13 +25,14 @@
   // Si HAY entradas, solo se aceptan las que matchean.
   // Match es case-insensitive. Email exact match. Dominio compara sufijo.
   var ALLOWED_EMAILS = [
-    // 'diego@timetracker.com.mx',
-    // 'pedroc11@gmail.com',
+    'pedroc11@gmail.com',
+    // agrega aqui emails individuales: 'diego@timetracker.com.mx',
   ];
   var ALLOWED_DOMAINS = [
-    // 'timetracker.com.mx',
-    // 'storecheck.com.mx',
-    // 'vuelocapital.com',
+    'timetracker.com.mx',
+    'storecheck.com.mx',
+    'vuelocapital.com',
+    // agrega mas dominios cuando confirmes con Diego (LPs, abogados, etc)
   ];
 
   function isAllowed(email) {
