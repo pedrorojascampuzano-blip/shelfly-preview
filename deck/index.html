@@ -48,6 +48,53 @@
   }
   .num-mega { font-feature-settings: "tnum" 1, "lnum" 1; letter-spacing: -0.04em; }
   .ws-tight { letter-spacing: -0.03em; }
+  /* Mega number for TAM/SAM/SOM cards: scales smoothly, never wraps, suffix stays inline */
+  .num-market {
+    font-family: 'Inter', system-ui, sans-serif;
+    font-weight: 800;
+    letter-spacing: -0.04em;
+    font-feature-settings: "tnum" 1, "lnum" 1;
+    font-size: clamp(2.5rem, 5vw, 4rem);
+    line-height: 1;
+    white-space: nowrap;
+    display: block;
+    overflow: visible;
+  }
+  .num-market .suffix {
+    color: #FF6B35;
+    font-size: 0.55em;
+    font-weight: 800;
+    margin-left: 0.05em;
+    letter-spacing: -0.03em;
+  }
+  /* Source link inside card (replaces [VALIDAR] tag) */
+  .source-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    color: #FF6B35;
+    text-decoration: none;
+    border-bottom: 1px dashed rgba(255,107,53,0.4);
+    padding-bottom: 1px;
+    transition: color 0.15s ease;
+  }
+  .source-link:hover { color: #d94e1f; border-bottom-color: #d94e1f; }
+  .source-link.dark { color: #FFB494; border-bottom-color: rgba(255,180,148,0.4); }
+  .source-link.dark:hover { color: #ffd0b8; }
+  /* Citation superscript link */
+  .cite-link {
+    color: #FF6B35;
+    font-size: 0.7em;
+    font-weight: 700;
+    text-decoration: none;
+    margin-left: 2px;
+    vertical-align: super;
+  }
+  .cite-link:hover { color: #d94e1f; }
+  .cite-link.dark { color: #FFB494; }
   .gradient-navy {
     background: radial-gradient(120% 80% at 30% 20%, #11355c 0%, #0A2540 45%, #060f1c 100%);
   }
@@ -207,7 +254,7 @@
       <span>Abril 2026</span>
     </div>
   </div>
-  <span class="slide-num text-white/55">01 / 10</span>
+  <span class="slide-num text-white/55">01 / 12</span>
   <span class="slide-brand text-white/55">Shelfly</span>
 </section>
 
@@ -271,14 +318,111 @@
       <p class="mt-2 text-xs text-navy/40 uppercase tracking-[0.18em]">Brand Manager mid · cita ilustrativa</p>
     </div>
   </div>
-  <span class="slide-num text-navy/60">02 / 10</span>
+  <span class="slide-num text-navy/60">02 / 12</span>
   <span class="slide-brand text-navy/60">Shelfly</span>
 </section>
 
 <!-- =========================================================
-     SLIDE 3 - LA SOLUCIÓN
+     SLIDE 3 - PAINPOINTS REALES
      ========================================================= -->
 <section id="s3" class="slide bg-white flex items-center">
+  <div class="px-12 lg:px-20 max-w-7xl mx-auto w-full">
+    <div class="flex items-center gap-3 mb-6">
+      <div class="w-8 h-px bg-primary"></div>
+      <span class="text-xs font-semibold tracking-[0.25em] uppercase text-primary">Painpoints reales</span>
+    </div>
+    <h2 class="ws-tight font-bold text-navy leading-[1.05] max-w-5xl mb-4" style="font-size: clamp(32px, 4.5vw, 52px);">
+      Cinco dolores concretos que escuchamos en discovery.
+    </h2>
+    <blockquote class="border-l-2 border-primary pl-5 italic text-navy/75 text-sm leading-relaxed max-w-4xl mb-10">
+      "Esta idea nació hace 2 años cuando una marca de tequila mid me describió sus dolores con reps tradicionales. Los mismos dolores los tienen marcas de farma OTC, vinos, snacks regionales y food service B2B."
+    </blockquote>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-5 mb-6">
+      <!-- Pain 1 -->
+      <div class="card p-6">
+        <div class="flex items-center gap-3 mb-3">
+          <div class="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
+            <!-- lucide: search -->
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#FF6B35" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+          </div>
+          <span class="text-xs font-bold tracking-[0.18em] uppercase text-primary">01</span>
+        </div>
+        <h3 class="text-base font-bold text-navy ws-tight leading-tight mb-2">Sourcing rotativo y sin filtros</h3>
+        <p class="text-sm text-navy/75 leading-relaxed mb-2">Conseguir reps de calidad en mercado fragmentado toma semanas. Las agencias cobran fee fijo, sin SLA por calidad.</p>
+        <p class="text-xs text-navy/55 italic leading-relaxed">"Una marca difícil consigue reps; cuando los consigue son los mismos saturados con 4 marcas".</p>
+      </div>
+
+      <!-- Pain 2 -->
+      <div class="card p-6">
+        <div class="flex items-center gap-3 mb-3">
+          <div class="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
+            <!-- lucide: map -->
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#FF6B35" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.106 5.553a2 2 0 0 0 1.788 0l3.659-1.83A1 1 0 0 1 21 4.619v12.764a1 1 0 0 1-.553.894l-4.553 2.277a2 2 0 0 1-1.788 0l-4.212-2.106a2 2 0 0 0-1.788 0l-3.659 1.83A1 1 0 0 1 3 19.381V6.618a1 1 0 0 1 .553-.894L8.106 3.447a2 2 0 0 1 1.788 0z"/><path d="M15 5.764v15"/><path d="M9 3.236v15"/></svg>
+          </div>
+          <span class="text-xs font-bold tracking-[0.18em] uppercase text-primary">02</span>
+        </div>
+        <h3 class="text-base font-bold text-navy ws-tight leading-tight mb-2">Cero visibility de cobertura</h3>
+        <p class="text-sm text-navy/75 leading-relaxed">Nadie sabe qué áreas geográficas cubre realmente cada rep. Mapas pintados a ojo en PowerPoint. Hueco de visibilidad en SKU mid-tail.</p>
+      </div>
+
+      <!-- Pain 3 -->
+      <div class="card p-6">
+        <div class="flex items-center gap-3 mb-3">
+          <div class="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
+            <!-- lucide: shield-alert -->
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#FF6B35" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="M12 8v4"/><path d="M12 16h.01"/></svg>
+          </div>
+          <span class="text-xs font-bold tracking-[0.18em] uppercase text-primary">03</span>
+        </div>
+        <h3 class="text-base font-bold text-navy ws-tight leading-tight mb-2">Cero accountability sobre ejecución</h3>
+        <p class="text-sm text-navy/75 leading-relaxed">El rep dice "estuve en 12 PDV hoy"; la marca no tiene forma de validar que ejecutó la actividad pedida (rotación, pricing, planograma).</p>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-5">
+      <!-- Pain 4 -->
+      <div class="card p-6">
+        <div class="flex items-center gap-3 mb-3">
+          <div class="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
+            <!-- lucide: lock -->
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#FF6B35" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+          </div>
+          <span class="text-xs font-bold tracking-[0.18em] uppercase text-primary">04</span>
+        </div>
+        <h3 class="text-base font-bold text-navy ws-tight leading-tight mb-2">Reps exclusivos por contrato = ineficiencia económica</h3>
+        <p class="text-sm text-navy/75 leading-relaxed">Estructura tradicional fuerza al rep a representar una sola marca. Sus relaciones con PDV se desperdician. La marca paga 100% del costo de un activo subutilizado.</p>
+      </div>
+
+      <!-- Pain 5 -->
+      <div class="card p-6">
+        <div class="flex items-center gap-3 mb-3">
+          <div class="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
+            <!-- lucide: bar-chart-3 -->
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#FF6B35" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v16a2 2 0 0 0 2 2h16"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/></svg>
+          </div>
+          <span class="text-xs font-bold tracking-[0.18em] uppercase text-primary">05</span>
+        </div>
+        <h3 class="text-base font-bold text-navy ws-tight leading-tight mb-2">Decisiones por gut feel, no por datos</h3>
+        <p class="text-sm text-navy/75 leading-relaxed">Brand managers asignan presupuesto de campo basado en intuición. No hay link entre actividad ejecutada → sell-through → recomendación de campaña próxima.</p>
+      </div>
+    </div>
+
+    <div class="mt-8 p-6 rounded-xl bg-navy/5 border border-navy/10">
+      <div class="text-xs font-bold tracking-[0.22em] uppercase text-primary mb-2">Buyer ICP</div>
+      <p class="text-sm text-navy/85 leading-relaxed">
+        Brand managers, heads de trade marketing, COOs en marcas mid-market CPG / farma OTC / vinos / food service. Compradores secundarios: ex-consultores que armaron su search fund retail (estilo Diego Gavito, Ignacio Rivero) y buscan complementar suite TT+SC con marketplace transaccional.<a class="cite-link" href="https://www.notion.so/pedrorojas/Estrategia-de-negocios-y-leads-AT-Kearney-Andela-2026-04-29-351b1aa1843f80b38623dc3175950700" target="_blank" rel="noopener" title="Discovery con Adrian">&#8599;</a>
+      </p>
+    </div>
+  </div>
+  <span class="slide-num text-navy/60">03 / 12</span>
+  <span class="slide-brand text-navy/60">Shelfly</span>
+</section>
+
+<!-- =========================================================
+     SLIDE 4 - LA SOLUCIÓN
+     ========================================================= -->
+<section id="s4" class="slide bg-white flex items-center">
   <div class="px-12 lg:px-20 max-w-7xl mx-auto w-full">
     <div class="flex items-center gap-3 mb-6">
       <div class="w-8 h-px bg-primary"></div>
@@ -335,14 +479,14 @@
       </div>
     </div>
   </div>
-  <span class="slide-num text-navy/60">03 / 10</span>
+  <span class="slide-num text-navy/60">04 / 12</span>
   <span class="slide-brand text-navy/60">Shelfly</span>
 </section>
 
 <!-- =========================================================
-     SLIDE 4 - HOW IT WORKS
+     SLIDE 5 - HOW IT WORKS
      ========================================================= -->
-<section id="s4" class="slide bg-cream flex items-center">
+<section id="s5" class="slide bg-cream flex items-center">
   <div class="px-12 lg:px-20 max-w-7xl mx-auto w-full">
     <div class="flex items-center gap-3 mb-6">
       <div class="w-8 h-px bg-primary"></div>
@@ -409,14 +553,14 @@
       Stack: Next.js · Supabase · Expo · Mercado Pago · Cloudflare R2
     </div>
   </div>
-  <span class="slide-num text-navy/60">04 / 10</span>
+  <span class="slide-num text-navy/60">05 / 12</span>
   <span class="slide-brand text-navy/60">Shelfly</span>
 </section>
 
 <!-- =========================================================
-     SLIDE 5 - POSICIONAMIENTO: TRES PRODUCTOS, UN UNIVERSO RETAIL OPS
+     SLIDE 6 - POSICIONAMIENTO: TRES PRODUCTOS, UN UNIVERSO RETAIL OPS
      ========================================================= -->
-<section id="s5" class="slide bg-white flex items-center">
+<section id="s6" class="slide bg-white flex items-center">
   <div class="px-12 lg:px-20 max-w-7xl mx-auto w-full">
     <div class="flex items-center gap-3 mb-6">
       <div class="w-8 h-px bg-primary"></div>
@@ -522,14 +666,14 @@
       </div>
     </div>
   </div>
-  <span class="slide-num text-navy/60">05 / 10</span>
+  <span class="slide-num text-navy/60">06 / 12</span>
   <span class="slide-brand text-navy/60">Shelfly</span>
 </section>
 
 <!-- =========================================================
-     SLIDE 6 - MERCADO
+     SLIDE 7 - MERCADO
      ========================================================= -->
-<section id="s6" class="slide bg-cream flex items-center">
+<section id="s7" class="slide bg-cream flex items-center">
   <div class="px-12 lg:px-20 max-w-7xl mx-auto w-full">
     <div class="flex items-center gap-3 mb-6">
       <div class="w-8 h-px bg-primary"></div>
@@ -542,38 +686,32 @@
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
       <div class="card p-10">
         <div class="text-xs font-bold tracking-[0.22em] uppercase text-navy/50 mb-3">TAM</div>
-        <div class="num-mega font-extrabold text-navy" style="font-size: clamp(64px, 7vw, 96px); line-height: 1;">
-          $5-7<span class="text-primary">B</span>
-        </div>
+        <span class="num-market text-navy">$5-7<span class="suffix">B</span></span>
         <p class="mt-3 text-sm font-semibold text-navy/80">USD anuales: trade marketing CPG + farma OTC + food service B2B en MX</p>
         <p class="mt-4 text-xs text-navy/60 leading-relaxed">
           Suma de servicios de campo multi-canal: tradicional, conveniencia, cadenas, farmacia, horeca y otros.
-          <span class="validate-tag">Validar ANTAD/Nielsen/IMS Health</span>
         </p>
+        <a class="source-link mt-3" href="https://antad.net/indicadores/indicantad/" target="_blank" rel="noopener">Fuente: ANTAD IndicANTAD &#8599;</a>
       </div>
 
       <div class="card p-10">
         <div class="text-xs font-bold tracking-[0.22em] uppercase text-navy/50 mb-3">SAM</div>
-        <div class="num-mega font-extrabold text-navy" style="font-size: clamp(64px, 7vw, 96px); line-height: 1;">
-          $800M-1.2<span class="text-primary">B</span>
-        </div>
+        <span class="num-market text-navy">$800M-1.2<span class="suffix">B</span></span>
         <p class="mt-3 text-sm font-semibold text-navy/80">USD addressable mid-market multi-canal sin fuerza propia</p>
         <p class="mt-4 text-xs text-navy/60 leading-relaxed">
           ~600-800K PDV multi-canal (tradicional + conveniencia + farma + horeca + otros). 250-500 marcas CPG/farma/food service mid en MX.
-          <span class="validate-tag">Validar</span>
         </p>
+        <a class="source-link mt-3" href="https://antad.net" target="_blank" rel="noopener">Fuente: ANTAD &#8599;</a>
       </div>
 
       <div class="card p-10 border-primary/30 bg-gradient-to-br from-white to-primary/5">
         <div class="text-xs font-bold tracking-[0.22em] uppercase text-primary mb-3">SOM Año 2</div>
-        <div class="num-mega font-extrabold text-navy" style="font-size: clamp(64px, 7vw, 96px); line-height: 1;">
-          $720<span class="text-primary">K</span>
-        </div>
+        <span class="num-market text-navy">$720<span class="suffix">K</span></span>
         <p class="mt-3 text-sm font-semibold text-navy/80">USD revenue plataforma vía warm pipeline + AI-native operation</p>
         <p class="mt-4 text-xs text-navy/60 leading-relaxed">
           ~80 marcas activas, 4-5K visitas/mes pico, multi-canal. Año 5: USD 2-6M.
-          <span class="validate-tag">Validar supuesto</span>
         </p>
+        <span class="mt-3 inline-block text-[10px] font-semibold uppercase tracking-[0.08em] text-primary/80">Modelo financiero interno</span>
       </div>
     </div>
 
@@ -598,10 +736,10 @@
             <span class="text-xs font-bold tracking-[0.22em] uppercase text-navy/70">Supply-side</span>
           </div>
           <p class="text-sm text-navy/80 leading-relaxed mb-3">
-            <strong class="text-navy">Chamba</strong> (chambasai.com <span class="validate-tag">Validar</span>): staffing tech mexicano con onboarding via WhatsApp para gig workers. Más agencias de staffing tradicionales.
+            <strong class="text-navy">Chamba</strong> (<a href="https://chambas.ai" target="_blank" rel="noopener" class="source-link">chambas.ai &#8599;</a>): AI recruiting via WhatsApp para roles operativos. 1.4M candidatos, 200+ empresas (Toks, Shake Shack, Elektra). Backed by Nazca.
           </p>
           <p class="text-xs text-navy/55 leading-relaxed">
-            Relevante en supply (recruiting de reps), no en demand. Aprendizaje: su funnel WhatsApp es la referencia para nuestro onboarding rep.
+            Relevante en supply, no en demand. Aprendizaje: funnel WhatsApp + agentes para nuestro onboarding rep.
           </p>
         </div>
       </div>
@@ -625,14 +763,14 @@
       </div>
     </div>
   </div>
-  <span class="slide-num text-navy/60">06 / 10</span>
+  <span class="slide-num text-navy/60">07 / 12</span>
   <span class="slide-brand text-navy/60">Shelfly</span>
 </section>
 
 <!-- =========================================================
-     SLIDE 7 - MODELO DE NEGOCIO
+     SLIDE 8 - MODELO DE NEGOCIO
      ========================================================= -->
-<section id="s7" class="slide bg-white flex items-center">
+<section id="s8" class="slide bg-white flex items-center">
   <div class="px-12 lg:px-20 max-w-7xl mx-auto w-full">
     <div class="flex items-center gap-3 mb-6">
       <div class="w-8 h-px bg-primary"></div>
@@ -687,14 +825,14 @@
       </div>
     </div>
   </div>
-  <span class="slide-num text-navy/60">07 / 10</span>
+  <span class="slide-num text-navy/60">08 / 12</span>
   <span class="slide-brand text-navy/60">Shelfly</span>
 </section>
 
 <!-- =========================================================
-     SLIDE 8 - ROADMAP
+     SLIDE 9 - ROADMAP
      ========================================================= -->
-<section id="s8" class="slide bg-cream flex items-center">
+<section id="s9" class="slide bg-cream flex items-center">
   <div class="px-12 lg:px-20 max-w-7xl mx-auto w-full">
     <div class="flex items-center gap-3 mb-6">
       <div class="w-8 h-px bg-primary"></div>
@@ -771,14 +909,14 @@
       </div>
     </div>
   </div>
-  <span class="slide-num text-navy/60">08 / 10</span>
+  <span class="slide-num text-navy/60">09 / 12</span>
   <span class="slide-brand text-navy/60">Shelfly</span>
 </section>
 
 <!-- =========================================================
-     SLIDE 9 - CAPITAL Y USO DE FONDOS
+     SLIDE 10 - CAPITAL Y USO DE FONDOS
      ========================================================= -->
-<section id="s9" class="slide bg-white flex items-center">
+<section id="s10" class="slide bg-white flex items-center">
   <div class="px-12 lg:px-20 max-w-7xl mx-auto w-full">
     <div class="flex items-center gap-3 mb-6">
       <div class="w-8 h-px bg-primary"></div>
@@ -853,14 +991,83 @@
       </div>
     </div>
   </div>
-  <span class="slide-num text-navy/60">09 / 10</span>
+  <span class="slide-num text-navy/60">10 / 12</span>
   <span class="slide-brand text-navy/60">Shelfly</span>
 </section>
 
 <!-- =========================================================
-     SLIDE 10 - ASK AL SOCIO (post asset injection)
+     SLIDE 11 - CICLO DE VENTA / GO-TO-MARKET
      ========================================================= -->
-<section id="s10" class="slide gradient-navy text-white flex items-center">
+<section id="s11" class="slide bg-cream flex items-center">
+  <div class="px-12 lg:px-20 max-w-7xl mx-auto w-full">
+    <div class="flex items-center gap-3 mb-6">
+      <div class="w-8 h-px bg-primary"></div>
+      <span class="text-xs font-semibold tracking-[0.25em] uppercase text-primary">Ciclo de venta</span>
+    </div>
+    <h2 class="ws-tight font-bold text-navy leading-[1.05] max-w-5xl mb-4" style="font-size: clamp(32px, 4.5vw, 52px);">
+      Cómo entramos: feedback session, no sales pitch.
+    </h2>
+    <p class="text-base lg:text-lg text-navy/70 max-w-4xl mb-10">
+      Approach validado con Adrian (cofundador Semantiks, ex-FinTech MX): los compradores ex-AT Kearney respetan este lenguaje. En México casi nadie lo hace.<a class="cite-link" href="https://www.notion.so/pedrorojas/Estrategia-de-negocios-y-leads-AT-Kearney-Andela-2026-04-29-351b1aa1843f80b38623dc3175950700" target="_blank" rel="noopener" title="Notion: discovery con Adrian">&#8599;</a>
+    </p>
+
+    <div class="grid grid-cols-1 lg:grid-cols-5 gap-4 mb-10">
+      <!-- Step 1 -->
+      <div class="card p-5 flex flex-col">
+        <div class="text-xs font-bold tracking-[0.2em] uppercase text-primary mb-2">Paso 01</div>
+        <h3 class="text-sm font-bold text-navy ws-tight leading-tight mb-2">Pedir 30 min</h3>
+        <p class="text-xs text-navy/70 leading-relaxed">Solicitar 30 min para entender ejecución de campo y dolores actuales. NO pitch.</p>
+      </div>
+      <!-- Step 2 -->
+      <div class="card p-5 flex flex-col">
+        <div class="text-xs font-bold tracking-[0.2em] uppercase text-primary mb-2">Paso 02</div>
+        <h3 class="text-sm font-bold text-navy ws-tight leading-tight mb-2">Mostrar como aprendizaje</h3>
+        <p class="text-xs text-navy/70 leading-relaxed">Plataforma como aprendizaje mutuo, NO como venta. Pedir feedback explícito.</p>
+      </div>
+      <!-- Step 3 -->
+      <div class="card p-5 flex flex-col">
+        <div class="text-xs font-bold tracking-[0.2em] uppercase text-primary mb-2">Paso 03</div>
+        <h3 class="text-sm font-bold text-navy ws-tight leading-tight mb-2">Commitment de regreso</h3>
+        <p class="text-xs text-navy/70 leading-relaxed">Salir con commitment de regresar con iteraciones específicas en 2-3 semanas.</p>
+      </div>
+      <!-- Step 4 -->
+      <div class="card p-5 flex flex-col border-primary/40 bg-gradient-to-br from-white to-primary/5">
+        <div class="text-xs font-bold tracking-[0.2em] uppercase text-primary mb-2">Paso 04</div>
+        <h3 class="text-sm font-bold text-navy ws-tight leading-tight mb-2">Regresar con cambios</h3>
+        <p class="text-xs text-navy/70 leading-relaxed mb-2">Cambios concretos basados en su feedback.</p>
+        <p class="text-xs italic text-navy/60 leading-snug">"El feedback que me diste, ya lo implementamos." — Adrian</p>
+      </div>
+      <!-- Step 5 -->
+      <div class="card p-5 flex flex-col">
+        <div class="text-xs font-bold tracking-[0.2em] uppercase text-primary mb-2">Paso 05</div>
+        <h3 class="text-sm font-bold text-navy ws-tight leading-tight mb-2">Ahí sí, pricing</h3>
+        <p class="text-xs text-navy/70 leading-relaxed">Conversación de pricing con compromiso emocional + producto adaptado.</p>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-5">
+      <div class="p-6 rounded-xl bg-primary/8 border border-primary/25">
+        <div class="text-xs font-bold tracking-[0.22em] uppercase text-primary mb-2">Quién específicamente</div>
+        <p class="text-sm text-navy/85 leading-relaxed">
+          Head de customer service · head de trade marketing · head de operaciones. <strong class="text-navy">NO compras, NO procurement.</strong> Los compradores ex-AT Kearney respetan este approach (es su lenguaje propio).
+        </p>
+      </div>
+      <div class="p-6 rounded-xl bg-navy/5 border border-navy/10">
+        <div class="text-xs font-bold tracking-[0.22em] uppercase text-navy/60 mb-2">Por qué funciona</div>
+        <p class="text-sm text-navy/85 leading-relaxed">
+          El approach abre puertas que el sales pitch directo cierra. La gente te hace un favor y se siente comprometida. Es el level zero del relationship building.
+        </p>
+      </div>
+    </div>
+  </div>
+  <span class="slide-num text-navy/60">11 / 12</span>
+  <span class="slide-brand text-navy/60">Shelfly</span>
+</section>
+
+<!-- =========================================================
+     SLIDE 12 - ASK AL SOCIO (post asset injection)
+     ========================================================= -->
+<section id="s12" class="slide gradient-navy text-white flex items-center">
   <div class="px-12 lg:px-20 max-w-7xl mx-auto w-full">
     <div class="flex items-center gap-3 mb-6">
       <div class="w-8 h-px bg-primary"></div>
@@ -928,7 +1135,7 @@
       </div>
     </div>
   </div>
-  <span class="slide-num text-white/55">10 / 10</span>
+  <span class="slide-num text-white/55">12 / 12</span>
   <span class="slide-brand text-white/55">Shelfly</span>
 </section>
 
