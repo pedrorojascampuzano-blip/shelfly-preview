@@ -52,19 +52,19 @@
   .num-market {
     font-family: 'Inter', system-ui, sans-serif;
     font-weight: 800;
-    letter-spacing: -0.04em;
+    letter-spacing: -0.03em;
     font-feature-settings: "tnum" 1, "lnum" 1;
-    font-size: clamp(2.5rem, 5vw, 4rem);
-    line-height: 1;
+    font-size: clamp(1.75rem, 2.6vw, 2.5rem);
+    line-height: 1.05;
     white-space: nowrap;
     display: block;
     overflow: visible;
   }
   .num-market .suffix {
     color: #FF6B35;
-    font-size: 0.55em;
+    font-size: 0.7em;
     font-weight: 800;
-    margin-left: 0.05em;
+    margin-left: 0.04em;
     letter-spacing: -0.03em;
   }
   /* Source link inside card (replaces [VALIDAR] tag) */
@@ -258,10 +258,68 @@
   <span class="slide-brand text-white/55">Shelfly</span>
 </section>
 
-<!-- =========================================================
-     SLIDE 2 - EL PROBLEMA
-     ========================================================= -->
-<section id="s2" class="slide bg-cream flex items-center">
+<section id="s2" class="slide bg-white flex items-center">
+  <div class="px-12 lg:px-20 max-w-7xl mx-auto w-full">
+    <div class="flex items-center gap-3 mb-6">
+      <div class="w-8 h-px bg-primary"></div>
+      <span class="text-xs font-semibold tracking-[0.25em] uppercase text-primary">Solución</span>
+    </div>
+    <h2 class="ws-tight font-bold text-navy leading-[1.05] max-w-5xl" style="font-size: clamp(36px, 5vw, 56px);">
+      Shelfly es el marketplace que conecta marcas con reps de campo on-demand.
+    </h2>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mt-16">
+      <!-- Para marcas -->
+      <div class="border-t-4 border-primary pt-7">
+        <div class="flex items-center gap-3 mb-4">
+          <!-- lucide: store -->
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#FF6B35" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m2 7 4.41-4.41A2 2 0 0 1 7.83 2h8.34a2 2 0 0 1 1.42.59L22 7"/><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><path d="M15 22v-4a2 2 0 0 0-2-2h-2a2 2 0 0 0-2 2v4"/><path d="M2 7h20"/><path d="M22 7v3a2 2 0 0 1-2 2v0a2.7 2.7 0 0 1-1.59-.63.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 16 12a2.7 2.7 0 0 1-1.59-.63.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 12 12a2.7 2.7 0 0 1-1.59-.63.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 8 12a2.7 2.7 0 0 1-1.59-.63.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 4 12v0a2 2 0 0 1-2-2V7"/></svg>
+          <h3 class="text-xs font-bold tracking-[0.22em] uppercase text-navy/70">Para marcas</h3>
+        </div>
+        <h4 class="text-2xl font-bold text-navy ws-tight leading-tight mb-4">Cobertura sin contratar plantilla.</h4>
+        <ul class="space-y-3 text-base text-navy/80 leading-relaxed">
+          <li class="flex gap-2"><span class="text-primary font-bold">·</span> Misiones en cualquier PDV en horas, no semanas.</li>
+          <li class="flex gap-2"><span class="text-primary font-bold">·</span> Evidencia georeferenciada con foto y validación automática.</li>
+          <li class="flex gap-2"><span class="text-primary font-bold">·</span> Pago por resultado, no por plantilla fija.</li>
+        </ul>
+      </div>
+
+      <!-- Para reps -->
+      <div class="border-t-4 border-navy pt-7">
+        <div class="flex items-center gap-3 mb-4">
+          <!-- lucide: user-round -->
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#0A2540" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="5"/><path d="M20 21a8 8 0 0 0-16 0"/></svg>
+          <h3 class="text-xs font-bold tracking-[0.22em] uppercase text-navy/70">Para reps</h3>
+        </div>
+        <h4 class="text-2xl font-bold text-navy ws-tight leading-tight mb-4">Ingreso flexible cerca de su ruta.</h4>
+        <ul class="space-y-3 text-base text-navy/80 leading-relaxed">
+          <li class="flex gap-2"><span class="text-navy font-bold">·</span> Misiones en mapa, acepta y ejecuta.</li>
+          <li class="flex gap-2"><span class="text-navy font-bold">·</span> Pago semanal claro vía Mercado Pago.</li>
+          <li class="flex gap-2"><span class="text-navy font-bold">·</span> Onboarding en horas, no días.</li>
+        </ul>
+      </div>
+
+      <!-- Para el ecosistema retail -->
+      <div class="border-t-4 border-success pt-7">
+        <div class="flex items-center gap-3 mb-4">
+          <!-- lucide: trending-up -->
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>
+          <h3 class="text-xs font-bold tracking-[0.22em] uppercase text-navy/70">Para el ecosistema</h3>
+        </div>
+        <h4 class="text-2xl font-bold text-navy ws-tight leading-tight mb-4">Visibilidad de un canal opaco.</h4>
+        <ul class="space-y-3 text-base text-navy/80 leading-relaxed">
+          <li class="flex gap-2"><span class="text-success font-bold">·</span> Data de share-of-shelf y OOS donde no llegaba nadie.</li>
+          <li class="flex gap-2"><span class="text-success font-bold">·</span> Estandarización de planograma en long-tail.</li>
+          <li class="flex gap-2"><span class="text-success font-bold">·</span> Capa data agregada como producto independiente.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <span class="slide-num text-navy/60">02 / 12</span>
+  <span class="slide-brand text-navy/60">Shelfly</span>
+</section>
+
+<section id="s3" class="slide bg-cream flex items-center">
   <div class="px-12 lg:px-20 max-w-7xl mx-auto w-full">
     <div class="flex items-center gap-3 mb-6">
       <div class="w-8 h-px bg-primary"></div>
@@ -318,14 +376,11 @@
       <p class="mt-2 text-xs text-navy/40 uppercase tracking-[0.18em]">Brand Manager mid · cita ilustrativa</p>
     </div>
   </div>
-  <span class="slide-num text-navy/60">02 / 12</span>
+  <span class="slide-num text-navy/60">03 / 12</span>
   <span class="slide-brand text-navy/60">Shelfly</span>
 </section>
 
-<!-- =========================================================
-     SLIDE 3 - PAINPOINTS REALES
-     ========================================================= -->
-<section id="s3" class="slide bg-white flex items-center">
+<section id="s4" class="slide bg-white flex items-center">
   <div class="px-12 lg:px-20 max-w-7xl mx-auto w-full">
     <div class="flex items-center gap-3 mb-6">
       <div class="w-8 h-px bg-primary"></div>
@@ -415,77 +470,10 @@
       </p>
     </div>
   </div>
-  <span class="slide-num text-navy/60">03 / 12</span>
-  <span class="slide-brand text-navy/60">Shelfly</span>
-</section>
-
-<!-- =========================================================
-     SLIDE 4 - LA SOLUCIÓN
-     ========================================================= -->
-<section id="s4" class="slide bg-white flex items-center">
-  <div class="px-12 lg:px-20 max-w-7xl mx-auto w-full">
-    <div class="flex items-center gap-3 mb-6">
-      <div class="w-8 h-px bg-primary"></div>
-      <span class="text-xs font-semibold tracking-[0.25em] uppercase text-primary">Solución</span>
-    </div>
-    <h2 class="ws-tight font-bold text-navy leading-[1.05] max-w-5xl" style="font-size: clamp(36px, 5vw, 56px);">
-      Shelfly es el marketplace que conecta marcas con reps de campo on-demand.
-    </h2>
-
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mt-16">
-      <!-- Para marcas -->
-      <div class="border-t-4 border-primary pt-7">
-        <div class="flex items-center gap-3 mb-4">
-          <!-- lucide: store -->
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#FF6B35" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m2 7 4.41-4.41A2 2 0 0 1 7.83 2h8.34a2 2 0 0 1 1.42.59L22 7"/><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><path d="M15 22v-4a2 2 0 0 0-2-2h-2a2 2 0 0 0-2 2v4"/><path d="M2 7h20"/><path d="M22 7v3a2 2 0 0 1-2 2v0a2.7 2.7 0 0 1-1.59-.63.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 16 12a2.7 2.7 0 0 1-1.59-.63.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 12 12a2.7 2.7 0 0 1-1.59-.63.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 8 12a2.7 2.7 0 0 1-1.59-.63.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 4 12v0a2 2 0 0 1-2-2V7"/></svg>
-          <h3 class="text-xs font-bold tracking-[0.22em] uppercase text-navy/70">Para marcas</h3>
-        </div>
-        <h4 class="text-2xl font-bold text-navy ws-tight leading-tight mb-4">Cobertura sin contratar plantilla.</h4>
-        <ul class="space-y-3 text-base text-navy/80 leading-relaxed">
-          <li class="flex gap-2"><span class="text-primary font-bold">·</span> Misiones en cualquier PDV en horas, no semanas.</li>
-          <li class="flex gap-2"><span class="text-primary font-bold">·</span> Evidencia georeferenciada con foto y validación automática.</li>
-          <li class="flex gap-2"><span class="text-primary font-bold">·</span> Pago por resultado, no por plantilla fija.</li>
-        </ul>
-      </div>
-
-      <!-- Para reps -->
-      <div class="border-t-4 border-navy pt-7">
-        <div class="flex items-center gap-3 mb-4">
-          <!-- lucide: user-round -->
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#0A2540" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="5"/><path d="M20 21a8 8 0 0 0-16 0"/></svg>
-          <h3 class="text-xs font-bold tracking-[0.22em] uppercase text-navy/70">Para reps</h3>
-        </div>
-        <h4 class="text-2xl font-bold text-navy ws-tight leading-tight mb-4">Ingreso flexible cerca de su ruta.</h4>
-        <ul class="space-y-3 text-base text-navy/80 leading-relaxed">
-          <li class="flex gap-2"><span class="text-navy font-bold">·</span> Misiones en mapa, acepta y ejecuta.</li>
-          <li class="flex gap-2"><span class="text-navy font-bold">·</span> Pago semanal claro vía Mercado Pago.</li>
-          <li class="flex gap-2"><span class="text-navy font-bold">·</span> Onboarding en horas, no días.</li>
-        </ul>
-      </div>
-
-      <!-- Para el ecosistema retail -->
-      <div class="border-t-4 border-success pt-7">
-        <div class="flex items-center gap-3 mb-4">
-          <!-- lucide: trending-up -->
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>
-          <h3 class="text-xs font-bold tracking-[0.22em] uppercase text-navy/70">Para el ecosistema</h3>
-        </div>
-        <h4 class="text-2xl font-bold text-navy ws-tight leading-tight mb-4">Visibilidad de un canal opaco.</h4>
-        <ul class="space-y-3 text-base text-navy/80 leading-relaxed">
-          <li class="flex gap-2"><span class="text-success font-bold">·</span> Data de share-of-shelf y OOS donde no llegaba nadie.</li>
-          <li class="flex gap-2"><span class="text-success font-bold">·</span> Estandarización de planograma en long-tail.</li>
-          <li class="flex gap-2"><span class="text-success font-bold">·</span> Capa data agregada como producto independiente.</li>
-        </ul>
-      </div>
-    </div>
-  </div>
   <span class="slide-num text-navy/60">04 / 12</span>
   <span class="slide-brand text-navy/60">Shelfly</span>
 </section>
 
-<!-- =========================================================
-     SLIDE 5 - HOW IT WORKS
-     ========================================================= -->
 <section id="s5" class="slide bg-cream flex items-center">
   <div class="px-12 lg:px-20 max-w-7xl mx-auto w-full">
     <div class="flex items-center gap-3 mb-6">
@@ -557,9 +545,6 @@
   <span class="slide-brand text-navy/60">Shelfly</span>
 </section>
 
-<!-- =========================================================
-     SLIDE 6 - POSICIONAMIENTO: TRES PRODUCTOS, UN UNIVERSO RETAIL OPS
-     ========================================================= -->
 <section id="s6" class="slide bg-white flex items-center">
   <div class="px-12 lg:px-20 max-w-7xl mx-auto w-full">
     <div class="flex items-center gap-3 mb-6">
@@ -670,9 +655,6 @@
   <span class="slide-brand text-navy/60">Shelfly</span>
 </section>
 
-<!-- =========================================================
-     SLIDE 7 - MERCADO
-     ========================================================= -->
 <section id="s7" class="slide bg-cream flex items-center">
   <div class="px-12 lg:px-20 max-w-7xl mx-auto w-full">
     <div class="flex items-center gap-3 mb-6">
@@ -767,9 +749,6 @@
   <span class="slide-brand text-navy/60">Shelfly</span>
 </section>
 
-<!-- =========================================================
-     SLIDE 8 - MODELO DE NEGOCIO
-     ========================================================= -->
 <section id="s8" class="slide bg-white flex items-center">
   <div class="px-12 lg:px-20 max-w-7xl mx-auto w-full">
     <div class="flex items-center gap-3 mb-6">
@@ -829,9 +808,6 @@
   <span class="slide-brand text-navy/60">Shelfly</span>
 </section>
 
-<!-- =========================================================
-     SLIDE 9 - ROADMAP
-     ========================================================= -->
 <section id="s9" class="slide bg-cream flex items-center">
   <div class="px-12 lg:px-20 max-w-7xl mx-auto w-full">
     <div class="flex items-center gap-3 mb-6">
@@ -913,9 +889,6 @@
   <span class="slide-brand text-navy/60">Shelfly</span>
 </section>
 
-<!-- =========================================================
-     SLIDE 10 - CAPITAL Y USO DE FONDOS
-     ========================================================= -->
 <section id="s10" class="slide bg-white flex items-center">
   <div class="px-12 lg:px-20 max-w-7xl mx-auto w-full">
     <div class="flex items-center gap-3 mb-6">
@@ -995,9 +968,6 @@
   <span class="slide-brand text-navy/60">Shelfly</span>
 </section>
 
-<!-- =========================================================
-     SLIDE 11 - CICLO DE VENTA / GO-TO-MARKET
-     ========================================================= -->
 <section id="s11" class="slide bg-cream flex items-center">
   <div class="px-12 lg:px-20 max-w-7xl mx-auto w-full">
     <div class="flex items-center gap-3 mb-6">
@@ -1064,9 +1034,6 @@
   <span class="slide-brand text-navy/60">Shelfly</span>
 </section>
 
-<!-- =========================================================
-     SLIDE 12 - ASK AL SOCIO (post asset injection)
-     ========================================================= -->
 <section id="s12" class="slide gradient-navy text-white flex items-center">
   <div class="px-12 lg:px-20 max-w-7xl mx-auto w-full">
     <div class="flex items-center gap-3 mb-6">
