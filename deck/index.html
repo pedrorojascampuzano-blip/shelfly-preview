@@ -232,6 +232,44 @@
     text-transform: uppercase;
     opacity: 0.55;
   }
+  /* Mobile: deshabilitar scroll-snap, dejar fluir contenido, ajustar paddings */
+  @media (max-width: 768px) {
+    body {
+      scroll-snap-type: none;
+      overflow-y: auto;
+    }
+    .slide {
+      scroll-snap-align: none;
+      height: auto;
+      min-height: 100vh;
+      width: 100%;
+      overflow: visible;
+      padding-top: 3rem;
+      padding-bottom: 3rem;
+    }
+    /* Padding lateral compacto */
+    .slide [class*="px-12"], .slide [class*="lg:px-20"] {
+      padding-left: 1.25rem !important;
+      padding-right: 1.25rem !important;
+    }
+    /* Tipografías mega: shrink */
+    .num-mega { font-size: 2.25rem !important; line-height: 1.05; }
+    .num-market { font-size: 1.75rem !important; line-height: 1.05; }
+    /* Headlines: respetar pero permitir wrap */
+    h1, h2, h3 { word-break: normal; overflow-wrap: anywhere; }
+    /* Slide-num/brand más compactos */
+    .slide-num, .slide-brand {
+      font-size: 9px !important;
+      bottom: 12px !important;
+    }
+    /* Dots de navegación: ocultar en mobile (no hay snap) */
+    #dots { display: none !important; }
+    /* Tablas responsive */
+    table { display: block; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+    /* Cards: márgenes verticales más ligeros */
+    .card { padding: 1.25rem !important; }
+  }
+
   /* Print: one slide per page, landscape */
   @media print {
     @page { size: letter landscape; margin: 0; }
@@ -275,7 +313,7 @@
     <div class="grid grid-cols-12 gap-6 items-stretch">
       <div class="col-span-12 lg:col-span-3">
         <div class="text-[11px] font-semibold tracking-[0.2em] uppercase text-white/45 mb-2">01 · Marca</div>
-        <p class="text-2xl lg:text-3xl font-medium text-white leading-snug ws-tight">Veleta, marca mediana de bebidas, busca expandir distribución en bares y restaurantes de Roma Norte y Condesa.</p>
+        <p class="text-2xl lg:text-3xl font-medium text-white leading-snug ws-tight">Veleta, marca mediana de ropa y accesorios, busca colocación en boutiques multimarca y pop-ups de Roma Norte, Condesa y Polanco.</p>
       </div>
       <div class="hidden lg:flex col-span-1 items-center justify-center seq-arrow-dark text-2xl">→</div>
       <div class="col-span-12 lg:col-span-3">
@@ -321,7 +359,7 @@
         <div class="text-[10px] font-bold tracking-[0.22em] uppercase text-primary mb-3">Caso 01 · Marca chica</div>
         <h3 class="text-lg font-bold text-navy ws-tight leading-tight mb-3">No tiene plantilla, necesita llegar a canales nicho.</h3>
         <p class="text-sm text-navy/75 leading-relaxed mb-4">
-          <span class="font-semibold text-navy">Veleta</span> (marca mediana de bebidas) publica una misión: bares y restaurantes de Roma Norte y Condesa. Encuentra a una vendedora local con conectes en horeca. Cobra por resultados validados. No firma contrato anual, no contrata equipo.
+          <span class="font-semibold text-navy">Veleta</span> (marca de ropa y accesorios) publica una misión: colocación en boutiques multimarca y pop-ups de Roma Norte, Condesa y Polanco. Encuentra a una vendedora con conectes en boutiques y tiendas concept de la zona. Cobra por resultados validados. No firma contrato anual, no contrata equipo.
         </p>
         <div class="text-[11px] text-navy/55 leading-snug">Sin plantilla. Sin agencia. Sin compromiso de exclusividad.</div>
       </div>
@@ -797,7 +835,7 @@
             <span class="text-[10px] font-bold tracking-[0.22em] uppercase text-navy/70">Supply-side</span>
           </div>
           <p class="text-xs text-navy/80 leading-snug">
-            <strong class="text-navy">ChambasAI</strong> (<a href="https://chambas.ai" target="_blank" rel="noopener" class="source-link">chambas.ai &#8599;</a>): reclutamiento por WhatsApp con IA. 1.4M candidatos, 200+ empresas (Toks, Shake Shack, Elektra). Aprendizaje: funnel WhatsApp + agentes para onboarding de vendedores.
+            Reclutamiento de fuerza de campo por WhatsApp ya existe en MX (ej: <a href="https://chambas.ai" target="_blank" rel="noopener" class="source-link">ChambasAI</a> con 1.4M candidatos para roles operativos). Cubren onboarding pero no marketplace transaccional ni ejecución validada en cancha.
           </p>
         </div>
       </div>
@@ -1008,7 +1046,7 @@
           <span class="text-xs font-bold tracking-[0.18em] uppercase text-primary">03</span>
         </div>
         <h3 class="text-base font-bold text-navy ws-tight leading-tight mb-2">Onboarding por WhatsApp</h3>
-        <p class="text-sm text-navy/75 leading-relaxed">Chatbot recluta y verifica vendedores nuevos en su canal natural. Inspirado en <a href="https://chambas.ai" target="_blank" rel="noopener" class="source-link">ChambasAI &#8599;</a> (1.4M candidatos vía WhatsApp).</p>
+        <p class="text-sm text-navy/75 leading-relaxed">Chatbot recluta y verifica vendedores nuevos en su canal natural. El patrón ya está validado en MX para roles operativos.</p>
       </div>
 
       <!-- IA 4 -->
