@@ -268,6 +268,9 @@
     table { display: block; overflow-x: auto; -webkit-overflow-scrolling: touch; }
     /* Cards: márgenes verticales más ligeros */
     .card { padding: 1.25rem !important; }
+    /* Uso de fondos: anchos fijos w-28/w-12 causan overflow en mobile, los reducimos */
+    li.flex .w-28 { width: 5rem !important; font-size: 0.75rem !important; }
+    li.flex .w-12 { width: 2.5rem !important; }
   }
 
   /* Print: one slide per page, landscape */
@@ -313,7 +316,7 @@
     <div class="grid grid-cols-12 gap-6 items-stretch">
       <div class="col-span-12 lg:col-span-3">
         <div class="text-[11px] font-semibold tracking-[0.2em] uppercase text-white/45 mb-2">01 · Marca</div>
-        <p class="text-2xl lg:text-3xl font-medium text-white leading-snug ws-tight">Veleta, marca mediana de ropa y accesorios, busca colocación en boutiques multimarca y pop-ups de Roma Norte, Condesa y Polanco.</p>
+        <p class="text-2xl lg:text-3xl font-medium text-white leading-snug ws-tight">Veleta (<a href="https://instagram.com/veletamx" target="_blank" rel="noopener" class="underline decoration-primary/40 hover:decoration-primary">@veletamx</a>), marca CDMX de ropa y accesorios upcycled, busca colocación en boutiques de moda sostenible y tiendas outdoor sin construir fuerza de ventas propia.</p>
       </div>
       <div class="hidden lg:flex col-span-1 items-center justify-center seq-arrow-dark text-2xl">→</div>
       <div class="col-span-12 lg:col-span-3">
@@ -359,7 +362,7 @@
         <div class="text-[10px] font-bold tracking-[0.22em] uppercase text-primary mb-3">Caso 01 · Marca chica</div>
         <h3 class="text-lg font-bold text-navy ws-tight leading-tight mb-3">No tiene plantilla, necesita llegar a canales nicho.</h3>
         <p class="text-sm text-navy/75 leading-relaxed mb-4">
-          <span class="font-semibold text-navy">Veleta</span> (marca de ropa y accesorios) publica una misión: colocación en boutiques multimarca y pop-ups de Roma Norte, Condesa y Polanco. Encuentra a una vendedora con conectes en boutiques y tiendas concept de la zona. Cobra por resultados validados. No firma contrato anual, no contrata equipo.
+          <span class="font-semibold text-navy">Veleta</span> (ropa y accesorios upcycled hechos con velas náuticas, kites y remanentes textiles) publica una misión: colocación en boutiques de moda sostenible y tiendas outdoor. Encuentra una vendedora con conectes en ese tipo de canal. Cobra por resultados validados. No firma contrato anual, no contrata equipo.
         </p>
         <div class="text-[11px] text-navy/55 leading-snug">Sin plantilla. Sin agencia. Sin compromiso de exclusividad.</div>
       </div>
@@ -369,7 +372,7 @@
         <div class="text-[10px] font-bold tracking-[0.22em] uppercase text-navy/55 mb-3">Caso 02 · Marca grande</div>
         <h3 class="text-lg font-bold text-navy ws-tight leading-tight mb-3">Ya usa Time Tracker en cadenas, quiere expandir al long-tail.</h3>
         <p class="text-sm text-navy/75 leading-relaxed mb-4">
-          Una marca enterprise ya cubre Chedraui y Soriana con Time Tracker. Quiere entrar al long-tail (restaurantes, conveniencia o farmacias según su categoría) donde TT no opera. Shelfly cubre ese tramo sin desplazar al equipo existente.
+          Una marca enterprise ya cubre Chedraui y La Comer con Time Tracker. Quiere entrar al long-tail (restaurantes, conveniencia o farmacias según su categoría) donde TT no opera. Shelfly cubre ese tramo sin desplazar al equipo existente.
         </p>
         <div class="text-[11px] text-navy/55 leading-snug">Complemento del stack, no reemplazo.</div>
       </div>
@@ -557,7 +560,7 @@
       De brief a evidencia validada en 72 horas.
     </h2>
 
-    <div class="flex items-start gap-2 lg:gap-4">
+    <div class="flex flex-col gap-6 lg:flex-row lg:items-start lg:gap-2 xl:gap-4">
       <!-- Step 1 -->
       <div class="flex-1 max-w-xs">
         <div class="w-16 h-16 rounded-2xl bg-white border border-navy/10 flex items-center justify-center shadow-sm mb-5">
@@ -642,7 +645,7 @@
           Control biométrico de promotores en autoservicio enterprise. 21 años en MX.
         </p>
         <div class="text-[10px] font-bold tracking-[0.2em] uppercase text-navy/50 mb-1">Clientes</div>
-        <p class="text-xs text-navy/80 leading-snug mb-3">Chedraui · La Comer · Soriana · Casa Ley · S*Mart · Merza · Calimax</p>
+        <p class="text-xs text-navy/80 leading-snug mb-3">Chedraui · La Comer · Casa Ley · S*Mart · Merza · Calimax<a class="cite-link" href="https://www.timetracker.com.mx/" target="_blank" rel="noopener" title="Fuente: timetracker.com.mx">&#8599;</a></p>
         <div class="mt-auto pt-3 border-t border-navy/10">
           <span class="text-[10px] font-bold tracking-[0.2em] uppercase text-navy/50">Modelo</span>
           <p class="text-xs text-navy mt-1">SaaS enterprise + hardware</p>
@@ -656,7 +659,7 @@
         </div>
         <div class="text-[10px] font-bold tracking-[0.2em] uppercase text-navy/50 mb-2">Shelf intelligence · CV &gt;95%</div>
         <p class="text-xs text-navy/80 leading-snug mb-3">
-          Reconocimiento de imagen para anaquel. Adquirido por Time Tracker en nov 2025. Pipeline: 850 marcas y agencias.
+          Reconocimiento de imagen para anaquel. Alianza estratégica con Time Tracker en nov 2025; operan independientes. Pipeline combinado TT+SC: 850+ marcas y agencias.<a class="cite-link" href="https://www.mundoejecutivo.com.mx/actualidad/time-tracker-y-storecheck-se-unen-para-impulsar-la-evolucion-del-retail-en-mexico/" target="_blank" rel="noopener" title="Fuente: Mundo Ejecutivo 11 nov 2025">&#8599;</a>
         </p>
         <div class="text-[10px] font-bold tracking-[0.2em] uppercase text-navy/50 mb-1">Productos</div>
         <p class="text-xs text-navy/80 leading-snug mb-3">FIELD (visibilidad campo) · HUB (sell-in/sell-out) · VISION (CV)</p>
@@ -782,20 +785,20 @@
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-5">
       <div class="card p-6">
         <div class="text-xs font-bold tracking-[0.22em] uppercase text-navy/50 mb-3">TAM</div>
-        <span class="num-market text-navy">$5-7<span class="suffix">B</span></span>
-        <p class="mt-3 text-sm font-semibold text-navy/80">USD anuales: marketing en cancha de consumo masivo + farma OTC + restaurantes como puntos de venta en MX</p>
+        <span class="num-market text-navy">$2-3<span class="suffix">B</span></span>
+        <p class="mt-3 text-sm font-semibold text-navy/80">USD anuales: gasto BTL total en MX (activaciones, eventos, trade marketing, ejecución en punto de venta)</p>
         <p class="mt-4 text-xs text-navy/60 leading-relaxed">
-          Suma de servicios de campo multi-canal: tradicional, conveniencia, cadenas, farmacia, restaurantes y otros.
+          Trade marketing es ~13% del BTL total (~$280-350M USD), el resto es activaciones y POS. Shelfly captura una fracción cuando reemplaza fuerza fija o agencia tradicional.
         </p>
         <p class="mt-3 text-[10px] text-navy/55 leading-snug border-t border-navy/10 pt-2 italic">
-          Estimación propia top-down basada en spend trade marketing CPG + farma OTC + restaurantes como puntos de venta. Bottom-up ver SAM build-up.
+          Inversión BTL MX 2024: $42.4-54.2B MXN (~$2.1-2.7B USD).<a class="cite-link" href="https://www.informabtl.com/below-the-line-en-mexico-cerca-de-la-equidad/" target="_blank" rel="noopener" title="Fuente: InformaBTL 2024">&#8599;</a>
         </p>
       </div>
 
       <div class="card p-6">
         <div class="text-xs font-bold tracking-[0.22em] uppercase text-navy/50 mb-3">SAM</div>
         <span class="num-market text-navy">$800M-1.2<span class="suffix">B</span></span>
-        <p class="mt-3 text-sm font-semibold text-navy/80">USD addressable mid-market multi-canal sin fuerza propia</p>
+        <p class="mt-3 text-sm font-semibold text-navy/80">USD addressable: marcas medianas multi-canal sin fuerza propia</p>
         <p class="mt-4 text-xs text-navy/60 leading-relaxed">
           ~600-800K tiendas multi-canal (tradicional + conveniencia + farma OTC + restaurantes + otros). 250-500 marcas medianas de consumo masivo, farma OTC y restaurantes en MX.
         </p>
@@ -898,7 +901,7 @@
         <div class="num-mega text-4xl font-extrabold text-navy">6.4<span class="text-navy/60">×</span></div>
         <p class="mt-2 text-sm text-navy/65">Escenario base sin asset injection. Por arriba del benchmark 3× SaaS.</p>
         <p class="mt-2 text-[10px] text-navy/55 leading-snug border-t border-navy/10 pt-2">
-          LTV $128K (12m × $11K MRR × 97% retention promedio mensual) <span class="text-navy/40">÷</span> CAC $20K (mid-funnel sales + onboarding) = 6.4×. Con asset injection del socio, CAC baja a ~$2K y LTV/CAC sube a 50×+. <span class="italic">Asunción modelada, validamos contra primera cohorte real M6.</span>
+          LTV $128K (12m × $11K MRR entry-tier × 97% retention) <span class="text-navy/40">÷</span> CAC $20K (warm pipeline + onboarding) = 6.4×. Con asset injection del socio, CAC baja a ~$2K y LTV/CAC sube. Path de upsell a SaaS dashboard ($8-25K MRR) lleva ACV a rango mid-market real. <span class="italic">Asunción modelada, validamos contra primera cohorte M6.</span>
         </p>
       </div>
       <div class="card p-6" style="border-left: 3px solid #FF6B35;">
@@ -927,7 +930,7 @@
       <div class="absolute left-0 right-0 top-7 h-px bg-navy/15"></div>
       <div class="absolute left-0 top-7 h-px bg-primary" style="width: 12%;"></div>
 
-      <div class="grid grid-cols-4 gap-6 relative">
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 relative">
         <!-- Mes 1 -->
         <div>
           <div class="inline-flex items-center justify-center min-w-[56px] h-14 px-3 rounded-full bg-primary text-white font-bold text-sm relative z-10 mb-5 ws-tight">M1</div>
@@ -1145,7 +1148,7 @@
           <span class="text-sm text-navy/60">MXN/mes</span>
         </div>
         <p class="mt-2 text-xs text-navy/60 leading-snug">
-          Mes 1-6: $132K (Pedro CEO sueldo $90K + tooling + legal + infra). Mes 7-12: $217K (+freelancer mid + marketing + CS). Mes 13-18: $377K (equipo de 3). 3.5x más barato que YC seed promedio ($50K USD/mes).
+          Mes 1-6: $132K (Pedro CEO sueldo $90K + tooling + legal + infra). Mes 7-12: $217K (+freelancer mid + marketing + CS). Mes 13-18: $377K (equipo de 3). ~6x más barato que mediana seed global ($85K USD/mes).<a class="cite-link" href="https://learn.icanpitch.com/blog/burn-rate-benchmarks-by-industry-stage/" target="_blank" rel="noopener" title="Fuente: Carta benchmarks 2025">&#8599;</a>
         </p>
       </div>
     </div>
