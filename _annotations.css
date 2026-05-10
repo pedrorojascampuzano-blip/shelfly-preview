@@ -1,0 +1,269 @@
+/* ====================================================================
+   Shelfly Deck — In-Deck Annotations Widget
+   Vanilla CSS. Cero dependencias. Aware of brand palette:
+   #FF6B35 primary · #0A2540 navy · #FFF8F3 cream · Inter font.
+   ==================================================================== */
+
+#ann-root {
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  color: #0F172A;
+}
+
+/* Hide everything when present mode is on */
+#ann-root.ann-present-hidden {
+  display: none !important;
+}
+
+/* -------- Floating button per slide -------- */
+.ann-fab {
+  position: absolute;
+  bottom: 18px;
+  right: 18px;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 1px solid rgba(10, 37, 64, 0.12);
+  background: #ffffff;
+  color: #0A2540;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 8px rgba(10, 37, 64, 0.12);
+  z-index: 50;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+  font-family: inherit;
+  padding: 0;
+}
+.ann-fab:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(10, 37, 64, 0.2);
+}
+.ann-fab svg {
+  width: 18px;
+  height: 18px;
+  display: block;
+}
+
+/* When slide is on a dark gradient (gradient-navy), invert */
+.gradient-navy .ann-fab {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.2);
+  color: #FFF8F3;
+  backdrop-filter: blur(6px);
+}
+.gradient-navy .ann-fab:hover {
+  background: rgba(255, 255, 255, 0.18);
+}
+
+/* Has-comments state: orange */
+.ann-fab.has-comments {
+  background: #FF6B35;
+  color: #ffffff;
+  border-color: #FF6B35;
+}
+.ann-fab.has-comments:hover {
+  background: #d94e1f;
+}
+
+/* Count badge */
+.ann-fab-badge {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  min-width: 18px;
+  height: 18px;
+  border-radius: 9px;
+  background: #0A2540;
+  color: #ffffff;
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 18px;
+  text-align: center;
+  padding: 0 5px;
+  box-sizing: border-box;
+  border: 2px solid #ffffff;
+}
+.gradient-navy .ann-fab-badge {
+  border-color: #0A2540;
+  background: #FF6B35;
+}
+
+/* -------- Side panel -------- */
+.ann-panel {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 320px;
+  max-width: 92vw;
+  background: #ffffff;
+  border-left: 1px solid rgba(10, 37, 64, 0.1);
+  box-shadow: -8px 0 24px rgba(10, 37, 64, 0.15);
+  z-index: 1000;
+  transform: translateX(100%);
+  transition: transform 0.22s ease-out;
+  display: flex;
+  flex-direction: column;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+}
+.ann-panel.open { transform: translateX(0); }
+
+.ann-panel-header {
+  padding: 16px 18px 12px;
+  border-bottom: 1px solid rgba(10, 37, 64, 0.08);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #FFF8F3;
+}
+.ann-panel-title {
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: #0A2540;
+  margin: 0;
+}
+.ann-panel-subtitle {
+  font-size: 11px;
+  color: rgba(10, 37, 64, 0.55);
+  margin-top: 2px;
+  font-weight: 500;
+}
+.ann-close {
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+  color: rgba(10, 37, 64, 0.5);
+  padding: 4px;
+  border-radius: 4px;
+  line-height: 0;
+}
+.ann-close:hover { color: #0A2540; background: rgba(10, 37, 64, 0.05); }
+
+.ann-panel-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 14px 18px;
+}
+
+.ann-form {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+.ann-textarea {
+  width: 100%;
+  min-height: 80px;
+  resize: vertical;
+  padding: 10px 12px;
+  border: 1px solid rgba(10, 37, 64, 0.15);
+  border-radius: 8px;
+  font-family: inherit;
+  font-size: 13px;
+  line-height: 1.5;
+  color: #0F172A;
+  background: #ffffff;
+  box-sizing: border-box;
+  outline: none;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+.ann-textarea:focus {
+  border-color: #FF6B35;
+  box-shadow: 0 0 0 3px rgba(255, 107, 53, 0.12);
+}
+.ann-save {
+  align-self: flex-end;
+  background: #FF6B35;
+  color: #ffffff;
+  border: 0;
+  border-radius: 6px;
+  font-family: inherit;
+  font-weight: 600;
+  font-size: 12px;
+  letter-spacing: 0.02em;
+  padding: 8px 14px;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+.ann-save:hover { background: #d94e1f; }
+.ann-save:disabled { background: rgba(10, 37, 64, 0.2); cursor: not-allowed; }
+
+.ann-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.ann-empty {
+  font-size: 12px;
+  color: rgba(10, 37, 64, 0.5);
+  font-style: italic;
+  padding: 16px 0;
+  text-align: center;
+}
+.ann-item {
+  background: #FFF8F3;
+  border: 1px solid rgba(10, 37, 64, 0.06);
+  border-radius: 8px;
+  padding: 10px 12px;
+  font-size: 12.5px;
+  line-height: 1.5;
+  color: #0F172A;
+  position: relative;
+}
+.ann-item-ts {
+  font-size: 10px;
+  font-weight: 600;
+  color: rgba(10, 37, 64, 0.45);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+.ann-item-text { white-space: pre-wrap; word-wrap: break-word; }
+.ann-item-del {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+  color: rgba(10, 37, 64, 0.35);
+  font-size: 14px;
+  padding: 2px 6px;
+  border-radius: 4px;
+  line-height: 1;
+}
+.ann-item-del:hover { color: #d94e1f; background: rgba(217, 78, 31, 0.08); }
+
+.ann-panel-footer {
+  border-top: 1px solid rgba(10, 37, 64, 0.08);
+  padding: 12px 18px;
+  display: flex;
+  gap: 8px;
+  justify-content: space-between;
+  align-items: center;
+  background: #FFF8F3;
+}
+.ann-btn {
+  background: #ffffff;
+  border: 1px solid rgba(10, 37, 64, 0.15);
+  color: #0A2540;
+  font-family: inherit;
+  font-weight: 600;
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  padding: 7px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+.ann-btn:hover { background: #FFF8F3; border-color: rgba(10, 37, 64, 0.3); }
+.ann-btn.ann-btn-danger:hover { color: #d94e1f; border-color: #d94e1f; }
+
+/* Mobile */
+@media (max-width: 640px) {
+  .ann-panel { width: 100vw; max-width: 100vw; }
+  .ann-fab { width: 44px; height: 44px; bottom: 14px; right: 14px; }
+}
