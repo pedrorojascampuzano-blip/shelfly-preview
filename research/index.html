@@ -1,0 +1,1373 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Shelfly · Research Hub · Source of Truth</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy: #0A2540;
+    --navy-soft: rgba(10,37,64,0.72);
+    --navy-muted: rgba(10,37,64,0.55);
+    --navy-faint: rgba(10,37,64,0.08);
+    --cream: #FFF8F3;
+    --primary: #FF6B35;
+    --primary-soft: rgba(255,107,53,0.10);
+    --success: #10B981;
+    --warning: #B45309;
+    --danger: #B91C1C;
+    --line: rgba(10,37,64,0.10);
+    --ink: #0F172A;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    color: var(--ink);
+    background: var(--cream);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    line-height: 1.55;
+  }
+  a { color: var(--primary); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  code { font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 0.85em; background: var(--navy-faint); padding: 1px 5px; border-radius: 3px; }
+
+  /* Layout */
+  .app {
+    display: grid;
+    grid-template-columns: 260px 1fr;
+    min-height: 100vh;
+  }
+  /* Sidebar */
+  aside.nav {
+    background: #fff;
+    border-right: 1px solid var(--line);
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    overflow-y: auto;
+    padding: 28px 22px;
+  }
+  .brand {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    margin-bottom: 6px;
+  }
+  .brand-name {
+    font-size: 18px;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    color: var(--navy);
+  }
+  .brand-dot { color: var(--primary); font-weight: 800; }
+  .brand-sub {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--navy-muted);
+    margin-bottom: 26px;
+  }
+  .nav-label {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--navy-muted);
+    margin: 18px 0 8px;
+  }
+  .nav-list { list-style: none; padding: 0; margin: 0; }
+  .nav-list li a {
+    display: block;
+    padding: 7px 10px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--navy-soft);
+    border-left: 2px solid transparent;
+    transition: all 0.15s ease;
+  }
+  .nav-list li a:hover {
+    background: var(--primary-soft);
+    color: var(--navy);
+    text-decoration: none;
+  }
+  .nav-list li a.active {
+    background: var(--primary-soft);
+    color: var(--navy);
+    border-left-color: var(--primary);
+    font-weight: 600;
+  }
+  .nav-footer {
+    margin-top: 28px;
+    padding-top: 16px;
+    border-top: 1px solid var(--line);
+    font-size: 11px;
+    color: var(--navy-muted);
+    line-height: 1.6;
+  }
+  .nav-footer a { color: var(--navy-soft); font-weight: 500; }
+
+  /* Content */
+  main {
+    padding: 48px 56px 80px;
+    max-width: 980px;
+  }
+  .eyebrow {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--primary);
+    margin-bottom: 6px;
+  }
+  h1 {
+    font-size: 36px;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    color: var(--navy);
+    margin: 0 0 10px;
+    line-height: 1.15;
+  }
+  h2 {
+    font-size: 24px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    color: var(--navy);
+    margin: 0 0 14px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--line);
+  }
+  h3 {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--navy);
+    margin: 18px 0 6px;
+    letter-spacing: -0.01em;
+  }
+  h4 {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--navy-muted);
+    margin: 14px 0 6px;
+  }
+  p { margin: 0 0 12px; color: var(--navy-soft); font-size: 14px; }
+  .lede {
+    font-size: 16px;
+    color: var(--navy);
+    line-height: 1.6;
+    margin-bottom: 28px;
+    max-width: 720px;
+  }
+
+  section.block {
+    margin-bottom: 56px;
+    scroll-margin-top: 24px;
+  }
+  section.block:first-of-type { margin-top: 4px; }
+
+  /* Cards & lists */
+  .card {
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 18px 20px;
+    margin-bottom: 14px;
+  }
+  .card-accent {
+    border-left: 3px solid var(--primary);
+  }
+  .grid-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+  }
+  .grid-3 {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+  }
+  ul.facts { list-style: none; padding: 0; margin: 0; }
+  ul.facts li {
+    padding: 9px 0;
+    border-bottom: 1px solid var(--line);
+    font-size: 13.5px;
+    color: var(--navy-soft);
+    display: flex;
+    gap: 10px;
+  }
+  ul.facts li:last-child { border-bottom: none; }
+  ul.facts li strong { color: var(--navy); font-weight: 600; flex-shrink: 0; }
+
+  /* Tags */
+  .tag {
+    display: inline-block;
+    font-size: 9.5px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding: 2px 7px;
+    border-radius: 3px;
+    vertical-align: middle;
+    margin-left: 6px;
+  }
+  .tag-ok    { color: #065F46; background: rgba(16,185,129,0.12); border: 1px solid rgba(16,185,129,0.3); }
+  .tag-warn  { color: var(--warning); background: rgba(180,83,9,0.10); border: 1px solid rgba(180,83,9,0.28); }
+  .tag-gap   { color: var(--danger); background: rgba(185,28,28,0.08); border: 1px solid rgba(185,28,28,0.25); }
+  .tag-info  { color: var(--navy); background: var(--navy-faint); border: 1px solid var(--line); }
+
+  /* Tables */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+    margin-bottom: 12px;
+  }
+  th, td {
+    text-align: left;
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--line);
+    vertical-align: top;
+  }
+  th {
+    background: var(--navy);
+    color: #fff;
+    font-weight: 600;
+    font-size: 10.5px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+  tr:last-child td { border-bottom: none; }
+  td.num { font-variant-numeric: tabular-nums; font-weight: 600; color: var(--navy); }
+
+  /* Source / cite */
+  .src {
+    font-size: 11px;
+    color: var(--navy-muted);
+    margin-top: 8px;
+    line-height: 1.55;
+  }
+  .src a { color: var(--primary); border-bottom: 1px dashed rgba(255,107,53,0.4); }
+  .src a:hover { text-decoration: none; border-bottom-style: solid; }
+
+  /* Know vs don't know */
+  .kvk {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin: 10px 0 4px;
+  }
+  .kvk > div {
+    padding: 12px 14px;
+    border-radius: 6px;
+    font-size: 12.5px;
+    line-height: 1.5;
+  }
+  .know { background: rgba(16,185,129,0.07); border: 1px solid rgba(16,185,129,0.25); }
+  .dont { background: rgba(180,83,9,0.07); border: 1px solid rgba(180,83,9,0.25); }
+  .kvk h5 {
+    margin: 0 0 6px;
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+  }
+  .know h5 { color: #065F46; }
+  .dont h5 { color: var(--warning); }
+  .kvk ul { margin: 0; padding-left: 16px; color: var(--navy-soft); }
+  .kvk li { margin-bottom: 3px; }
+
+  /* Quote */
+  blockquote {
+    border-left: 2px solid var(--primary);
+    padding: 4px 16px;
+    margin: 12px 0;
+    color: var(--navy-soft);
+    font-size: 13.5px;
+    font-style: italic;
+    line-height: 1.6;
+  }
+  blockquote cite {
+    display: block;
+    margin-top: 6px;
+    font-size: 11px;
+    font-style: normal;
+    color: var(--navy-muted);
+    letter-spacing: 0.04em;
+  }
+
+  /* Implicación line */
+  .impl {
+    background: #fff;
+    border: 1px solid var(--line);
+    border-left: 3px solid var(--navy);
+    padding: 12px 16px;
+    border-radius: 4px;
+    font-size: 13px;
+    color: var(--navy);
+    margin-top: 8px;
+  }
+  .impl strong {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--primary);
+    margin-right: 8px;
+  }
+
+  /* Verdict badges in cifras */
+  .verdict {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 2px 6px;
+    border-radius: 3px;
+  }
+  .v-def { color: #065F46; background: rgba(16,185,129,0.12); }
+  .v-asp { color: var(--warning); background: rgba(180,83,9,0.12); }
+  .v-over { color: var(--danger); background: rgba(185,28,28,0.10); }
+
+  /* Print */
+  @media print {
+    @page { size: letter; margin: 18mm; }
+    body { background: #fff; }
+    aside.nav { display: none; }
+    .app { grid-template-columns: 1fr; }
+    main { padding: 0; max-width: none; }
+    section.block { page-break-inside: avoid; margin-bottom: 32px; }
+    .card { break-inside: avoid; }
+  }
+
+  /* Mobile */
+  @media (max-width: 768px) {
+    .app { grid-template-columns: 1fr; }
+    aside.nav {
+      position: static;
+      height: auto;
+      border-right: none;
+      border-bottom: 1px solid var(--line);
+      padding: 18px;
+    }
+    main { padding: 24px 18px 60px; }
+    .grid-2, .grid-3 { grid-template-columns: 1fr; }
+    .kvk { grid-template-columns: 1fr; }
+    h1 { font-size: 28px; }
+    h2 { font-size: 20px; }
+    table { display: block; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  }
+</style>
+</head>
+<body>
+<div class="app">
+
+<aside class="nav">
+  <div class="brand">
+    <span class="brand-name">Shelfly<span class="brand-dot">.</span></span>
+  </div>
+  <div class="brand-sub">Research Hub</div>
+
+  <div class="nav-label">Vista general</div>
+  <ul class="nav-list">
+    <li><a href="#resumen">Resumen ejecutivo</a></li>
+    <li><a href="#metodologia">Metodología</a></li>
+  </ul>
+
+  <div class="nav-label">Caso real</div>
+  <ul class="nav-list">
+    <li><a href="#veleta">Veleta (primera prospect)</a></li>
+  </ul>
+
+  <div class="nav-label">Mercado</div>
+  <ul class="nav-list">
+    <li><a href="#mercado">Mercado MX (TAM/SAM/SOM)</a></li>
+    <li><a href="#portafolio">Time Tracker + Storecheck</a></li>
+    <li><a href="#vuelo">Vuelo Capital · Diego · Ignacio</a></li>
+  </ul>
+
+  <div class="nav-label">Competitive</div>
+  <ul class="nav-list">
+    <li><a href="#competidores">Competidores (state of art)</a></li>
+    <li><a href="#diferenciacion">Diferenciación / FODA</a></li>
+  </ul>
+
+  <div class="nav-label">Defensibilidad de cifras</div>
+  <ul class="nav-list">
+    <li><a href="#cifras">Cifras del deck + benchmarks</a></li>
+  </ul>
+
+  <div class="nav-label">Discovery</div>
+  <ul class="nav-list">
+    <li><a href="#conversaciones">Conversaciones clave</a></li>
+    <li><a href="#tracks">Tracks R1-R4 · A1-A10</a></li>
+    <li><a href="#decisiones">Decisiones y trade-offs</a></li>
+  </ul>
+
+  <div class="nav-footer">
+    Source of truth permanente para todas las iteraciones del deck.
+    <br><br>
+    <a href="../index.html">← Hub de preview</a><br>
+    <a href="../deck/">Deck v7.x →</a>
+  </div>
+</aside>
+
+<main>
+
+<!-- ============================================================== -->
+<section class="block" id="resumen">
+  <div class="eyebrow">Vista general</div>
+  <h1>Shelfly Research Hub</h1>
+  <p class="lede">
+    Source of truth permanente con todo el research acumulado sobre Shelfly: marketplace que conecta marcas (Veleta, CPG mid-tier, farma OTC, vinos) con vendedores reales para llegar a tiendas multi-canal donde la plantilla fija no llega. Cada hecho con cita inline, cada gap declarado honestamente.
+  </p>
+
+  <div class="grid-3">
+    <div class="card card-accent">
+      <h4>Producto</h4>
+      <p style="margin:0;font-size:13px;color:var(--navy)">Marketplace transaccional con comisión 17% por misión validada en cancha (GPS + foto + metadata).</p>
+    </div>
+    <div class="card">
+      <h4>Mercado</h4>
+      <p style="margin:0;font-size:13px;color:var(--navy)">TAM BTL MX $2-3B USD <span class="tag tag-ok">cita InformaBTL</span>. SAM build-up $800M-1.2B. SOM Año 2 ~$720K USD.</p>
+    </div>
+    <div class="card">
+      <h4>Asset injection</h4>
+      <p style="margin:0;font-size:13px;color:var(--navy)">Vuelo Capital (TT+SC, 850 marcas warm) como socio potencial. Decisión hoy: workshop 90 min con term sheet borrador.</p>
+    </div>
+  </div>
+
+  <h3>Estado de validación</h3>
+  <div class="kvk">
+    <div class="know">
+      <h5>Lo que SÍ está validado</h5>
+      <ul>
+        <li>Existencia y operación pública de Time Tracker (timetracker.com.mx) y Storecheck (storecheck.com).</li>
+        <li>Clientes confirmados de TT por su sitio oficial (Chedraui, La Comer, Casa Ley, S*Mart, Merza, Calimax).</li>
+        <li>Alianza TT+SC nov 2025 (Mundo Ejecutivo, blog Storecheck).</li>
+        <li>Adquisición de TT por Vuelo Capital dic 2024 (Search Funds News).</li>
+        <li>Background Diego Gavito (ITAM, Booth, Kearney, Amazon) e Ignacio Rivero (LCA Capital).</li>
+        <li>TAM BTL MX 2024: $42.4-54.2B MXN (~$2.1-2.7B USD) según InformaBTL.</li>
+        <li>ChambasAI con 1.4M candidatos WhatsApp (chambas.ai).</li>
+        <li>Confusión real "reps/PDV" documentada con Jimena (Veleta), 30 abril 2026.</li>
+      </ul>
+    </div>
+    <div class="dont">
+      <h5>Lo que NO está validado / gaps abiertos</h5>
+      <ul>
+        <li>Trade marketing spend MX desagregado a CPG sin acceso Nielsen/Kantar.</li>
+        <li>Universo exacto de PDV multi-canal (600-800K es estimación bottom-up).</li>
+        <li>Revenue / # piezas / pricing real de Veleta.</li>
+        <li>Walmart NO es cliente de TT (es aspiracional).</li>
+        <li>"Superley" mencionado por Pedro no aparece en fuentes públicas TT.</li>
+        <li>Storage TT/SC modules: HUB y VISION confirmados por blog; price points no publicados.</li>
+        <li>SOM $720K Año 2 depende de conversión warm pipeline ≥ 30 marcas.</li>
+        <li>Premia (MX) como player: sin presencia web indexada, posible nicho regional.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================== -->
+<section class="block" id="metodologia">
+  <div class="eyebrow">Cómo se construyó</div>
+  <h2>Metodología</h2>
+  <p>
+    Research compilado a partir de cuatro fuentes paralelas: (1) transcripts de conversación directa con prospects (Jimena Garate de Veleta) y mentores (Adrián, Mariana), (2) deck Shelfly v7.x con sus cifras y citas verificadas, (3) due diligence pública sobre TT/SC/Vuelo, (4) audits previos R1-R4 + A1-A10 que estresaron cada cifra contra benchmarks externos.
+  </p>
+  <ul class="facts">
+    <li><strong>R3 audit</strong> (Pedro 2026-05-08) — Marcó cada cifra del deck como "defendible / aspiracional / sobreestimada" con benchmark externo. Output reflejado en sección Cifras abajo.</li>
+    <li><strong>R4 audit</strong> — Validó fuentes web (timetracker.com.mx, storecheck.com, vuelocapital.com, InformaBTL, Search Funds News, Mundo Ejecutivo).</li>
+    <li><strong>A1-A10 sub-agents</strong> — Tracks paralelos: A2 SAM/SOM revisado, A5 deck visual polish, A8 coherencia narrativa, A10 export PDF.</li>
+    <li><strong>Conversaciones operativas</strong> — VN largo Pedro→Jimena (5 min) el más claro que existió del pitch. Llamada Adrián 29 abril sobre feedback session vs sales pitch. Mariana mencionada como NDA firmado por marca de cuidado natural.</li>
+  </ul>
+</section>
+
+<!-- ============================================================== -->
+<section class="block" id="veleta">
+  <div class="eyebrow">Caso 01 · Marca chica</div>
+  <h2>Veleta (primera prospect real)</h2>
+  <p class="lede">
+    Marca CDMX de Jimena Garate. Ropa y accesorios upcycled hechos con velas náuticas, kites y remanentes textiles. Primera prospect que firmó NDA y vio el preview el 30 abril 2026.
+  </p>
+
+  <div class="grid-2">
+    <div class="card">
+      <h4>Identidad pública</h4>
+      <ul class="facts">
+        <li><strong>Instagram:</strong> <a href="https://instagram.com/veletamx" target="_blank" rel="noopener">@veletamx</a> · ~2.3K seguidores</li>
+        <li><strong>Tienda física:</strong> CDMX, calle Marsella / Versalles (Juárez)</li>
+        <li><strong>Materia prima:</strong> Velas náuticas, kites, remanentes textiles (upcycled)</li>
+        <li><strong>Colaboración pública:</strong> Acopa Outdoors</li>
+        <li><strong>Fundadora:</strong> Jimena Garate (firmó NDA Shelfly 30 abr 2026)</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h4>Caso de uso Shelfly</h4>
+      <ul class="facts">
+        <li><strong>Misión hipotética:</strong> Colocación en boutiques de moda sostenible y tiendas outdoor en CDMX</li>
+        <li><strong>Match:</strong> Lucía, vendedora con red en 47 tiendas (boutiques, concept stores, outdoor)</li>
+        <li><strong>Resultado:</strong> 12 boutiques visitadas en 1 semana, catálogo presentado, muestra dejada. Evidencia GPS + foto.</li>
+        <li><strong>Ticket modelado:</strong> No definido aún; placeholder USD 140 (alineado a SAM build-up)</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="kvk">
+    <div class="know">
+      <h5>Lo que SÍ sabemos</h5>
+      <ul>
+        <li>Es una marca real con presencia digital y tienda física verificables.</li>
+        <li>Modelo upcycled con narrativa de sostenibilidad clara.</li>
+        <li>Jimena entiende el problema cuando se lo explican humano-a-humano (post-VN dijo "Ahhh está súper la idea. Me gusta").</li>
+        <li>NDA firmado con email Veleta (firma corporativa, no personal).</li>
+      </ul>
+    </div>
+    <div class="dont">
+      <h5>Lo que NO sabemos</h5>
+      <ul>
+        <li>Revenue mensual / # piezas vendidas / pricing promedio.</li>
+        <li>Si hoy ya intentaron entrar a boutiques (canal real vs aspiracional).</li>
+        <li>Margen unitario que justifique pagar comisión 17% + ticket misión.</li>
+        <li>Capacidad de surtir 47 tiendas si la conversión es alta (capacity bottleneck en upcycled).</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="impl">
+    <strong>Implicación deck</strong>
+    Veleta funciona como ilustración pero NO como caso anchor con números. Para el slide 1 el flujo Veleta → Lucía → 12 visitas es válido como narrativa. Para slides de tracción NO usar Veleta como cifra real.
+  </div>
+
+  <div class="src">
+    Fuentes: <a href="https://instagram.com/veletamx" target="_blank" rel="noopener">@veletamx Instagram</a> · <a href="https://www.notion.so/35ab1aa1843f8152b3f7c8a311911645" target="_blank" rel="noopener">Notion: Jimena Garate × Shelfly preview review</a> · WhatsApp consolidated 30 abr 2026 (path local: <code>~/Documents/whatsapp_archive/extracted/jimena-shelfly-2026-04-30/consolidated.txt</code>).
+  </div>
+</section>
+
+<!-- ============================================================== -->
+<section class="block" id="mercado">
+  <div class="eyebrow">Mercado · MX</div>
+  <h2>Mercado de ejecución multi-canal en México</h2>
+  <p>
+    Construcción de TAM / SAM / SOM con asunciones explícitas. Cada cifra con su fuente y su veredicto de validación.
+  </p>
+
+  <div class="grid-3">
+    <div class="card">
+      <h4>TAM</h4>
+      <div style="font-size:30px;font-weight:800;color:var(--navy);letter-spacing:-0.03em">$2-3<span style="color:var(--primary);font-size:0.7em">B</span></div>
+      <p style="margin-top:6px;font-size:12.5px;color:var(--navy)">USD anuales: gasto BTL total MX (activaciones, eventos, trade marketing, ejecución en punto de venta)</p>
+      <div class="src">
+        Fuente: <a href="https://www.informabtl.com/below-the-line-en-mexico-cerca-de-la-equidad/" target="_blank" rel="noopener">InformaBTL 2024</a> — Inversión BTL MX 2024: $42.4-54.2B MXN (~$2.1-2.7B USD). <span class="verdict v-def">Defendible</span>
+      </div>
+    </div>
+    <div class="card">
+      <h4>SAM</h4>
+      <div style="font-size:30px;font-weight:800;color:var(--navy);letter-spacing:-0.03em">$800M-1.2<span style="color:var(--primary);font-size:0.7em">B</span></div>
+      <p style="margin-top:6px;font-size:12.5px;color:var(--navy)">Build-up: ~600K PDV × 12 misiones/año × $140 USD ticket ≈ $1B USD</p>
+      <div class="src">
+        Bottom-up modelado, no citado directo. <span class="verdict v-asp">Aspiracional/modelado</span>. Asunciones: 12 misiones/año y $140 ticket promedio. Refuerzo parcial: <a href="https://antad.net" target="_blank" rel="noopener">ANTAD</a> + INEGI DENUE para PDV.
+      </div>
+    </div>
+    <div class="card card-accent">
+      <h4>SOM Año 2</h4>
+      <div style="font-size:30px;font-weight:800;color:var(--navy);letter-spacing:-0.03em">$720<span style="color:var(--primary);font-size:0.7em">K</span></div>
+      <p style="margin-top:6px;font-size:12.5px;color:var(--navy)">Revenue plataforma vía warm pipeline + AI-native operation. ~80 marcas activas, 4-5K visitas/mes pico.</p>
+      <div class="src">
+        Modelo financiero interno. <span class="verdict v-asp">Aspiracional</span>. Depende de ≥30 marcas warm convertidas desde 850 del portafolio TT/SC en M1-M12.
+      </div>
+    </div>
+  </div>
+
+  <h3>Construcción del SAM (build-up explícito)</h3>
+  <table>
+    <thead>
+      <tr>
+        <th>Componente</th>
+        <th>Valor</th>
+        <th>Fuente / asunción</th>
+        <th>Veredicto</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>PDV multi-canal MX</td>
+        <td class="num">600-800K</td>
+        <td>Tiendas tradicionales (~1.2M INEGI/ANTAD) + conveniencia + farma OTC + restaurantes + gimnasios. Filtro Shelfly: addressable mid-market en ciudades primarias/secundarias.</td>
+        <td><span class="verdict v-asp">Aspiracional</span></td>
+      </tr>
+      <tr>
+        <td>Misiones / año / PDV</td>
+        <td class="num">12</td>
+        <td>1 misión/mes promedio. Conservador para CPG, agresivo para nicho.</td>
+        <td><span class="verdict v-asp">Modelado</span></td>
+      </tr>
+      <tr>
+        <td>Ticket promedio USD</td>
+        <td class="num">$140</td>
+        <td>MXN ~2,500 por misión (incluye fee rep + take rate plataforma). Benchmark vs MXN 250-400 de agencia tradicional por visita.</td>
+        <td><span class="verdict v-asp">Modelado</span></td>
+      </tr>
+      <tr>
+        <td>Producto</td>
+        <td class="num">~$1B USD/año</td>
+        <td>600K × 12 × $140 = $1.008B. Banda baja/alta ajusta universo PDV.</td>
+        <td><span class="verdict v-asp">Modelado</span></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="impl">
+    <strong>Disclaimer</strong>
+    Shelfly NO va por el SAM completo. Captura una fracción cuando reemplaza fuerza fija o agencia tradicional. Take rate 17% sobre GMV ejecutado.
+  </div>
+
+  <h3>Trade marketing context (referencia industria)</h3>
+  <ul class="facts">
+    <li><strong>Trade spend CPG:</strong> 10-20% de ingresos según <a href="https://www.morningai.com/learn/trade-spend" target="_blank" rel="noopener">MorningAI</a>. Marcas emergentes en el extremo alto.</li>
+    <li><strong>Marketing CPG total 2024:</strong> 19.5% de ventas; de ese total ~48% es trade promotion (<a href="https://cadentcg.com/cadent-insight/2024-marketing-spending-study/" target="_blank" rel="noopener">Cadent Consulting</a>).</li>
+    <li><strong>Trade marketing como % del BTL MX:</strong> ~13% (~$280-350M USD), el resto activaciones y POS.</li>
+    <li><strong>Software retail execution global:</strong> $2.5-2.6B en 2024, CAGR 8-13% (<a href="https://www.fortunebusinessinsights.com/retail-execution-software-market-105956" target="_blank" rel="noopener">Fortune Business Insights</a>) <span class="tag tag-warn">Discrepancia metodológica</span>.</li>
+  </ul>
+</section>
+
+<!-- ============================================================== -->
+<section class="block" id="portafolio">
+  <div class="eyebrow">Asset injection</div>
+  <h2>Time Tracker + Storecheck (portafolio)</h2>
+
+  <div class="grid-2">
+    <div class="card">
+      <h4>Time Tracker</h4>
+      <ul class="facts">
+        <li><strong>Fundado:</strong> 2004 (Héctor Anaya, Héctor Piña)</li>
+        <li><strong>HQ:</strong> CDMX (Protasio Tagle 79, San Miguel Chapultepec II)</li>
+        <li><strong>Modelo:</strong> SaaS B2B + hardware biométrico para control de promotores en cadenas de autoservicio</li>
+        <li><strong>Productos:</strong> Monitor (real-time) · Prenom (gestión personal) · Tienda Perfecta</li>
+        <li><strong>Empleados:</strong> 100+ (ref 2017; actual no publicado)</li>
+        <li><strong>Adquisición:</strong> dic 2024 por Vuelo Capital (equity + seller's finance, monto no divulgado)</li>
+      </ul>
+      <div class="src">
+        Fuentes: <a href="https://www.timetracker.com.mx/" target="_blank" rel="noopener">timetracker.com.mx</a> · <a href="https://searchfundsnews.com/time-tracker-announces-majority-growth-investment-by-vuelo-capital/" target="_blank" rel="noopener">Search Funds News</a> · <a href="https://expansion.mx/empresas/2017/12/07/esta-es-la-empresa-que-ayuda-a-las-minoristas-a-gestionar-a-su-personal" target="_blank" rel="noopener">Expansión 2017</a>
+      </div>
+    </div>
+
+    <div class="card">
+      <h4>Storecheck</h4>
+      <ul class="facts">
+        <li><strong>HQ:</strong> Querétaro (operación integrada con TT CDMX post-alianza)</li>
+        <li><strong>Modelo:</strong> SaaS enterprise (cobra a marcas)</li>
+        <li><strong>Productos:</strong> FIELD (visibilidad campo) · HUB (sell-in/sell-out/inventario) · VISION (CV >95% accuracy)</li>
+        <li><strong>Usuarios activos históricos:</strong> 18K+</li>
+        <li><strong>Alianza con TT:</strong> nov 2025 — operan independientes</li>
+        <li><strong>Status para Shelfly:</strong> Aliado interno del portafolio del socio, NO competidor</li>
+      </ul>
+      <div class="src">
+        Fuentes: <a href="https://www.storecheck.com.mx/" target="_blank" rel="noopener">storecheck.com.mx</a> · <a href="https://blog.storecheck.com.mx/time-tracker-y-storecheck-una-alianza-que-potencia-el-retail/" target="_blank" rel="noopener">blog.storecheck.com.mx</a> · <a href="https://www.mundoejecutivo.com.mx/actualidad/time-tracker-y-storecheck-se-unen-para-impulsar-la-evolucion-del-retail-en-mexico/" target="_blank" rel="noopener">Mundo Ejecutivo</a>
+      </div>
+    </div>
+  </div>
+
+  <h3>Clientes confirmados de Time Tracker</h3>
+  <table>
+    <thead>
+      <tr>
+        <th>Cadena</th>
+        <th>Evidencia</th>
+        <th>Fuente</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Chedraui <span class="tag tag-ok">Confirmado</span></td>
+        <td>Caso de éxito documentado: ausentismo 30%→1%, pagos extra -40%</td>
+        <td><a href="https://infochannel.info/retail-utiliza-investigacion-biometrica-para-impulsar-su-crecimiento/" target="_blank" rel="noopener">Infochannel</a></td>
+      </tr>
+      <tr>
+        <td>La Comer <span class="tag tag-ok">Confirmado</span></td>
+        <td>Mencionada en sitio actual TT</td>
+        <td><a href="https://www.timetracker.com.mx/" target="_blank" rel="noopener">timetracker.com.mx</a></td>
+      </tr>
+      <tr>
+        <td>Casa Ley <span class="tag tag-ok">Confirmado</span></td>
+        <td>Sitio + artículo Vuelo Capital</td>
+        <td><a href="https://searchfundsnews.com/time-tracker-announces-majority-growth-investment-by-vuelo-capital/" target="_blank" rel="noopener">Search Funds News</a></td>
+      </tr>
+      <tr>
+        <td>S*Mart <span class="tag tag-ok">Confirmado</span></td>
+        <td>Mencionada en sitio actual TT</td>
+        <td><a href="https://www.timetracker.com.mx/" target="_blank" rel="noopener">timetracker.com.mx</a></td>
+      </tr>
+      <tr>
+        <td>Grupo Merza <span class="tag tag-ok">Confirmado</span></td>
+        <td>Sitio actual TT</td>
+        <td><a href="https://www.timetracker.com.mx/" target="_blank" rel="noopener">timetracker.com.mx</a></td>
+      </tr>
+      <tr>
+        <td>Calimax <span class="tag tag-ok">Confirmado</span></td>
+        <td>Sitio + artículo Vuelo Capital</td>
+        <td><a href="https://searchfundsnews.com/time-tracker-announces-majority-growth-investment-by-vuelo-capital/" target="_blank" rel="noopener">Search Funds News</a></td>
+      </tr>
+      <tr>
+        <td>Soriana <span class="tag tag-warn">Solo ref 2017</span></td>
+        <td>Mencionada en Expansión 2017 pero NO en sitio actual</td>
+        <td><a href="https://expansion.mx/empresas/2017/12/07/esta-es-la-empresa-que-ayuda-a-las-minoristas-a-gestionar-a-su-personal" target="_blank" rel="noopener">Expansión 2017</a></td>
+      </tr>
+      <tr>
+        <td>Walmart <span class="tag tag-gap">NO es cliente</span></td>
+        <td>Aspiracional. Diego quiere expandir, lo que implica NO cliente actual</td>
+        <td>—</td>
+      </tr>
+      <tr>
+        <td>Superley <span class="tag tag-gap">No verificado</span></td>
+        <td>Mencionado por Pedro; ninguna fuente pública. Posible regional Casa Ley</td>
+        <td>—</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3>Escala combinada post-alianza (nov 2025)</h3>
+  <ul class="facts">
+    <li><strong>Cadenas top atendidas:</strong> 7 de las más importantes de MX (no nombradas en comunicados)</li>
+    <li><strong>Marcas y agencias:</strong> 850+ en pipeline combinado TT+SC</li>
+    <li><strong>Sucursales con presencia (ref 2017):</strong> 1,500+</li>
+    <li><strong>Crecimiento histórico:</strong> "doble dígito anual durante más de una década" (Diego en press release)</li>
+  </ul>
+
+  <div class="impl">
+    <strong>Implicación Shelfly</strong>
+    El portafolio TT+SC cubre cadenas grandes con shelf intelligence + biométricos. NO cubre long-tail multi-canal (changarros, conveniencia, farma OTC, restaurantes, gimnasios). Shelfly cierra ese gap como tercera capa, sin canibalizar. Asset injection clave: 850 marcas warm + relaciones con agencias = supply-side accelerator.
+  </div>
+</section>
+
+<!-- ============================================================== -->
+<section class="block" id="vuelo">
+  <div class="eyebrow">Socios potenciales</div>
+  <h2>Vuelo Capital · Diego Gavito · Ignacio Rivero</h2>
+
+  <div class="grid-2">
+    <div class="card">
+      <h4>Diego Gavito</h4>
+      <ul class="facts">
+        <li><strong>Rol:</strong> Co-CEO Time Tracker, Co-Founder Vuelo Capital</li>
+        <li><strong>Educación:</strong> BSc Business Engineering (honors) ITAM + MBA (honors) Chicago Booth</li>
+        <li><strong>Experiencia previa:</strong> Senior Manager AT Kearney, analista financiero Amazon, consejero Grupo Procsa</li>
+        <li><strong>LinkedIn:</strong> <a href="https://www.linkedin.com/in/diego-gavito-12b097101" target="_blank" rel="noopener">diego-gavito-12b097101</a></li>
+        <li><strong>Email dominio:</strong> d***@timetracker.com.mx</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h4>Ignacio Rivero</h4>
+      <ul class="facts">
+        <li><strong>Rol:</strong> Co-CEO Time Tracker, Co-Founder Vuelo Capital</li>
+        <li><strong>Educación:</strong> MBA Chicago Booth + doble licenciatura ITAM</li>
+        <li><strong>Experiencia previa:</strong> VP LCA Capital, consejero en 5 portafolios, BAML</li>
+      </ul>
+    </div>
+  </div>
+
+  <h3>Vuelo Capital (search fund 2022)</h3>
+  <ul class="facts">
+    <li><strong>Estructura:</strong> Search fund mexicano. Mayoría de TT adquirida dic 2024 con equity + seller's finance.</li>
+    <li><strong>LPs:</strong> Cerralvo Capital, Alza Capital Partners, Vonzeo Capital, WSC & Company, Istria Capital, Kinderhook Partners, Spectra Investments, Ambit Partners</li>
+    <li><strong>Crunchbase:</strong> Sin registro público (opera como search fund acquisition, no VC-backed startup)</li>
+  </ul>
+  <div class="src">
+    Fuentes: <a href="https://www.vuelocapital.com/team" target="_blank" rel="noopener">vuelocapital.com/team</a> · <a href="https://searcherinsights.com/network/searchers/diego-gavito/" target="_blank" rel="noopener">Searcher Insights</a>
+  </div>
+
+  <div class="impl">
+    <strong>Hipótesis a validar</strong>
+    ¿Diego entra como persona física o vía Vuelo Capital? ¿LPs tienen derecho de co-inversión en deals nuevos? Esto determina si Pedro negocia con individuo o con fondo. Adicional: ¿Ignacio entra al deal o solo Diego?
+  </div>
+</section>
+
+<!-- ============================================================== -->
+<section class="block" id="competidores">
+  <div class="eyebrow">Landscape</div>
+  <h2>Competidores · State of the art</h2>
+  <p>Separados por lado del marketplace (demand-side vs supply-side) para evitar comparaciones injustas.</p>
+
+  <h3>Demand-side (compiten por la billetera de la marca)</h3>
+  <table>
+    <thead>
+      <tr>
+        <th>Player</th>
+        <th>HQ</th>
+        <th>Modelo</th>
+        <th>Geo MX</th>
+        <th>Limitación vs Shelfly</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>Trax</strong></td>
+        <td>Singapur</td>
+        <td>SaaS enterprise CV anaquel</td>
+        <td>Sí (80+ países)</td>
+        <td>Solo CPG tier-1; 6 cifras USD/año; sin marketplace</td>
+      </tr>
+      <tr>
+        <td><strong>Smollan</strong></td>
+        <td>Sudáfrica (WPP)</td>
+        <td>Agencia outsourcing</td>
+        <td><span class="tag tag-gap">No</span> (Brasil sí, MX no)</td>
+        <td>Sin oficinas MX; modelo agencia, no marketplace</td>
+      </tr>
+      <tr>
+        <td><strong>Storecheck FIELD</strong> <span class="tag tag-ok">Aliado</span></td>
+        <td>Querétaro</td>
+        <td>SaaS shelf intelligence + CV</td>
+        <td>Sí</td>
+        <td>Pre-alianza era competidor demand-side; post nov 2025 dentro del portafolio del socio</td>
+      </tr>
+      <tr>
+        <td><strong>Repsly</strong></td>
+        <td>Boston USA</td>
+        <td>SaaS USD 29-99/usuario/mes</td>
+        <td>No real</td>
+        <td>Asume plantilla propia de marca; contratos anuales</td>
+      </tr>
+      <tr>
+        <td><strong>FORM (GoSpotCheck)</strong></td>
+        <td>Denver USA</td>
+        <td>SaaS USD 40+/user, mín 20</td>
+        <td>No</td>
+        <td>Mínimo de usuarios excluye PYME; sin marketplace</td>
+      </tr>
+      <tr>
+        <td><strong>Field Agent</strong></td>
+        <td>Arkansas USA</td>
+        <td>Marketplace crowdsourcing auditoría</td>
+        <td><span class="tag tag-warn">Parcial</span> (Field Agent MX en FB, actividad incierta)</td>
+        <td>Solo auditorías puntuales, no ejecución continua</td>
+      </tr>
+      <tr>
+        <td><strong>Gigwalk</strong></td>
+        <td>SF USA</td>
+        <td>Marketplace gigs</td>
+        <td>No</td>
+        <td>Sin presencia MX/LatAm; sólo tareas puntuales</td>
+      </tr>
+      <tr>
+        <td><strong>Agencias trade MX</strong></td>
+        <td>MX (locales)</td>
+        <td>Plantilla fija, contratos largos</td>
+        <td>Sí</td>
+        <td>BTL, Promovendo, Praxis. Sin tech layer; precio alto</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3>Supply-side (compiten por la bolsa de reps independientes)</h3>
+  <table>
+    <thead>
+      <tr>
+        <th>Player</th>
+        <th>HQ</th>
+        <th>Modelo</th>
+        <th>Escala</th>
+        <th>Status</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>ChambasAI</strong></td>
+        <td>MX</td>
+        <td>Reclutamiento WhatsApp-first</td>
+        <td>1.4M candidatos</td>
+        <td>Competidor parcial supply-side + playbook de referencia onboarding</td>
+      </tr>
+      <tr>
+        <td><strong>Staffing tradicional</strong></td>
+        <td>MX (locales)</td>
+        <td>Contratos exclusivos con reps</td>
+        <td>—</td>
+        <td>BTL, Promovendo, Praxis enganchan reps con exclusividad</td>
+      </tr>
+      <tr>
+        <td><strong>Gig apps (Rappi, Uber, DiDi)</strong></td>
+        <td>LatAm</td>
+        <td>Take rate 20-25%</td>
+        <td>Millones</td>
+        <td>Absorben capacity de los mismos perfiles target. Commission rate de referencia (Shelfly 17% &lt; Rappi 20-25%)</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="src">
+    Fuentes: <a href="https://chambas.ai" target="_blank" rel="noopener">chambas.ai</a> · <a href="https://traxretail.com/" target="_blank" rel="noopener">Trax</a> · <a href="https://smollan.com/offices/" target="_blank" rel="noopener">Smollan</a> · <a href="https://www.repsly.com/pricing" target="_blank" rel="noopener">Repsly</a> · <a href="https://www.form.com/pricing/gospotcheck/" target="_blank" rel="noopener">FORM</a> · <a href="https://www.fieldagent.co.uk/crowdsoured-retail-audits-in-perspective" target="_blank" rel="noopener">Field Agent</a>
+  </div>
+
+  <div class="impl">
+    <strong>Posición Shelfly</strong>
+    Único que cierra ambos lados con marketplace transaccional + ejecución validada (GPS, metadatos, huella de imagen). Take rate 17% por debajo de Rappi 20-25%. Cobertura multi-canal donde nadie opera con tech layer.
+  </div>
+</section>
+
+<!-- ============================================================== -->
+<section class="block" id="diferenciacion">
+  <div class="eyebrow">Diferenciación + FODA</div>
+  <h2>Diferenciación / FODA</h2>
+
+  <h3>Por qué Shelfly cierra el gap que ninguno cierra</h3>
+  <table>
+    <thead>
+      <tr>
+        <th>Dimensión</th>
+        <th>Shelfly</th>
+        <th>SaaS demand-side (Trax/Repsly/FORM)</th>
+        <th>Agencia (Smollan/BTL)</th>
+        <th>Supply-side (ChambasAI)</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Modelo</td>
+        <td><strong>Marketplace transaccional, comisión 17%</strong></td>
+        <td>SaaS fijo por usuario</td>
+        <td>Outsourcing plantilla</td>
+        <td>Reclutamiento</td>
+      </tr>
+      <tr>
+        <td>Cierre demand + supply</td>
+        <td><strong>Sí, ambos lados</strong></td>
+        <td>Demand-side asume plantilla propia</td>
+        <td>Demand-side, sin supply marketplace</td>
+        <td>Solo supply</td>
+      </tr>
+      <tr>
+        <td>Cobertura PDV</td>
+        <td><strong>Multi-canal (tradicional, conveniencia, farma OTC, restaurantes, gimnasios, gasolineras)</strong></td>
+        <td>Cadenas grandes</td>
+        <td>Cadenas grandes</td>
+        <td>Brigadas operativas genéricas</td>
+      </tr>
+      <tr>
+        <td>Validación cancha</td>
+        <td><strong>GPS + foto + huella imagen + CV fase 2</strong></td>
+        <td>CV en cadenas grandes</td>
+        <td>Supervisión propia</td>
+        <td>No aplica</td>
+      </tr>
+      <tr>
+        <td>Pago a vendedor</td>
+        <td><strong>Semanal vía Mercado Pago</strong></td>
+        <td>N/A (plantilla marca)</td>
+        <td>Nómina mensual</td>
+        <td>Brigada</td>
+      </tr>
+      <tr>
+        <td>Contratos</td>
+        <td><strong>Sin compromiso anual; por misión</strong></td>
+        <td>12 meses anticipado</td>
+        <td>Multi-año</td>
+        <td>—</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3>FODA</h3>
+  <div class="grid-2">
+    <div class="card" style="border-left:3px solid var(--success)">
+      <h4>Fortalezas</h4>
+      <ul style="margin:0;padding-left:18px;font-size:13px;color:var(--navy-soft)">
+        <li>Asset injection TT+SC (850 marcas warm + relaciones agencias)</li>
+        <li>Mercado MX grande y subatendido en long-tail multi-canal</li>
+        <li>Comisión 17% &lt; Rappi 20-25% (atractivo para reps)</li>
+        <li>Pedro full-time AI-native (Claude Code 3-5× velocity)</li>
+        <li>Idea con 2 años de discovery (no greenfield)</li>
+      </ul>
+    </div>
+    <div class="card" style="border-left:3px solid var(--primary)">
+      <h4>Oportunidades</h4>
+      <ul style="margin:0;padding-left:18px;font-size:13px;color:var(--navy-soft)">
+        <li>Long-tail (changarros, conveniencia regional, farma OTC) sin tech layer</li>
+        <li>Geografía LatAm replicable (USA, Brasil, otros)</li>
+        <li>Take rate por resultado (no SaaS fijo) = mayor alineación</li>
+        <li>Verticales adyacentes: OTC farma, food service B2B, suplementos</li>
+        <li>Capa data products mes 18+ con cobertura suficiente</li>
+      </ul>
+    </div>
+    <div class="card" style="border-left:3px solid var(--warning)">
+      <h4>Debilidades</h4>
+      <ul style="margin:0;padding-left:18px;font-size:13px;color:var(--navy-soft)">
+        <li>Cero tracción a la fecha (5 mayo 2026)</li>
+        <li>$90K MXN/mes Pedro CEO solo (sin equipo técnico hired aún)</li>
+        <li>SAM/SOM modelados, no validados con primera cohorte</li>
+        <li>Capacidad de surtir misiones depende de captar reps</li>
+        <li>Veleta como caso ilustrativo, no anchor con números reales</li>
+      </ul>
+    </div>
+    <div class="card" style="border-left:3px solid var(--danger)">
+      <h4>Amenazas</h4>
+      <ul style="margin:0;padding-left:18px;font-size:13px;color:var(--navy-soft)">
+        <li>Storecheck FIELD post-alianza puede expandir a long-tail</li>
+        <li>Regulación gig MX (outsourcing 2021 + LFT plataformas 2025) = riesgo laboral encubierto</li>
+        <li>ChambasAI con 1.4M candidatos compite por supply</li>
+        <li>Rappi/Uber absorben capacity reps</li>
+        <li>Si Diego no entra: CAC sube, plan se retrasa 6-12 meses</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================== -->
+<section class="block" id="cifras">
+  <div class="eyebrow">Defensibilidad</div>
+  <h2>Cifras del deck con benchmarks reales</h2>
+  <p>Cada cifra del deck con su fuente, benchmark externo, y veredicto.</p>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Cifra del deck</th>
+        <th>Fuente</th>
+        <th>Benchmark / cita</th>
+        <th>Veredicto</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>TAM $2-3B USD BTL MX</td>
+        <td><a href="https://www.informabtl.com/below-the-line-en-mexico-cerca-de-la-equidad/" target="_blank" rel="noopener">InformaBTL 2024</a></td>
+        <td>$42.4-54.2B MXN ~ $2.1-2.7B USD</td>
+        <td><span class="verdict v-def">Defendible</span></td>
+      </tr>
+      <tr>
+        <td>SAM $800M-1.2B USD</td>
+        <td>Build-up bottom-up interno</td>
+        <td>600K PDV × 12 misiones × $140 ≈ $1B. Sin source directo</td>
+        <td><span class="verdict v-asp">Aspiracional modelado</span></td>
+      </tr>
+      <tr>
+        <td>SOM Año 2 $720K USD</td>
+        <td>Modelo financiero interno</td>
+        <td>80 marcas × $9K USD avg/año take rate</td>
+        <td><span class="verdict v-asp">Aspiracional</span></td>
+      </tr>
+      <tr>
+        <td>2M+ tiendas multi-canal MX</td>
+        <td>INEGI DENUE + ANTAD agregado</td>
+        <td>1.2M tiendas tradicionales (INEGI) + 50K cadenas modernas (ANTAD) + 600K restaurantes + 30K farmacias + 13K gasolineras</td>
+        <td><span class="verdict v-def">Defendible</span></td>
+      </tr>
+      <tr>
+        <td>&lt;20% marcas con fuerza propia</td>
+        <td>Discovery cualitativo</td>
+        <td>Sin source público directo. ANTAD/INEGI no desagregan así</td>
+        <td><span class="verdict v-asp">Aspiracional</span></td>
+      </tr>
+      <tr>
+        <td>Comisión 17%</td>
+        <td>Decisión de pricing interna</td>
+        <td>Rappi 20-25%, TaskRabbit 15-30%, Upwork 10-20%</td>
+        <td><span class="verdict v-def">Defendible (debajo benchmark)</span></td>
+      </tr>
+      <tr>
+        <td>850 marcas TT+SC</td>
+        <td><a href="https://www.mundoejecutivo.com.mx/actualidad/time-tracker-y-storecheck-se-unen-para-impulsar-la-evolucion-del-retail-en-mexico/" target="_blank" rel="noopener">Mundo Ejecutivo nov 2025</a></td>
+        <td>Cifra oficial post-alianza</td>
+        <td><span class="verdict v-def">Defendible</span></td>
+      </tr>
+      <tr>
+        <td>95%+ accuracy CV Storecheck</td>
+        <td>Blog Storecheck oficial</td>
+        <td><a href="https://blog.storecheck.com.mx/time-tracker-y-storecheck-una-alianza-que-potencia-el-retail/" target="_blank" rel="noopener">Cita propia de SC</a></td>
+        <td><span class="verdict v-def">Defendible (claim propio)</span></td>
+      </tr>
+      <tr>
+        <td>21 años Time Tracker</td>
+        <td>Press release Vuelo</td>
+        <td>Fundación 2004; 2025-2004 = 21</td>
+        <td><span class="verdict v-def">Defendible</span></td>
+      </tr>
+      <tr>
+        <td>CM $34.50 MXN/misión</td>
+        <td>Modelo interno</td>
+        <td>17% de $203 MXN avg ticket; sin cohorte real para validar</td>
+        <td><span class="verdict v-asp">Aspiracional modelado</span></td>
+      </tr>
+      <tr>
+        <td>LTV/CAC 6.4×</td>
+        <td>Modelo interno</td>
+        <td>$128K LTV ÷ $20K CAC. Asunción 97% retention mensual sin cohorte</td>
+        <td><span class="verdict v-asp">Aspiracional</span></td>
+      </tr>
+      <tr>
+        <td>Burn $240K MXN/mes promedio</td>
+        <td>Modelo interno LatAm rates</td>
+        <td>~6× menor que mediana seed global $85K USD/mes (<a href="https://learn.icanpitch.com/blog/burn-rate-benchmarks-by-industry-stage/" target="_blank" rel="noopener">Carta 2025</a>)</td>
+        <td><span class="verdict v-def">Defendible</span></td>
+      </tr>
+      <tr>
+        <td>$90K MXN Pedro CEO sueldo</td>
+        <td>Decisión propia conservadora</td>
+        <td>500 Global LatAm founder pay mediana: $3-5K USD/mes</td>
+        <td><span class="verdict v-def">Defendible</span></td>
+      </tr>
+      <tr>
+        <td>Capital total 18m $4.36M MXN</td>
+        <td>Suma burn 18m</td>
+        <td>$132K + $217K + $377K avg/mes × respectivos tramos</td>
+        <td><span class="verdict v-def">Defendible (matemática)</span></td>
+      </tr>
+      <tr>
+        <td>3-5× dev velocity con Claude Code</td>
+        <td>Claim propio Pedro</td>
+        <td>Sin source público citable; experiencia personal</td>
+        <td><span class="verdict v-asp">Aspiracional claim</span></td>
+      </tr>
+      <tr>
+        <td>1.4M candidatos ChambasAI</td>
+        <td><a href="https://chambas.ai" target="_blank" rel="noopener">chambas.ai</a></td>
+        <td>Claim del sitio oficial</td>
+        <td><span class="verdict v-def">Defendible (claim oficial)</span></td>
+      </tr>
+      <tr>
+        <td>Alianza TT+SC nov 2025</td>
+        <td>Mundo Ejecutivo + blog SC</td>
+        <td>Operan independientes; NO adquisición formal</td>
+        <td><span class="verdict v-def">Defendible (alianza, no acquisition)</span></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="impl">
+    <strong>Regla para próximas iteraciones</strong>
+    Cualquier cifra nueva debe pasar este filtro: (1) ¿hay source citable URL? (2) si no, ¿es modelo interno bien documentado? (3) si tampoco, ¿queda marcado como "asunción"? Cero cifras sin tag de veredicto.
+  </div>
+</section>
+
+<!-- ============================================================== -->
+<section class="block" id="conversaciones">
+  <div class="eyebrow">Discovery operativo</div>
+  <h2>Conversaciones clave</h2>
+
+  <h3>Jimena Garate (Veleta) — 30 abril 2026</h3>
+  <p>Primera prospect que vio el preview. NDA firmado, confusión "reps/PDV" documentada, idea validada post-VN explicativo.</p>
+
+  <blockquote>
+    "Tengo dudas. Qué es reps. Qué es PDV. Está en código esto. Necesito verla contigo. Chance mi IQ está bajo o tengo hambre."
+    <cite>— Jimena, 16:58 a 17:00, después de abrir preview sin contexto previo</cite>
+  </blockquote>
+
+  <blockquote>
+    "Pero estos vendedores son virtuales, o sea, de la inteligencia artificial, o son personas que se les... ¿es correcto?" [tuvo que preguntar dos veces para confirmar humano vs AI]
+    <cite>— Jimena, 18:23 y 18:26</cite>
+  </blockquote>
+
+  <blockquote>
+    "Ahhh está súper la idea. Me gusta."
+    <cite>— Jimena, 19:22, después del VN largo de Pedro explicando el pitch</cite>
+  </blockquote>
+
+  <div class="impl">
+    <strong>Insights operativos</strong>
+    (1) Nunca mandar la URL sola: el preview no es self-serve, requiere VN/llamada. (2) Negar explícitamente que los vendedores son AI desde el primer slide. (3) Definir "reps" y "PDV" en primera mención, no asumir vocabulario.
+  </div>
+  <div class="src">
+    Fuente: <code>~/Documents/whatsapp_archive/extracted/jimena-shelfly-2026-04-30/consolidated.txt</code> · <a href="https://www.notion.so/35ab1aa1843f8152b3f7c8a311911645" target="_blank" rel="noopener">Notion: Jimena Garate × Shelfly preview review</a>
+  </div>
+
+  <h3>Adrián (Semantiks) — 29 abril 2026</h3>
+  <p>No advisor formal. Conector con Gavito y Lam. Recomendó approach feedback session vs sales pitch para B2B enterprise MX.</p>
+
+  <blockquote>
+    "Más que irles a vender, eso es la parte de un feedback session. En México se hace muy poco."
+    <cite>— Adrián, llamada 29 abr 2026</cite>
+  </blockquote>
+
+  <div class="impl">
+    <strong>Insight reutilizado en deck</strong>
+    Slide 13 (Ciclo de venta) recoge directamente este playbook: 5 pasos de feedback session, NO sales pitch. Quién: head de customer service / trade marketing / operaciones. NO compras.
+  </div>
+  <div class="src">
+    Fuente: <a href="https://www.notion.so/pedrorojas/Estrategia-de-negocios-y-leads-AT-Kearney-Andela-2026-04-29-351b1aa1843f80b38623dc3175950700" target="_blank" rel="noopener">Notion: AT Kearney/Andela transcript 29 abr</a> · WhatsApp chat: <code>~/Documents/whatsapp_archive/adrian_2026-04-29.zip</code>
+  </div>
+
+  <h3>Mariana — abril 2026</h3>
+  <p>NDA firmado. Marca de cuidado natural mencionada como caso uso potencial. Discovery cualitativo sobre vinos también referenciado en transcripts.</p>
+  <div class="src">
+    Fuente: <a href="https://www.notion.so/p/351b1aa1843f816089cfd08db18116f3" target="_blank" rel="noopener">Notion: Transcripción Wine 29 abr</a>
+  </div>
+
+  <h3>Diego Gavito — pendiente</h3>
+  <p>Pitch no realizado a la fecha. Plan: workshop 90 min con term sheet borrador. 3 preguntas clave preparadas (ver docs/socio_diego_gavito.md):</p>
+  <ul class="facts">
+    <li><strong>Q1:</strong> Con Storecheck ya tienes campo + BI + shelf vision: ¿qué te falta que Shelfly resolvería que TT no puede construir internamente?</li>
+    <li><strong>Q2:</strong> ¿"Canal" = warm intros a directores de promotoría O acuerdo donde TT distribuye Shelfly a las 850 marcas?</li>
+    <li><strong>Q3:</strong> ¿Entras como persona física o vía Vuelo? ¿LPs tienen derecho de co-inversión?</li>
+  </ul>
+</section>
+
+<!-- ============================================================== -->
+<section class="block" id="tracks">
+  <div class="eyebrow">Research history</div>
+  <h2>Tracks de research previos · R1-R4 + A1-A10</h2>
+  <p>Outputs de iteraciones previas que ya están internalizados en deck o docs. Listados como audit trail para no repetir trabajo.</p>
+
+  <h3>Tracks R (research)</h3>
+  <ul class="facts">
+    <li><strong>R1 — Market research base</strong>: TAM/SAM/SOM v1 sin source. Reemplazado por R3. Output en <code>docs/01_market_research.md</code>.</li>
+    <li><strong>R2 — Branding + naming</strong>: Marketplace Reps → Shelfly (decisión 2026-04-28). Output en <code>docs/03_branding.md</code> y <code>legal/NAMING_V2.md</code>.</li>
+    <li><strong>R3 — Cifras audit</strong>: Cada cifra del deck contra benchmark externo. Veredictos defendible/aspiracional/sobreestimado. Recogido en sección Cifras arriba.</li>
+    <li><strong>R4 — Sources web validation</strong>: timetracker.com.mx, storecheck.com, vuelocapital.com, InformaBTL, Search Funds News, Mundo Ejecutivo, Carta, 500 Global. Citas verificadas.</li>
+  </ul>
+
+  <h3>Tracks A (agent sub-tasks)</h3>
+  <ul class="facts">
+    <li><strong>A1 — Veleta correction</strong>: Bebidas → ropa upcycled tras feedback Pedro. Slide 1 reescrito.</li>
+    <li><strong>A2 — SAM/SOM rebuild</strong>: Bottom-up explícito con asunciones marcadas. TAM $5-7B → $2-3B.</li>
+    <li><strong>A3 — TT+SC alianza correction</strong>: "Adquirió" → "alianza nov 2025". Fuentes oficiales confirman operación independiente.</li>
+    <li><strong>A4 — Cliente list cleanup</strong>: Soriana out (no en sitio actual). Walmart tag "aspiracional". 850 marcas confirmadas Mundo Ejecutivo.</li>
+    <li><strong>A5 — Visual polish</strong>: VALIDAR tags suavizados, M12-18 alineado.</li>
+    <li><strong>A6 — Lucía/Daniela dual identity fix</strong>: Caso 1 vendedora = Lucía; Caso 3 vendedor independiente = Daniela.</li>
+    <li><strong>A7 — Mobile responsive</strong>: @media 768px patrón aplicado en slide 5 y 10.</li>
+    <li><strong>A8 — Coherencia narrativa cross-slide</strong>: Boutiques no bares, punto de venta no anaquel.</li>
+    <li><strong>A9 — ChambasAI orgánico</strong>: Mover de footnote a slide 7 demand-side / supply-side split.</li>
+    <li><strong>A10 — Export PDF</strong>: @media print con page-break-after, color-adjust exact.</li>
+  </ul>
+
+  <div class="impl">
+    <strong>Próximo track abierto</strong>
+    R5 — Discovery con primera cohorte real (10 marcas) para validar M6 cifras. Sin ese dato, SOM/LTV/CAC quedan como aspiracional permanente.
+  </div>
+</section>
+
+<!-- ============================================================== -->
+<section class="block" id="decisiones">
+  <div class="eyebrow">Audit trail</div>
+  <h2>Decisiones y trade-offs</h2>
+  <p>Qué decisiones se tomaron en iteraciones previas y por qué. Para que la próxima Claude no las re-debata.</p>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Decisión</th>
+        <th>Antes</th>
+        <th>Después</th>
+        <th>Razón</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Veleta = categoría</td>
+        <td>Bebidas</td>
+        <td><strong>Ropa upcycled</strong></td>
+        <td>Feedback Pedro: Veleta es @veletamx en Instagram, marca de ropa con velas náuticas + kites. Bebidas era invención del agent.</td>
+      </tr>
+      <tr>
+        <td>Identidades vendedoras</td>
+        <td>Lucía aparecía 2 veces (caso 1 + caso 3)</td>
+        <td><strong>Lucía caso 1, Daniela caso 3</strong></td>
+        <td>Coherencia: caso 1 es vendedora con red existente; caso 3 es vendedor independiente que monetiza contactos propios. Mismo nombre era confuso.</td>
+      </tr>
+      <tr>
+        <td>Clientes TT</td>
+        <td>Incluía Soriana + Walmart + Superley</td>
+        <td><strong>Chedraui · La Comer · Casa Ley · S*Mart · Merza · Calimax</strong></td>
+        <td>Soriana solo en Expansión 2017, no en sitio actual. Walmart aspiracional. Superley no aparece en fuentes públicas. Mantener solo lo verificable en timetracker.com.mx.</td>
+      </tr>
+      <tr>
+        <td>TT + SC status</td>
+        <td>"Adquirió Storecheck"</td>
+        <td><strong>"Alianza estratégica nov 2025; operan independientes"</strong></td>
+        <td>Fuentes oficiales (Mundo Ejecutivo + blog SC) hablan de alianza. No hay press release de adquisición formal. Decir "adquirió" sería sobre-claim.</td>
+      </tr>
+      <tr>
+        <td>TAM</td>
+        <td>$5-7B USD</td>
+        <td><strong>$2-3B USD</strong></td>
+        <td>$5-7B sin source soportable. InformaBTL 2024 da $42.4-54.2B MXN = $2.1-2.7B USD = TAM defendible con cita.</td>
+      </tr>
+      <tr>
+        <td>Burn benchmark</td>
+        <td>"3.5× más barato que YC"</td>
+        <td><strong>"6× más barato que mediana seed global Carta"</strong></td>
+        <td>Math correcta: $240K MXN ~ $14K USD vs $85K USD mediana Carta = 6×, no 3.5×. YC no publica burn benchmark directo.</td>
+      </tr>
+      <tr>
+        <td>Comisión vs Rappi</td>
+        <td>Sin comparación</td>
+        <td><strong>17% &lt; Rappi 20-25%</strong></td>
+        <td>Ancla competitiva para reps: Shelfly te paga más por misión vs gig apps.</td>
+      </tr>
+      <tr>
+        <td>VALIDAR tags en deck</td>
+        <td>Muy visibles, color naranja brillante</td>
+        <td><strong>Suavizados (cita link discreto)</strong></td>
+        <td>El deck en sí mismo es source of truth; tags VALIDAR pertenecen al hub research, no al deck pitch-ready.</td>
+      </tr>
+      <tr>
+        <td>Veleta como anchor</td>
+        <td>Slide 1 con cifras Veleta</td>
+        <td><strong>Veleta como ilustración narrativa</strong></td>
+        <td>Sin revenue ni pricing real Veleta, usarla con cifras sería invención. Mantener flujo Veleta → Lucía → 12 visitas como caso ilustrativo, sin números.</td>
+      </tr>
+      <tr>
+        <td>Approach venta</td>
+        <td>Pitch + URL self-serve</td>
+        <td><strong>Feedback session + VN 5 min antes de URL</strong></td>
+        <td>Confusión Jimena 30 abr probó que URL sola no funciona. Adrián 29 abr validó feedback session approach con buyers enterprise MX.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="impl">
+    <strong>Regla general</strong>
+    Toda corrección que llegue al deck debe pasar primero por este audit trail. Si una próxima Claude propone "agreguemos Soriana como cliente" o "subamos TAM a $5B", revisar esta tabla antes de aceptar.
+  </div>
+</section>
+
+<!-- ============================================================== -->
+<footer style="margin-top:60px;padding:24px 0;border-top:1px solid var(--line);font-size:11px;color:var(--navy-muted);line-height:1.7">
+  <p style="margin:0">
+    <strong style="color:var(--navy)">Shelfly Research Hub</strong> · Source of truth permanente · Confidencial · Mayo 2026
+  </p>
+  <p style="margin:6px 0 0">
+    Compilado por Pedro Rojas Campuzano. Time Tracker y Storecheck son marcas de sus titulares; uso ilustrativo en contexto de propuesta de partnership. Cifras según fuentes públicas citadas.
+  </p>
+</footer>
+
+</main>
+
+</div>
+
+<script>
+  // Active nav link via IntersectionObserver
+  const sections = document.querySelectorAll('section.block');
+  const navLinks = document.querySelectorAll('.nav-list li a');
+  const linkByHref = {};
+  navLinks.forEach((a) => { linkByHref[a.getAttribute('href')] = a; });
+
+  const setActive = (hash) => {
+    navLinks.forEach((a) => a.classList.remove('active'));
+    if (linkByHref[hash]) linkByHref[hash].classList.add('active');
+  };
+
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach((e) => {
+      if (e.isIntersecting && e.intersectionRatio > 0.25) {
+        setActive('#' + e.target.id);
+      }
+    });
+  }, { threshold: [0.25, 0.6], rootMargin: '-10% 0px -55% 0px' });
+  sections.forEach((s) => io.observe(s));
+
+  // Initial highlight
+  if (window.location.hash && linkByHref[window.location.hash]) {
+    setActive(window.location.hash);
+  } else {
+    setActive('#resumen');
+  }
+</script>
+</body>
+</html>
