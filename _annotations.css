@@ -1,5 +1,5 @@
 /* ====================================================================
-   Shelfly Deck — In-Deck Annotations Widget
+   Shelfly Deck — In-Deck Annotations Widget v2
    Vanilla CSS. Cero dependencias. Aware of brand palette:
    #FF6B35 primary · #0A2540 navy · #FFF8F3 cream · Inter font.
    ==================================================================== */
@@ -9,16 +9,17 @@
   color: #0F172A;
 }
 
-/* Hide everything when present mode is on */
-#ann-root.ann-present-hidden {
-  display: none !important;
-}
-
-/* -------- Floating button per slide -------- */
-.ann-fab {
+/* -------- FAB stack per slide -------- */
+.ann-fab-stack {
   position: absolute;
   bottom: 18px;
   right: 18px;
+  display: flex;
+  flex-direction: column-reverse;
+  gap: 10px;
+  z-index: 50;
+}
+.ann-fab {
   width: 40px;
   height: 40px;
   border-radius: 50%;
@@ -30,8 +31,8 @@
   align-items: center;
   justify-content: center;
   box-shadow: 0 2px 8px rgba(10, 37, 64, 0.12);
-  z-index: 50;
-  transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+  position: relative;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease, border-color 0.15s ease;
   font-family: inherit;
   padding: 0;
 }
@@ -39,31 +40,40 @@
   transform: translateY(-1px);
   box-shadow: 0 4px 12px rgba(10, 37, 64, 0.2);
 }
-.ann-fab svg {
-  width: 18px;
-  height: 18px;
-  display: block;
-}
+.ann-fab svg { width: 18px; height: 18px; display: block; }
 
-/* When slide is on a dark gradient (gradient-navy), invert */
+/* When slide is dark, invert */
 .gradient-navy .ann-fab {
   background: rgba(255, 255, 255, 0.1);
   border-color: rgba(255, 255, 255, 0.2);
   color: #FFF8F3;
   backdrop-filter: blur(6px);
 }
-.gradient-navy .ann-fab:hover {
-  background: rgba(255, 255, 255, 0.18);
-}
+.gradient-navy .ann-fab:hover { background: rgba(255, 255, 255, 0.18); }
 
-/* Has-comments state: orange */
+/* Chat fab states */
 .ann-fab.has-comments {
   background: #FF6B35;
   color: #ffffff;
   border-color: #FF6B35;
 }
-.ann-fab.has-comments:hover {
-  background: #d94e1f;
+.ann-fab.has-comments:hover { background: #d94e1f; }
+
+/* Borders for combined indicator */
+.ann-fab.has-drawings { box-shadow: 0 0 0 2px #2ECC71, 0 2px 8px rgba(10,37,64,0.12); }
+.ann-fab.has-selections { box-shadow: 0 0 0 2px #F1C40F, 0 2px 8px rgba(10,37,64,0.12); }
+.ann-fab.has-drawings.has-selections {
+  box-shadow: 0 0 0 2px #2ECC71, 0 0 0 4px #F1C40F, 0 2px 8px rgba(10,37,64,0.12);
+}
+.ann-fab.has-comments.has-drawings.has-selections {
+  box-shadow: 0 0 0 2px #2ECC71, 0 0 0 4px #F1C40F, 0 4px 12px rgba(255,107,53,0.35);
+}
+
+/* Draw fab */
+.ann-fab-draw.active {
+  background: #0A2540;
+  color: #ffffff;
+  border-color: #0A2540;
 }
 
 /* Count badge */
@@ -89,13 +99,270 @@
   background: #FF6B35;
 }
 
+/* -------- Draw layer (canvas overlay) -------- */
+.ann-draw-layer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 40;
+  overflow: hidden;
+}
+.ann-draw-layer svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+.ann-draw-layer.interactive {
+  pointer-events: auto;
+  cursor: crosshair;
+  background: rgba(10, 37, 64, 0.02);
+}
+body.ann-draw-active .ann-draw-layer.interactive {
+  outline: 2px dashed rgba(255, 107, 53, 0.4);
+  outline-offset: -4px;
+}
+
+/* -------- Draw toolbar -------- */
+.ann-draw-toolbar {
+  position: fixed;
+  top: 14px;
+  left: 50%;
+  transform: translateX(-50%) translateY(-20px);
+  background: #ffffff;
+  border: 1px solid rgba(10, 37, 64, 0.12);
+  border-radius: 12px;
+  box-shadow: 0 6px 20px rgba(10, 37, 64, 0.18);
+  padding: 8px 10px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  z-index: 1100;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.18s ease, transform 0.18s ease;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+}
+.ann-draw-toolbar.visible {
+  transform: translateX(-50%) translateY(0);
+  opacity: 1;
+  pointer-events: auto;
+}
+.ann-draw-tb-group {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.ann-draw-tb-divider {
+  width: 1px;
+  height: 22px;
+  background: rgba(10, 37, 64, 0.1);
+}
+.ann-color-swatch {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  cursor: pointer;
+  padding: 0;
+  outline: 1px solid rgba(10, 37, 64, 0.12);
+  outline-offset: -1px;
+}
+.ann-color-swatch.active {
+  border-color: #0A2540;
+  outline-color: #0A2540;
+}
+.ann-width-btn {
+  width: 26px;
+  height: 22px;
+  border-radius: 6px;
+  border: 1px solid rgba(10, 37, 64, 0.1);
+  background: #fff;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+}
+.ann-width-btn span {
+  display: block;
+  width: 14px;
+  background: #0A2540;
+  border-radius: 999px;
+}
+.ann-width-btn.active {
+  background: #FFF8F3;
+  border-color: #FF6B35;
+}
+.ann-draw-tb-btn {
+  background: #fff;
+  border: 1px solid rgba(10, 37, 64, 0.1);
+  border-radius: 6px;
+  padding: 4px 10px;
+  cursor: pointer;
+  color: #0A2540;
+  font-family: inherit;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+}
+.ann-draw-tb-btn:hover { background: #FFF8F3; }
+.ann-draw-tb-btn.active {
+  background: #FF6B35;
+  color: #fff;
+  border-color: #FF6B35;
+}
+.ann-draw-tb-close { padding: 4px 6px; }
+.ann-draw-tb-close svg { width: 14px; height: 14px; }
+
+/* -------- Selection popover -------- */
+.ann-sel-popover {
+  position: absolute;
+  z-index: 1050;
+  background: #ffffff;
+  border: 1px solid rgba(10, 37, 64, 0.12);
+  border-radius: 10px;
+  box-shadow: 0 6px 20px rgba(10, 37, 64, 0.18);
+  padding: 8px;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  min-width: 200px;
+  opacity: 0;
+  transform: translateY(-4px);
+  pointer-events: none;
+  transition: opacity 0.15s ease, transform 0.15s ease;
+}
+.ann-sel-popover.visible {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+.ann-sel-btn {
+  background: #FF6B35;
+  color: #fff;
+  border: 0;
+  border-radius: 6px;
+  padding: 8px 12px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  width: 100%;
+  font-family: inherit;
+}
+.ann-sel-btn:hover { background: #d94e1f; }
+.ann-sel-form {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 240px;
+}
+.ann-sel-textarea {
+  width: 100%;
+  min-height: 60px;
+  resize: vertical;
+  padding: 8px 10px;
+  border: 1px solid rgba(10, 37, 64, 0.15);
+  border-radius: 6px;
+  font-family: inherit;
+  font-size: 12px;
+  outline: none;
+  box-sizing: border-box;
+}
+.ann-sel-textarea:focus {
+  border-color: #FF6B35;
+  box-shadow: 0 0 0 3px rgba(255, 107, 53, 0.12);
+}
+.ann-sel-actions {
+  display: flex;
+  gap: 6px;
+  justify-content: flex-end;
+}
+.ann-sel-cancel, .ann-sel-save {
+  border: 1px solid rgba(10, 37, 64, 0.15);
+  background: #fff;
+  border-radius: 6px;
+  padding: 5px 10px;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+}
+.ann-sel-save {
+  background: #FF6B35;
+  border-color: #FF6B35;
+  color: #fff;
+}
+.ann-sel-save:hover { background: #d94e1f; }
+
+/* -------- Highlight (commented text) -------- */
+.ann-highlight {
+  background: rgba(255, 235, 59, 0.35);
+  border-bottom: 1px dashed rgba(241, 196, 15, 0.8);
+  cursor: pointer;
+  border-radius: 2px;
+  padding: 0 1px;
+  transition: background 0.15s ease;
+}
+.ann-highlight:hover { background: rgba(255, 235, 59, 0.55); }
+
+/* Highlight tooltip */
+.ann-hl-tip {
+  position: absolute;
+  z-index: 1080;
+  background: #ffffff;
+  border: 1px solid rgba(10, 37, 64, 0.12);
+  border-radius: 8px;
+  box-shadow: 0 6px 20px rgba(10, 37, 64, 0.18);
+  padding: 10px 12px;
+  max-width: 260px;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  font-size: 12.5px;
+  line-height: 1.45;
+  color: #0F172A;
+  opacity: 0;
+  transform: translateY(-4px);
+  pointer-events: none;
+  transition: opacity 0.15s ease, transform 0.15s ease;
+}
+.ann-hl-tip.visible {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+.ann-hl-tip-ts {
+  font-size: 10px;
+  font-weight: 600;
+  color: rgba(10, 37, 64, 0.45);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+.ann-hl-tip-text { white-space: pre-wrap; word-wrap: break-word; }
+.ann-hl-tip-del {
+  margin-top: 8px;
+  background: transparent;
+  border: 1px solid rgba(217, 78, 31, 0.3);
+  color: #d94e1f;
+  border-radius: 5px;
+  padding: 4px 8px;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+}
+.ann-hl-tip-del:hover { background: rgba(217, 78, 31, 0.08); }
+
 /* -------- Side panel -------- */
 .ann-panel {
   position: fixed;
   top: 0;
   right: 0;
   bottom: 0;
-  width: 320px;
+  width: 340px;
   max-width: 92vw;
   background: #ffffff;
   border-left: 1px solid rgba(10, 37, 64, 0.1);
@@ -140,6 +407,28 @@
   line-height: 0;
 }
 .ann-close:hover { color: #0A2540; background: rgba(10, 37, 64, 0.05); }
+
+.ann-panel-tabs {
+  display: flex;
+  border-bottom: 1px solid rgba(10, 37, 64, 0.08);
+}
+.ann-tab {
+  flex: 1;
+  background: transparent;
+  border: 0;
+  padding: 9px 6px;
+  font-family: inherit;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: rgba(10, 37, 64, 0.55);
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+}
+.ann-tab.active {
+  color: #0A2540;
+  border-bottom-color: #FF6B35;
+}
 
 .ann-panel-body {
   flex: 1;
@@ -221,6 +510,16 @@
   margin-bottom: 4px;
 }
 .ann-item-text { white-space: pre-wrap; word-wrap: break-word; }
+.ann-sel-quote {
+  background: rgba(255, 235, 59, 0.25);
+  border-left: 2px solid #F1C40F;
+  padding: 4px 8px;
+  font-size: 11.5px;
+  font-style: italic;
+  margin-bottom: 6px;
+  border-radius: 2px;
+  word-wrap: break-word;
+}
 .ann-item-del {
   position: absolute;
   top: 6px;
@@ -235,6 +534,8 @@
   line-height: 1;
 }
 .ann-item-del:hover { color: #d94e1f; background: rgba(217, 78, 31, 0.08); }
+
+.ann-draw-summary { margin-bottom: 10px; }
 
 .ann-panel-footer {
   border-top: 1px solid rgba(10, 37, 64, 0.08);
@@ -262,8 +563,67 @@
 .ann-btn:hover { background: #FFF8F3; border-color: rgba(10, 37, 64, 0.3); }
 .ann-btn.ann-btn-danger:hover { color: #d94e1f; border-color: #d94e1f; }
 
+/* -------- FS status badge (bottom-left) -------- */
+.ann-fs-badge {
+  position: fixed;
+  bottom: 14px;
+  left: 14px;
+  z-index: 1200;
+  background: #ffffff;
+  border: 1px solid rgba(10, 37, 64, 0.12);
+  border-radius: 999px;
+  box-shadow: 0 2px 10px rgba(10, 37, 64, 0.15);
+  padding: 6px 12px 6px 10px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  font-size: 11px;
+  font-weight: 600;
+  color: #0A2540;
+}
+.ann-fs-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #9CA3AF;
+  display: inline-block;
+  flex-shrink: 0;
+}
+.ann-fs-dot.ok { background: #2ECC71; }
+.ann-fs-dot.pending { background: #F1C40F; animation: ann-pulse 1s ease-in-out infinite; }
+.ann-fs-dot.err { background: #E74C3C; }
+.ann-fs-dot.off { background: #9CA3AF; }
+@keyframes ann-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.45; }
+}
+.ann-fs-action {
+  background: #FF6B35;
+  color: #fff;
+  border: 0;
+  border-radius: 999px;
+  padding: 4px 10px;
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  cursor: pointer;
+  font-family: inherit;
+}
+.ann-fs-action:hover { background: #d94e1f; }
+
 /* Mobile */
 @media (max-width: 640px) {
   .ann-panel { width: 100vw; max-width: 100vw; }
-  .ann-fab { width: 44px; height: 44px; bottom: 14px; right: 14px; }
+  .ann-fab { width: 44px; height: 44px; }
+  .ann-fab-stack { bottom: 14px; right: 14px; }
+  .ann-draw-toolbar {
+    top: auto;
+    bottom: 70px;
+    left: 50%;
+    flex-wrap: wrap;
+    max-width: 92vw;
+  }
+  .ann-fs-badge { bottom: 70px; }
 }
