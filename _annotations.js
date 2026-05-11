@@ -1,30 +1,31 @@
 /* ====================================================================
-   Shelfly Deck — In-Deck Annotations Widget v2
+   Shelfly Deck — In-Deck Annotations Widget v3
    Vanilla JS. Cero deps. Auto-init on DOMContentLoaded.
 
-   v2 features (sobre v1):
+   v3 changes (sobre v2):
+   - Removido File System Access API + IndexedDB handle storage.
+   - Sync a disco via local server (http://localhost:8787) que arranca
+     solo via launchd. Cero clicks de "Conectar carpeta".
+   - localStorage sigue siendo cache primario; auto-POST a /save con
+     debounce 500ms cuando hay cambios.
+   - Status indicator chiquito: verde = server OK, gris = offline.
+   - Si el server no responde, todo funciona local (solo localStorage).
+
+   Conservado de v2:
    - Modo dibujo libre (canvas overlay por slide) con colores + grosor + borrador
-   - Modo selecciónDeTexto: comentarios anclados a texto seleccionado (highlight)
-   - Export ZIP-like: JSON + PNG por slide con drawings rasterizados + README
-   - FAB con badges múltiples (comentarios / drawings / selecciones)
+   - Modo seleccionDeTexto: comentarios anclados a texto seleccionado
    - Modos present: ?present=clean | ?present=annotated | ?present=true (=clean)
-   - Storage v2 con migración automática desde v1
+   - Export ZIP-like manual: JSON + PNG por slide + README
    ==================================================================== */
 (function () {
   'use strict';
 
-  var STORAGE_KEY = 'shelfly_deck_comments_v1'; // mismo key, schema 2.0 adentro
+  var STORAGE_KEY = 'shelfly_deck_comments_v1';
   var DECK_NAME = 'shelfly';
   var SCHEMA_VERSION = '2.0';
-  var DATA_FILENAME = 'data.json';
-  var SNAPSHOTS_DIRNAME = 'snapshots';
-  var IDB_NAME = 'shelfly_annotations';
-  var IDB_STORE = 'handles';
-  var IDB_KEY_ROOT = 'rootFolder';
+  var SERVER_URL = 'http://localhost:8787';
   var AUTOSAVE_DEBOUNCE_MS = 500;
-  var SUPPORTS_FS_ACCESS = typeof window !== 'undefined' &&
-    typeof window.showDirectoryPicker === 'function' &&
-    typeof window.indexedDB !== 'undefined';
+  var HEALTH_RECHECK_MS = 15000; // re-ping every 15s if offline
 
   var SVG_CHAT = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>';
   var SVG_PEN = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19l7-7 3 3-7 7-3-3z"/><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/><path d="M2 2l7.586 7.586"/><circle cx="11" cy="11" r="2"/></svg>';
@@ -56,7 +57,7 @@
     }
   }
 
-  // ---------- Storage ----------
+  // ---------- Storage (localStorage) ----------
   function emptySlide() {
     return { comments: [], drawings: [], selections: [] };
   }
@@ -78,7 +79,7 @@
             migrated.slides[slideId] = { comments: val, drawings: [], selections: [] };
           }
         });
-        saveAll(migrated);
+        saveAll(migrated, { silent: true });
         return migrated;
       }
       // Ensure all slides have all three buckets
@@ -96,14 +97,15 @@
       return { version: SCHEMA_VERSION, slides: {} };
     }
   }
-  function saveAll(data) {
+  function saveAll(data, opts) {
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
     } catch (e) {
-      console.warn('[annotations] save failed', e);
+      console.warn('[annotations] localStorage save failed', e);
     }
-    // Mirror to disk (debounced)
-    try { scheduleAutoSave(); } catch (e) { /* may not be wired yet */ }
+    if (!opts || !opts.silent) {
+      try { scheduleAutoSave(); } catch (e) { /* may not be wired yet */ }
+    }
   }
   function getSlide(slideId) {
     var all = loadAll();
@@ -131,7 +133,6 @@
   }
   function addDrawingPath(slideId, path) {
     var s = getSlide(slideId);
-    // Wrap in a single "session" entry so we can group by stroke session if needed
     s.drawings.push({ ts: new Date().toISOString(), path: path });
     setSlide(slideId, s);
   }
@@ -156,141 +157,15 @@
     setSlide(slideId, s);
   }
 
-  // ---------- IndexedDB (handle storage) ----------
-  function idbOpen() {
-    return new Promise(function (resolve, reject) {
-      if (!SUPPORTS_FS_ACCESS) return reject(new Error('fs-access not supported'));
-      var req = indexedDB.open(IDB_NAME, 1);
-      req.onupgradeneeded = function () {
-        var db = req.result;
-        if (!db.objectStoreNames.contains(IDB_STORE)) {
-          db.createObjectStore(IDB_STORE);
-        }
-      };
-      req.onsuccess = function () { resolve(req.result); };
-      req.onerror = function () { reject(req.error); };
-    });
-  }
-  function idbGet(key) {
-    return idbOpen().then(function (db) {
-      return new Promise(function (resolve, reject) {
-        var tx = db.transaction(IDB_STORE, 'readonly');
-        var st = tx.objectStore(IDB_STORE);
-        var rq = st.get(key);
-        rq.onsuccess = function () { resolve(rq.result); };
-        rq.onerror = function () { reject(rq.error); };
-      });
-    });
-  }
-  function idbPut(key, val) {
-    return idbOpen().then(function (db) {
-      return new Promise(function (resolve, reject) {
-        var tx = db.transaction(IDB_STORE, 'readwrite');
-        var st = tx.objectStore(IDB_STORE);
-        var rq = st.put(val, key);
-        rq.onsuccess = function () { resolve(); };
-        rq.onerror = function () { reject(rq.error); };
-      });
-    });
-  }
-  function idbDel(key) {
-    return idbOpen().then(function (db) {
-      return new Promise(function (resolve, reject) {
-        var tx = db.transaction(IDB_STORE, 'readwrite');
-        var st = tx.objectStore(IDB_STORE);
-        var rq = st.delete(key);
-        rq.onsuccess = function () { resolve(); };
-        rq.onerror = function () { reject(rq.error); };
-      });
-    });
-  }
-
-  // ---------- File System Access API ----------
-  var fsState = {
-    rootHandle: null,         // FileSystemDirectoryHandle for the _annotations/ folder
-    dataFileHandle: null,     // FileSystemFileHandle for data.json
-    snapshotsDirHandle: null, // FileSystemDirectoryHandle for snapshots/
-    permissionGranted: false,
+  // ---------- Server sync ----------
+  var serverState = {
+    online: false,
+    lastSaveStatus: null, // 'ok' | 'err' | 'pending' | 'offline' | null
     autosaveTimer: null,
-    writingNow: false,
-    pendingWrite: false,
-    lastSaveStatus: null      // 'ok' | 'err' | 'pending'
+    healthTimer: null,
+    inFlight: false,
+    pending: false
   };
-
-  function fsSupportedOrWarn() {
-    if (SUPPORTS_FS_ACCESS) return true;
-    return false;
-  }
-
-  function verifyPermission(handle, mode) {
-    var opts = { mode: mode || 'readwrite' };
-    return Promise.resolve()
-      .then(function () { return handle.queryPermission ? handle.queryPermission(opts) : 'granted'; })
-      .then(function (p) {
-        if (p === 'granted') return 'granted';
-        if (!handle.requestPermission) return 'denied';
-        return handle.requestPermission(opts);
-      });
-  }
-
-  function pickAndConnectFolder() {
-    if (!fsSupportedOrWarn()) {
-      alert('Tu browser no soporta File System Access API. Usa Arc/Chrome/Edge para auto-save.');
-      return Promise.reject(new Error('not supported'));
-    }
-    return window.showDirectoryPicker({ mode: 'readwrite', id: 'shelfly-annotations' })
-      .then(function (dirHandle) {
-        fsState.rootHandle = dirHandle;
-        return idbPut(IDB_KEY_ROOT, dirHandle);
-      })
-      .then(function () { return ensureSubHandles(); })
-      .then(function () {
-        fsState.permissionGranted = true;
-        setStatus('ok');
-        // Immediate write of current state
-        return writeDataNow();
-      })
-      .then(function () {
-        renderFsStatusBadge();
-        console.info('[annotations] folder connected · auto-save active');
-      })
-      .catch(function (err) {
-        if (err && err.name === 'AbortError') return; // user cancelled
-        console.warn('[annotations] folder pick failed', err);
-      });
-  }
-
-  function ensureSubHandles() {
-    if (!fsState.rootHandle) return Promise.reject(new Error('no root'));
-    return fsState.rootHandle.getFileHandle(DATA_FILENAME, { create: true })
-      .then(function (fh) {
-        fsState.dataFileHandle = fh;
-        return fsState.rootHandle.getDirectoryHandle(SNAPSHOTS_DIRNAME, { create: true });
-      })
-      .then(function (dh) {
-        fsState.snapshotsDirHandle = dh;
-      });
-  }
-
-  function tryRestoreHandle() {
-    if (!SUPPORTS_FS_ACCESS) return Promise.resolve(false);
-    return idbGet(IDB_KEY_ROOT).then(function (handle) {
-      if (!handle) return false;
-      return verifyPermission(handle, 'readwrite').then(function (perm) {
-        if (perm !== 'granted') {
-          fsState.rootHandle = handle;
-          fsState.permissionGranted = false;
-          return false;
-        }
-        fsState.rootHandle = handle;
-        fsState.permissionGranted = true;
-        return ensureSubHandles().then(function () { return true; });
-      });
-    }).catch(function (err) {
-      console.warn('[annotations] handle restore failed', err);
-      return false;
-    });
-  }
 
   function buildDataFilePayload() {
     var all = loadAll();
@@ -308,7 +183,7 @@
         drawings: s.drawings || []
       };
     }
-    // Also include any slides we have data for but no DOM section
+    // Include slides we have data for but no DOM section
     Object.keys(all.slides || {}).forEach(function (sid) {
       if (slidesOut[sid]) return;
       var s = all.slides[sid];
@@ -328,122 +203,172 @@
     };
   }
 
-  function writeDataNow() {
-    if (!fsState.dataFileHandle) return Promise.resolve(false);
-    if (fsState.writingNow) {
-      fsState.pendingWrite = true;
+  function pingHealth() {
+    return fetch(SERVER_URL + '/health', { method: 'GET', cache: 'no-store' })
+      .then(function (r) { return r.ok ? r.json() : null; })
+      .then(function (j) {
+        var ok = !!(j && j.ok);
+        if (ok !== serverState.online) {
+          serverState.online = ok;
+          setStatus(ok ? (serverState.lastSaveStatus === 'err' ? 'err' : 'ok') : 'offline');
+        }
+        return ok;
+      })
+      .catch(function () {
+        if (serverState.online) {
+          serverState.online = false;
+          setStatus('offline');
+        }
+        return false;
+      });
+  }
+
+  function saveToServer() {
+    if (!serverState.online) {
+      serverState.pending = false;
+      setStatus('offline');
       return Promise.resolve(false);
     }
-    fsState.writingNow = true;
+    if (serverState.inFlight) {
+      serverState.pending = true;
+      return Promise.resolve(false);
+    }
+    serverState.inFlight = true;
     setStatus('pending');
     var payload = buildDataFilePayload();
-    var json = JSON.stringify(payload, null, 2);
-    return fsState.dataFileHandle.createWritable()
-      .then(function (writable) {
-        return writable.write(json).then(function () { return writable.close(); });
-      })
-      .then(function () {
-        fsState.writingNow = false;
+    return fetch(SERVER_URL + '/save', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+      cache: 'no-store'
+    })
+      .then(function (r) {
+        serverState.inFlight = false;
+        if (!r.ok) throw new Error('HTTP ' + r.status);
         setStatus('ok');
-        if (fsState.pendingWrite) {
-          fsState.pendingWrite = false;
-          return writeDataNow();
+        if (serverState.pending) {
+          serverState.pending = false;
+          return saveToServer();
         }
         return true;
       })
       .catch(function (err) {
-        fsState.writingNow = false;
-        console.warn('[annotations] write failed', err);
-        setStatus('err');
+        serverState.inFlight = false;
+        console.warn('[annotations] save failed', err);
+        // Fall back to offline mode and retry health soon
+        serverState.online = false;
+        setStatus('offline');
         return false;
       });
   }
 
   function scheduleAutoSave() {
-    if (!fsState.permissionGranted || !fsState.dataFileHandle) return;
+    clearTimeout(serverState.autosaveTimer);
+    if (!serverState.online) {
+      setStatus('offline');
+      return;
+    }
     setStatus('pending');
-    clearTimeout(fsState.autosaveTimer);
-    fsState.autosaveTimer = setTimeout(function () {
-      writeDataNow();
+    serverState.autosaveTimer = setTimeout(function () {
+      saveToServer();
     }, AUTOSAVE_DEBOUNCE_MS);
   }
 
-  function saveSnapshotPng(slideId, dataUrl) {
-    if (!fsState.permissionGranted || !fsState.snapshotsDirHandle) return Promise.resolve(false);
-    var pad = function (n) { return n < 10 ? '0' + n : '' + n; };
-    var d = new Date();
-    var stamp = d.getFullYear() + pad(d.getMonth() + 1) + pad(d.getDate()) +
-                '-' + pad(d.getHours()) + pad(d.getMinutes()) + pad(d.getSeconds());
-    var name = slideId + '-' + stamp + '.png';
-    return fsState.snapshotsDirHandle.getFileHandle(name, { create: true })
-      .then(function (fh) { return fh.createWritable(); })
-      .then(function (w) {
-        var blob = dataUrlToBlob(dataUrl);
-        return w.write(blob).then(function () { return w.close(); });
-      })
-      .then(function () { return true; })
+  function saveSnapshotToServer(slideId, dataUrl) {
+    if (!serverState.online) return Promise.resolve(false);
+    return fetch(SERVER_URL + '/snapshot', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        slideId: slideId,
+        dataUrl: dataUrl,
+        timestamp: new Date().toISOString()
+      }),
+      cache: 'no-store'
+    })
+      .then(function (r) { return r.ok; })
       .catch(function (err) {
-        console.warn('[annotations] snapshot write failed', err);
+        console.warn('[annotations] snapshot failed', err);
         return false;
       });
   }
 
   function saveAllSnapshotsForSlide(slideId) {
-    if (!fsState.permissionGranted) return;
+    if (!serverState.online) return;
     var section = document.getElementById(slideId);
     if (!section) return;
     if (!getDrawings(slideId).length) return;
     try {
       var dataUrl = rasterizeSlideDrawings(section);
-      saveSnapshotPng(slideId, dataUrl);
+      saveSnapshotToServer(slideId, dataUrl);
     } catch (e) {
       console.warn('[annotations] snapshot failed', e);
     }
   }
 
-  // ---------- FS status badge ----------
-  var fsBadge = null;
-  function renderFsStatusBadge() {
-    if (!fsBadge) {
-      fsBadge = document.createElement('div');
-      fsBadge.className = 'ann-fs-badge';
-      fsBadge.innerHTML =
+  function loadFromServer() {
+    return fetch(SERVER_URL + '/load', { method: 'GET', cache: 'no-store' })
+      .then(function (r) { return r.ok ? r.json() : null; })
+      .catch(function () { return null; });
+  }
+
+  // Cold-boot restore: if localStorage is empty but server has data, hydrate.
+  function maybeHydrateFromServer() {
+    var local = loadAll();
+    var hasLocal = Object.keys(local.slides || {}).some(function (sid) {
+      var s = local.slides[sid] || {};
+      return (s.comments && s.comments.length) ||
+             (s.drawings && s.drawings.length) ||
+             (s.selections && s.selections.length);
+    });
+    if (hasLocal) return Promise.resolve(false);
+    return loadFromServer().then(function (data) {
+      if (!data || !data.slides) return false;
+      var migrated = { version: SCHEMA_VERSION, slides: {} };
+      Object.keys(data.slides).forEach(function (sid) {
+        var s = data.slides[sid] || {};
+        migrated.slides[sid] = {
+          comments: Array.isArray(s.comments) ? s.comments : [],
+          drawings: Array.isArray(s.drawings) ? s.drawings : [],
+          selections: Array.isArray(s.selections) ? s.selections : []
+        };
+      });
+      saveAll(migrated, { silent: true });
+      console.info('[annotations] hydrated from server · ' + Object.keys(migrated.slides).length + ' slides');
+      return true;
+    });
+  }
+
+  // ---------- Status badge ----------
+  var statusBadge = null;
+  function renderStatusBadge() {
+    if (!statusBadge) {
+      statusBadge = document.createElement('div');
+      statusBadge.className = 'ann-fs-badge';
+      statusBadge.innerHTML =
         '<span class="ann-fs-dot"></span>' +
         '<span class="ann-fs-text"></span>' +
-        '<button type="button" class="ann-fs-action" data-action="connect">Conectar carpeta</button>' +
-        '<button type="button" class="ann-fs-action" data-action="force" hidden>Forzar guardar</button>';
-      document.body.appendChild(fsBadge);
-      fsBadge.querySelector('[data-action="connect"]').addEventListener('click', function () {
-        pickAndConnectFolder();
-      });
-      fsBadge.querySelector('[data-action="force"]').addEventListener('click', function () {
-        writeDataNow();
+        '<button type="button" class="ann-fs-action" data-action="force">Forzar guardar</button>';
+      document.body.appendChild(statusBadge);
+      statusBadge.querySelector('[data-action="force"]').addEventListener('click', function () {
+        pingHealth().then(function (ok) { if (ok) saveToServer(); });
       });
     }
-    var dot = fsBadge.querySelector('.ann-fs-dot');
-    var text = fsBadge.querySelector('.ann-fs-text');
-    var connectBtn = fsBadge.querySelector('[data-action="connect"]');
-    var forceBtn = fsBadge.querySelector('[data-action="force"]');
-    if (!SUPPORTS_FS_ACCESS) {
+    var dot = statusBadge.querySelector('.ann-fs-dot');
+    var text = statusBadge.querySelector('.ann-fs-text');
+    var forceBtn = statusBadge.querySelector('[data-action="force"]');
+    var s = serverState.lastSaveStatus;
+    if (!serverState.online) {
       dot.className = 'ann-fs-dot off';
-      text.textContent = 'Sin auto-save (browser no soporta)';
-      connectBtn.hidden = true;
+      text.textContent = 'Solo local (server offline)';
       forceBtn.hidden = true;
       return;
     }
-    if (!fsState.permissionGranted) {
-      dot.className = 'ann-fs-dot off';
-      text.textContent = 'Auto-save off';
-      connectBtn.hidden = false;
-      forceBtn.hidden = true;
-      return;
-    }
-    connectBtn.hidden = true;
     forceBtn.hidden = false;
-    if (fsState.lastSaveStatus === 'err') {
+    if (s === 'err') {
       dot.className = 'ann-fs-dot err';
       text.textContent = 'Error al guardar';
-    } else if (fsState.lastSaveStatus === 'pending') {
+    } else if (s === 'pending') {
       dot.className = 'ann-fs-dot pending';
       text.textContent = 'Guardando...';
     } else {
@@ -452,8 +377,8 @@
     }
   }
   function setStatus(s) {
-    fsState.lastSaveStatus = s;
-    renderFsStatusBadge();
+    serverState.lastSaveStatus = s;
+    renderStatusBadge();
   }
 
   // ---------- Utils ----------
@@ -520,7 +445,6 @@
     layer = document.createElement('div');
     layer.className = 'ann-draw-layer';
     layer.setAttribute('data-slide-id', section.id);
-    // SVG inside: scales with section, paths use viewBox coords
     var svgNs = 'http://www.w3.org/2000/svg';
     var svg = document.createElementNS(svgNs, 'svg');
     svg.setAttribute('class', 'ann-draw-svg');
@@ -547,7 +471,6 @@
     if (!layer) return;
     var svg = layer.querySelector('svg');
     if (!svg) return;
-    // Clear
     while (svg.firstChild) svg.removeChild(svg.firstChild);
     var drawings = getDrawings(section.id);
     var svgNs = 'http://www.w3.org/2000/svg';
@@ -557,7 +480,6 @@
       var pts = d.points;
       var pathStr = '';
       if (pts.length === 1) {
-        // dot
         pathStr = 'M ' + pts[0][0] + ' ' + pts[0][1] + ' L ' + (pts[0][0] + 0.01) + ' ' + (pts[0][1] + 0.01);
       } else {
         pathStr = 'M ' + pts[0][0] + ' ' + pts[0][1];
@@ -591,7 +513,6 @@
     drawState.active = true;
     document.body.classList.add('ann-draw-active');
     showDrawToolbar();
-    // For every slide, make its draw-layer interactive
     var slides = document.querySelectorAll('section.slide');
     for (var i = 0; i < slides.length; i++) {
       attachDrawHandlers(slides[i]);
@@ -607,14 +528,13 @@
       detachDrawHandlers(slides[i]);
     }
     // Snapshot every slide that has drawings (cheap, async, fire-and-forget)
-    if (fsState.permissionGranted) {
+    if (serverState.online) {
       for (var j = 0; j < slides.length; j++) {
         if (getDrawings(slides[j].id).length) {
           saveAllSnapshotsForSlide(slides[j].id);
         }
       }
     }
-    // Update fab visuals to reflect inactive draw mode
     var allFabs = document.querySelectorAll('.ann-fab-draw');
     allFabs.forEach(function (f) { f.classList.remove('active'); });
   }
@@ -640,7 +560,6 @@
     if (!section) return;
     e.preventDefault();
     if (drawState.eraser) {
-      // Eraser: remove last drawing for this slide
       removeLastDrawing(section.id);
       renderDrawings(section);
       refreshFab(section.id);
@@ -669,7 +588,7 @@
     var pt = getPointInSvg(svg, e);
     var last = drawState.currentPoints[drawState.currentPoints.length - 1];
     var dx = pt[0] - last[0], dy = pt[1] - last[1];
-    if (dx * dx + dy * dy < 1) return; // skip tiny moves
+    if (dx * dx + dy * dy < 1) return;
     drawState.currentPoints.push(pt);
     var d = drawState.currentPathEl.getAttribute('d');
     drawState.currentPathEl.setAttribute('d', d + ' L ' + pt[0] + ' ' + pt[1]);
@@ -752,7 +671,6 @@
       '<button type="button" class="ann-draw-tb-btn ann-draw-tb-close" data-action="close" aria-label="Cerrar dibujo">' + SVG_CLOSE + '</button>';
     document.body.appendChild(drawToolbar);
 
-    // Color
     var swatches = drawToolbar.querySelectorAll('.ann-color-swatch');
     swatches.forEach(function (sw) {
       sw.addEventListener('click', function () {
@@ -763,7 +681,6 @@
         drawToolbar.querySelector('[data-action="eraser"]').classList.remove('active');
       });
     });
-    // Width
     var widths = drawToolbar.querySelectorAll('.ann-width-btn');
     widths.forEach(function (wb) {
       wb.addEventListener('click', function () {
@@ -772,14 +689,11 @@
         drawState.width = parseFloat(wb.getAttribute('data-width'));
       });
     });
-    // Eraser
     drawToolbar.querySelector('[data-action="eraser"]').addEventListener('click', function () {
       drawState.eraser = !drawState.eraser;
       this.classList.toggle('active', drawState.eraser);
     });
-    // Clear
     drawToolbar.querySelector('[data-action="clear"]').addEventListener('click', function () {
-      // Clear visible slide(s). Find which section is most in viewport.
       var section = findMostVisibleSlide();
       if (!section) return;
       if (!confirm('Borrar todos los dibujos de "' + slideTitle(section) + '"?')) return;
@@ -787,7 +701,6 @@
       renderDrawings(section);
       refreshFab(section.id);
     });
-    // Close
     drawToolbar.querySelector('[data-action="close"]').addEventListener('click', deactivateDrawMode);
     return drawToolbar;
   }
@@ -864,7 +777,6 @@
     selPopover.querySelector('.ann-sel-form').hidden = true;
     selPopover.querySelector('.ann-sel-textarea').value = '';
     selPopover.classList.add('visible');
-    // Position above the selection
     var top = window.scrollY + rect.top - 50;
     var left = window.scrollX + rect.left + (rect.width / 2) - 90;
     if (top < window.scrollY + 8) top = window.scrollY + rect.bottom + 8;
@@ -896,13 +808,11 @@
       var range = sel.getRangeAt(0);
       var section = findSlideForNode(range.startContainer);
       if (!section) return;
-      // Skip if selection is inside annotation UI
       var commonAncestor = range.commonAncestorContainer;
       var anc = commonAncestor.nodeType === 1 ? commonAncestor : commonAncestor.parentElement;
       if (anc && (anc.closest('.ann-panel') || anc.closest('.ann-sel-popover') || anc.closest('.ann-draw-toolbar'))) return;
       var rect = range.getBoundingClientRect();
       if (!rect || (rect.width === 0 && rect.height === 0)) return;
-      // Build a simple element selector for the start container's parent element
       var startEl = range.startContainer.nodeType === 1 ? range.startContainer : range.startContainer.parentElement;
       pendingSelection = {
         slideId: section.id,
@@ -917,7 +827,6 @@
   function applyHighlightsForSlide(slideId) {
     var section = document.getElementById(slideId);
     if (!section) return;
-    // Remove existing highlights for this slide
     var prev = section.querySelectorAll('.ann-highlight');
     prev.forEach(function (sp) {
       var parent = sp.parentNode;
@@ -928,7 +837,6 @@
     });
     var selections = getSelections(slideId);
     if (!selections.length) return;
-    // For each selection, find first occurrence of selectedText inside section and wrap it
     selections.forEach(function (s, idx) {
       wrapFirstOccurrence(section, s.selectedText, idx);
     });
@@ -983,7 +891,6 @@
     var sel = selections[idx];
     e.preventDefault();
     e.stopPropagation();
-    // Show inline tooltip
     showHighlightTooltip(span, sel, section.id, idx);
   }
 
@@ -1079,9 +986,9 @@
       refreshFab(currentSlideId);
     });
     panel.querySelector('[data-ann="export"]').addEventListener('click', function () {
-      if (fsState.permissionGranted) {
+      if (serverState.online) {
         // Force write data.json + snapshots for slides with drawings
-        writeDataNow().then(function () {
+        saveToServer().then(function () {
           var slides = document.querySelectorAll('section.slide');
           for (var i = 0; i < slides.length; i++) {
             if (getDrawings(slides[i].id).length) saveAllSnapshotsForSlide(slides[i].id);
@@ -1108,7 +1015,6 @@
       renderDrawSummary();
       refreshFab(currentSlideId);
     });
-    // Tabs
     var tabs = panel.querySelectorAll('.ann-tab');
     tabs.forEach(function (t) {
       t.addEventListener('click', function () {
@@ -1213,7 +1119,6 @@
   function refreshFab(slideId) {
     var section = document.getElementById(slideId);
     if (!section) return;
-    // Pick the chat fab specifically (not the draw fab)
     var fab = section.querySelector('.ann-fab-stack .ann-fab:not(.ann-fab-draw)');
     if (!fab) return;
     var slide = getSlide(slideId);
@@ -1275,29 +1180,24 @@
     stack.appendChild(btnChat);
     section.appendChild(stack);
 
-    // Ensure draw layer exists (read-only, no handlers yet)
     ensureDrawLayer(section);
     applyHighlightsForSlide(section.id);
     refreshFab(section.id);
   }
 
-  // ---------- Export ----------
+  // ---------- Export (manual fallback for offline / non-Chromium edge) ----------
   function rasterizeSlideDrawings(section) {
-    // Render the section's drawings to a canvas at the section's pixel size
     var w = section.clientWidth || 1280;
     var h = section.clientHeight || 720;
     var canvas = document.createElement('canvas');
     canvas.width = w;
     canvas.height = h;
     var ctx = canvas.getContext('2d');
-    // Light background so it's visible if user opens the PNG standalone
     ctx.fillStyle = '#FFF8F3';
     ctx.fillRect(0, 0, w, h);
-    // Watermark label
     ctx.fillStyle = 'rgba(10,37,64,0.35)';
     ctx.font = '12px system-ui, -apple-system, sans-serif';
     ctx.fillText('slide ' + section.id + ' · ' + slideTitle(section), 12, h - 12);
-    // Draw paths
     var drawings = getDrawings(section.id);
     for (var i = 0; i < drawings.length; i++) {
       var d = drawings[i].path;
@@ -1345,7 +1245,7 @@
       '',
       'ARCHIVOS EN ESTE EXPORT',
       '- comments.json: storage completo del widget de anotaciones.',
-      '- slide-<id>-drawings.png: PNG renderizado de los dibujos del slide (uno por slide con dibujos).',
+      '- slide-<id>-drawings.png: PNG renderizado de los dibujos del slide.',
       '- README-export.txt: este archivo.',
       '',
       'ESTRUCTURA DE comments.json',
@@ -1355,31 +1255,20 @@
       '  "schema_version": "' + SCHEMA_VERSION + '",',
       '  "slides": {',
       '    "<slide-id>": {',
-      '      "title": "string (heading h1/h2/h3 del slide)",',
+      '      "title": "string (heading del slide)",',
       '      "comments":   [{ "ts": "ISO", "text": "string" }],',
-      '      "selections": [{ "ts": "ISO", "selectedText": "string", "elementSelector": "css-ish path desde la section", "comment": "string" }],',
+      '      "selections": [{ "ts": "ISO", "selectedText": "string", "elementSelector": "...", "comment": "string" }],',
       '      "drawings":   [{ "ts": "ISO", "path": { "color": "rgba|hex", "width": number, "points": [[x,y], ...] } }]',
       '    }',
       '  }',
       '}',
-      '',
-      'NOTAS PARA CLAUDE (cuando Pedro pegue este export)',
-      '- "comments" son notas generales del slide. Aplicarlas como cambios de copy/diseño.',
-      '- "selections" estan ancladas a un fragmento de texto especifico (selectedText). Usar ese texto como ancla literal en el deck antes de modificar.',
-      '- "drawings" son trazos libres en coordenadas del section (origen top-left, en px del clientWidth/clientHeight del slide). Para entenderlos VISUALMENTE leer el PNG correspondiente: slide-<id>-drawings.png. Los dibujos suelen senalar regiones, conectar elementos, tachar, o circundar partes.',
-      '- Los PNGs solo muestran los trazos sobre un fondo cream con label; combinar con el HTML del slide para localizar a que apunta el dibujo (usar las coordenadas en points contra el bounding box del slide).',
-      '',
-      'PRESENT MODES',
-      '- ?present=clean  -> esconde todo (UI + dibujos + highlights)',
-      '- ?present=annotated -> esconde solo controles, deja dibujos y highlights visibles',
-      '- ?present=true | ?present=1 -> equivalente a clean'
+      ''
     ].join('\n');
   }
 
   function exportAll() {
     var all = loadAll();
     var slides = document.querySelectorAll('section.slide');
-    // Enrich slides with title and ensure all known sections appear
     var slidesOut = {};
     var slideIdsWithDrawings = [];
     for (var i = 0; i < slides.length; i++) {
@@ -1402,15 +1291,11 @@
       slides: slidesOut
     };
     var stamp = todayStr();
-    // 1) JSON
     var jsonBlob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
     downloadBlob(jsonBlob, DECK_NAME + '-annotations-' + stamp + '.json');
-    // 2) README
     var readmeBlob = new Blob([buildReadme()], { type: 'text/plain;charset=utf-8' });
     downloadBlob(readmeBlob, DECK_NAME + '-annotations-' + stamp + '-README.txt');
-    // 3) PNG per slide with drawings
     if (slideIdsWithDrawings.length) {
-      // small delay between downloads so browsers dont swallow them
       slideIdsWithDrawings.forEach(function (sid, idx) {
         setTimeout(function () {
           var section = document.getElementById(sid);
@@ -1429,7 +1314,7 @@
     if (mode === 'clean') {
       var s = document.createElement('style');
       s.textContent =
-        '.ann-fab, .ann-fab-stack, .ann-panel, .ann-draw-toolbar, .ann-sel-popover, .ann-hl-tip { display: none !important; }' +
+        '.ann-fab, .ann-fab-stack, .ann-panel, .ann-draw-toolbar, .ann-sel-popover, .ann-hl-tip, .ann-fs-badge { display: none !important; }' +
         '.ann-draw-layer { display: none !important; }' +
         '.ann-highlight { background: transparent !important; border: 0 !important; }';
       document.head.appendChild(s);
@@ -1437,10 +1322,39 @@
     } else if (mode === 'annotated') {
       var s2 = document.createElement('style');
       s2.textContent =
-        '.ann-fab, .ann-fab-stack, .ann-panel, .ann-draw-toolbar, .ann-sel-popover, .ann-hl-tip { display: none !important; }';
+        '.ann-fab, .ann-fab-stack, .ann-panel, .ann-draw-toolbar, .ann-sel-popover, .ann-hl-tip, .ann-fs-badge { display: none !important; }';
       document.head.appendChild(s2);
       console.info('[annotations] present=annotated active');
     }
+  }
+
+  function startHealthLoop() {
+    pingHealth().then(function (ok) {
+      if (ok) {
+        // Cold-boot hydrate (if local is empty) then force one save
+        maybeHydrateFromServer().then(function () {
+          // re-render UI bits that depend on slide data
+          var slides = document.querySelectorAll('section.slide');
+          for (var i = 0; i < slides.length; i++) {
+            refreshFab(slides[i].id);
+            renderDrawings(slides[i]);
+            applyHighlightsForSlide(slides[i].id);
+          }
+          saveToServer();
+        });
+      }
+    });
+    // Re-check periodically; if previously offline this picks the server back up.
+    clearInterval(serverState.healthTimer);
+    serverState.healthTimer = setInterval(function () {
+      var wasOnline = serverState.online;
+      pingHealth().then(function (ok) {
+        if (ok && !wasOnline) {
+          // came back online → flush any local-only changes
+          saveToServer();
+        }
+      });
+    }, HEALTH_RECHECK_MS);
   }
 
   function init() {
@@ -1456,7 +1370,6 @@
       return;
     }
 
-    // Inject FABs + draw layers + highlights for all slides
     for (var i = 0; i < slides.length; i++) {
       injectFab(slides[i]);
     }
@@ -1466,43 +1379,20 @@
       return;
     }
 
-    // Show FS status badge + try to restore folder handle
-    renderFsStatusBadge();
-    if (SUPPORTS_FS_ACCESS) {
-      tryRestoreHandle().then(function (ok) {
-        if (ok) {
-          setStatus('ok');
-          // First boot write so the file always reflects current state
-          writeDataNow();
-        }
-        renderFsStatusBadge();
-      });
-    }
+    renderStatusBadge();
+    startHealthLoop();
 
-    // Esc closes panel / draw mode / popover
     document.addEventListener('keydown', function (e) {
       if (e.key !== 'Escape') return;
-      if (drawState.active) {
-        deactivateDrawMode();
-        return;
-      }
-      if (panel && panel.classList.contains('open')) {
-        closePanel();
-        return;
-      }
-      if (selPopover && selPopover.classList.contains('visible')) {
-        closeSelPopover();
-      }
+      if (drawState.active) { deactivateDrawMode(); return; }
+      if (panel && panel.classList.contains('open')) { closePanel(); return; }
+      if (selPopover && selPopover.classList.contains('visible')) { closeSelPopover(); }
     });
 
-    // Text selection listener (mouseup + touchend)
     document.addEventListener('mouseup', onTextSelection);
     document.addEventListener('touchend', onTextSelection);
-
-    // Click on highlights → tooltip
     document.addEventListener('click', onHighlightClick);
 
-    // Resize: redraw svg viewboxes
     var resizeTimer;
     window.addEventListener('resize', function () {
       clearTimeout(resizeTimer);
@@ -1520,7 +1410,6 @@
       }, 150);
     });
 
-    // Cross-tab sync
     window.addEventListener('storage', function (e) {
       if (e.key !== STORAGE_KEY) return;
       for (var i = 0; i < slides.length; i++) {
@@ -1535,24 +1424,17 @@
       }
     });
 
-    // Console helper
     window.__shelflyAnnotations = {
       dump: function () { return loadAll(); },
       export: exportAll,
-      connectFolder: pickAndConnectFolder,
-      disconnectFolder: function () {
-        fsState.rootHandle = null;
-        fsState.dataFileHandle = null;
-        fsState.snapshotsDirHandle = null;
-        fsState.permissionGranted = false;
-        idbDel(IDB_KEY_ROOT).finally(function () { renderFsStatusBadge(); });
-      },
-      forceSave: writeDataNow,
-      fsState: function () {
+      forceSave: function () { return saveToServer(); },
+      forceHealth: pingHealth,
+      loadFromServer: loadFromServer,
+      serverState: function () {
         return {
-          supported: SUPPORTS_FS_ACCESS,
-          granted: fsState.permissionGranted,
-          status: fsState.lastSaveStatus
+          online: serverState.online,
+          lastSaveStatus: serverState.lastSaveStatus,
+          url: SERVER_URL
         };
       },
       activateDraw: activateDrawMode,
@@ -1570,7 +1452,7 @@
         }
       }
     };
-    console.info('[annotations v2] ready · ' + slides.length + ' slides · __shelflyAnnotations.dump() / .export() / .activateDraw()');
+    console.info('[annotations v3] ready · ' + slides.length + ' slides · server=' + SERVER_URL);
   }
 
   if (document.readyState === 'loading') {
